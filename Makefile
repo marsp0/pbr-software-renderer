@@ -1,21 +1,30 @@
 # https://en.wikipedia.org/wiki/Makefile
 
-SRCDIR 			:= .
+SRCDIR 			:= ./src
 OBJDIR			:= ./out
+
 EXECUTABLE    	:= renderer
 SRCFILES	 	:= $(shell find $(SRCDIR) -name "*.c")
-SRCNAMES		:= $(notdir $(SRCFILES))
+SRCNAMES 		:= $(filter-out test%.c, $(notdir $(SRCFILES)))
 OBJFILES 	    := $(SRCNAMES:%.c=$(OBJDIR)/%.o)
-LDFLAGS       	:= -lX11 -lXi -lSDL2
+
+TSTEXECUTABLE 	:= test_renderer
+TSTSRCNAMES 	:= $(filter-out main.c, $(notdir $(SRCFILES)))
+TSTOBJFILES 	:= $(TSTSRCNAMES:%.c=$(OBJDIR)/%.o)
+
+LDFLAGS       	:= -lX11 -lXi -lSDL2 -lm
 space 			:=
 VPATH 			:= $(subst $(space),:,$(shell find . -type d))
 GCCFLAGS      	:= -std=c17
 
 .PHONY: all
-all: out/$(EXECUTABLE)
+all: out/$(EXECUTABLE) out/$(TSTEXECUTABLE)
 
 out/$(EXECUTABLE): $(OBJFILES)
 	gcc $(GCCFLAGS) $(OBJFILES) -o $@ $(LDFLAGS)
+
+out/$(TSTEXECUTABLE): $(TSTOBJFILES)
+	gcc $(GCCFLAGS) $(TSTOBJFILES) -o $@ $(LDFLAGS)
 
 $(OBJDIR)/%.o: %.c
 	gcc $(GCCFLAGS) -c $< -o $@

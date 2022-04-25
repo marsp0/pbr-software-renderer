@@ -1,11 +1,11 @@
 #pragma once
 
-struct vec
+typedef struct vec
 {
-	float x;
-	float y;
-	float z;
-	float w;
+    float x;
+    float y;
+    float z;
+    float w;
 } vec;
 
 vec vec_new(float x, float y, float z);
