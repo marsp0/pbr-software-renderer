@@ -5,7 +5,7 @@
 #include "../vector.h"
 #include "test_utils.h"
 
-void test_vector_addition()
+static void test_vector_addition()
 {
     vec v1 = vec_new(1.f, 2.f, 3.f);
     vec v2 = vec_new(3.f, 2.f, 1.f);
@@ -14,7 +14,7 @@ void test_vector_addition()
     ASSERT_VEC(expected, actual);
 }
 
-void test_vector_subtraction()
+static void test_vector_subtraction()
 {
     vec v1 = vec_new(1.f, 2.f, 3.f);
     vec v2 = vec_new(3.f, 2.f, 1.f);
@@ -23,7 +23,7 @@ void test_vector_subtraction()
     ASSERT_VEC(expected, actual);
 }
 
-void test_vector_cross()
+static void test_vector_cross()
 {
     vec v1 = vec_new(1.f, 2.f, 3.f);
     vec v2 = vec_new(2.f, 3.5f, 14.2f);
@@ -32,7 +32,7 @@ void test_vector_cross()
     ASSERT_VEC(expected, actual);
 }
 
-void test_vector_scale()
+static void test_vector_scale()
 {
     vec v1 = vec_new(1.f, 2.f, 3.f);
     vec actual = vec_scale(v1, 5.f);
@@ -40,7 +40,7 @@ void test_vector_scale()
     ASSERT_VEC(expected, actual);
 }
 
-void test_vector_negate()
+static void test_vector_negate()
 {
     vec v1 = vec_new(1.f, 2.f, 3.f);
     vec actual = vec_negate(v1);
@@ -48,7 +48,7 @@ void test_vector_negate()
     ASSERT_VEC(expected, actual);
 }
 
-void test_vector_normalize()
+static void test_vector_normalize()
 {
     vec v1 = vec_new(2.f, 3.f, 4.f);
     vec actual = vec_normalize(v1);
@@ -57,7 +57,7 @@ void test_vector_normalize()
     ASSERT_VEC(expected, actual);
 }
 
-void test_vector_dot()
+static void test_vector_dot()
 {
     vec v1 = vec_new(1.f, 2.f, 3.f);
     vec v2 = vec_new(3.f, 2.f, 1.f);
@@ -66,7 +66,7 @@ void test_vector_dot()
     ASSERT_FLOAT(expected, actual);
 }
 
-void test_vector_magnitude()
+static void test_vector_magnitude()
 {
     vec v1 = vec_new(2.f, 3.f, 4.f);
     float actual = vec_magnitude(v1);

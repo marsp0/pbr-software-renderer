@@ -2,7 +2,7 @@
 
 #include "test_utils.h"
 
-void test_matrix_add()
+static void test_matrix_add()
 {
     mat m1 = mat_new_identity();
     mat m2 = mat_new_identity();
@@ -15,7 +15,7 @@ void test_matrix_add()
     ASSERT_MAT(expected, actual);
 }
 
-void test_matrix_sub()
+static void test_matrix_sub()
 {
     mat m1 = mat_new_identity();
     mat m2 = mat_new_identity();
@@ -28,7 +28,7 @@ void test_matrix_sub()
     ASSERT_MAT(expected, actual);
 }
 
-void test_matrix_mul_matrix()
+static void test_matrix_mul_matrix()
 {
     mat m1 = mat_new(5, 2, 3, 4, 0, 1, 0, 0, 16, 12, 1, 0, 3, 4, 0, 1);
     mat m2 = mat_new(1, 1, 0, 1, 6, 1, 0, 3, 2, 1, 14, 0, 4, 0, 2, 1);
@@ -37,7 +37,7 @@ void test_matrix_mul_matrix()
     ASSERT_MAT(expected, actual);
 }
 
-void test_matrix_mul_vector()
+static void test_matrix_mul_vector()
 {
     mat m = mat_new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 1);
     vec v = vec_new(1, 2, 3);
@@ -46,7 +46,7 @@ void test_matrix_mul_vector()
     ASSERT_VEC(expected, actual);
 }
 
-void test_matrix_inverse_1()
+static void test_matrix_inverse_1()
 {
     mat m = mat_new(1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, 1);
     mat actual = mat_inverse(m);
@@ -57,7 +57,7 @@ void test_matrix_inverse_1()
     ASSERT_MAT(expected, actual);
 }
 
-void test_matrix_inverse_2()
+static void test_matrix_inverse_2()
 {
     mat m = mat_new(1,2,3,4,
                     5,6,7,8,
@@ -71,7 +71,7 @@ void test_matrix_inverse_2()
     ASSERT_MAT(expected, actual);
 }
 
-void test_matrix_inverse_3()
+static void test_matrix_inverse_3()
 {
     mat m = mat_new(0.5f,2,3,4,
                     5,2,7,8,
@@ -85,7 +85,7 @@ void test_matrix_inverse_3()
     ASSERT_MAT(expected, actual);
 }
 
-void test_matrix_transpose()
+static void test_matrix_transpose()
 {
     mat m = mat_new(1,2,3,4,
                     5,6,7,8,

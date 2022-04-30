@@ -84,3 +84,27 @@ void assert_mat(mat expected, mat actual, const char* message, const char* file_
 
     assert(result);
 }
+
+void assert_col(color expected, color actual, const char* message, const char* file_name, int line_number)
+{
+    bool result = true;
+    float r_diff = fabs(expected.r - actual.r);
+    float g_diff = fabs(expected.g - actual.g);
+    float b_diff = fabs(expected.b - actual.b);
+    if (r_diff > epsilon || g_diff > epsilon || b_diff > epsilon)
+        result = false;
+    
+    if (!result)
+    {
+        if (strcmp(message, "") != 0)
+        {
+            printf(message);
+        }
+        printf("File:\t\t %s\n", file_name);
+        printf("Line:\t\t %i\n", line_number);
+        printf("Actual:\t\t %f, %f, %f\n", actual.r, actual.g, actual.b);
+        printf("Expected:\t %f, %f, %f\n", expected.r, expected.g, expected.b);
+    }
+
+    assert(result);
+}
