@@ -10,19 +10,19 @@ framebuffer* framebuffer_new(int width, int height)
     framebuffer* buffer = malloc(sizeof(framebuffer));
     buffer->width = width;
     buffer->height = height;
-    buffer->data = malloc(width * height * sizeof(uint32_t));
+    buffer->data = malloc(width * height * sizeof(color));
     
     return buffer;
 }
 
-void framebuffer_set(framebuffer* buffer, int x, int y, uint32_t val)
+void framebuffer_set(framebuffer* buffer, int x, int y, color val)
 {
 
 }
 
-uint32_t framebuffer_get(framebuffer* buffer, int x, int y)
+color framebuffer_get(framebuffer* buffer, int x, int y)
 {
-    return 0;
+    return color_new_f(0.f, 0.f, 0.f);
 }
 
 void framebuffer_destroy(framebuffer* buffer)
