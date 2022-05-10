@@ -2,7 +2,7 @@
 
 #include "vector.h"
 
-typedef struct mat
+typedef struct
 {
     float data[4][4];
 } mat;

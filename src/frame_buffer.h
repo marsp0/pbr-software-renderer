@@ -4,15 +4,15 @@
 
 #include "color.h"
 
-typedef struct framebuffer
+typedef struct
 {
-    int width;
-    int height;
-    color* data;
+    uint16_t width;
+    uint16_t height;
+    uint32_t* data;
 
 } framebuffer;
 
-framebuffer* framebuffer_new(int width, int height);
+framebuffer* framebuffer_new(uint16_t width, uint16_t height);
 void framebuffer_set(framebuffer* buffer, int x, int y, color val);
-color framebuffer_get(framebuffer* buffer, int x, int y);
+uint32_t framebuffer_get(framebuffer* buffer, int x, int y);
 void framebuffer_destroy(framebuffer* buffer);

@@ -3,7 +3,7 @@
 #include "frame_buffer.h"
 #include "depth_buffer.h"
 
-typedef struct renderer
+typedef struct
 {
     int width;
     int height;

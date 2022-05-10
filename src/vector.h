@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct vec
+typedef struct
 {
     float x;
     float y;

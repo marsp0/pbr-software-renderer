@@ -2,7 +2,7 @@
 
 static const float ONE_OVER_255 = 0.0039215;
 
-typedef struct color
+typedef struct
 {
     float r;
     float g;

@@ -2,7 +2,7 @@
 
 #include "stdlib.h"
 
-display display_new(int width, int height)
+display display_new(uint16_t width, uint16_t height)
 {
     display result;
     result.width = width;
