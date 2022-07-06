@@ -36,7 +36,7 @@ void display_swap_buffers(display dsp, framebuffer* buffer)
 
 }
 
-void display_destroy(display dsp)
+void display_free(display dsp)
 {
     SDL_DestroyWindow(dsp.window);
     SDL_Quit();

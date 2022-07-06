@@ -16,4 +16,4 @@ typedef struct
 
 display display_new(uint16_t width, uint16_t height);
 void display_swap_buffers(display dsp, framebuffer* buffer);
-void display_destroy();
+void display_free();
