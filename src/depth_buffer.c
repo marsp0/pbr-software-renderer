@@ -25,7 +25,7 @@ float depthbuffer_get(depthbuffer* buffer, int x, int y)
     return 0.f;
 }
 
-void depthbuffer_destroy(depthbuffer* buffer)
+void depthbuffer_free(depthbuffer* buffer)
 {
     free(buffer->data);
     free(buffer);

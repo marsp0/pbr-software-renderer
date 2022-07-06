@@ -1,9 +1,7 @@
 #include "test_vector.h"
-
-#include "math.h"
-
-#include "../vector.h"
 #include "test_utils.h"
+
+#include <math.h>
 
 static void test_vector_addition()
 {

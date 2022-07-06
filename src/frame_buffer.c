@@ -25,7 +25,7 @@ uint32_t framebuffer_get(framebuffer* buffer, int x, int y)
     return 0;
 }
 
-void framebuffer_destroy(framebuffer* buffer)
+void framebuffer_free(framebuffer* buffer)
 {
     free(buffer->data);
     free(buffer);
