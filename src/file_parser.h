@@ -1,3 +1,3 @@
 #pragma once
 
-void parse_obj(const char* file_name);
+void parse_obj_scene(const char* file_name);

@@ -4,5 +4,5 @@
 int main()
 {
     const char* file_name = "/home/martin/Documents/Projects/pbr-software-renderer/assets/test.obj";
-    parse_obj(file_name);
+    parse_obj_scene(file_name);
 }
