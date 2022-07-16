@@ -51,6 +51,22 @@ void assert_float(float expected, float actual, const char* message, const char*
     assert(result);
 }
 
+void assert_int(int expected, int actual, const char* message, const char* file_name, int line_number)
+{
+    if (expected != actual)
+    {
+        if (strcmp(message, "") != 0)
+        {
+            printf(message);
+        }
+        printf("File:\t\t %s\n", file_name);
+        printf("Line:\t\t %i\n", line_number);
+        printf("Actual:\t\t %d\n", actual);
+        printf("Expected:\t %d\n", expected);
+        assert(false);
+    }
+}
+
 void assert_mat(mat expected, mat actual, const char* message, const char* file_name, int line_number)
 {
     bool result = true;
