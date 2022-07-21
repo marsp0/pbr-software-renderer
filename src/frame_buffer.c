@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-framebuffer* framebuffer_new(uint16_t width, uint16_t height)
+framebuffer* framebuffer_new(int width, int height)
 {
     assert(width > 0 && height > 0);
     

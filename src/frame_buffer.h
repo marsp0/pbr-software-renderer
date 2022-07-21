@@ -6,13 +6,13 @@
 
 typedef struct
 {
-    uint16_t width;
-    uint16_t height;
+    int width;
+    int height;
     uint32_t* data;
 
 } framebuffer;
 
-framebuffer* framebuffer_new(uint16_t width, uint16_t height);
+framebuffer* framebuffer_new(int width, int height);
 void framebuffer_set(framebuffer* buffer, int x, int y, color val);
 uint32_t framebuffer_get(framebuffer* buffer, int x, int y);
 void framebuffer_free(framebuffer* buffer);

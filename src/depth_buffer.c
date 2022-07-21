@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-depthbuffer* depthbuffer_new(uint16_t width, uint16_t height)
+depthbuffer* depthbuffer_new(int width, int height)
 {
     assert(width > 0 && height > 0);
 

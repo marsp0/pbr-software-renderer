@@ -172,7 +172,7 @@ vec mat_mul_vec(mat m, vec v)
 
 mat mat_inverse(mat m)
 {
-    // https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
+    /* https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix */
     
     mat result;
     

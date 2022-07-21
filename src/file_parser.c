@@ -12,19 +12,20 @@
 
 typedef struct 
 {
-    uint32_t vertex_count;
-    uint32_t texcoord_count;
-    uint32_t normal_count;
-    uint32_t index_count;
+    int vertex_count;
+    int texcoord_count;
+    int normal_count;
+    int index_count;
 } mesh_info;
 
-static uint32_t read_line(unsigned char* src, unsigned char* dst, uint32_t cursor, uint32_t size)
+static int read_line(unsigned char* src, char* dst, int cursor, int size)
 {
     memset(dst, 0, size);
 
-    uint32_t end_pos = size;
+    int end_pos = size;
     
-    for (int i = 0; i < size - 1; i++) // its size - 1 because of null termination
+    /* its size - 1 because of null termination */
+    for (int i = 0; i < size - 1; i++)
     {
         if (src[cursor + i] == '\n')
         {
@@ -38,9 +39,9 @@ static uint32_t read_line(unsigned char* src, unsigned char* dst, uint32_t curso
     return cursor + end_pos + 1;
 }
 
-static mesh_info parse_obj_mesh_info(unsigned char* buffer, uint32_t size, uint32_t cursor)
+static mesh_info parse_obj_mesh_info(unsigned char* buffer, int size, int cursor)
 {
-    mesh_info data = { 0, 0, 0, 0 };
+    mesh_info result = { 0, 0, 0, 0 };
     char line[LINE_SIZE];
     while(true)
     {
@@ -48,41 +49,40 @@ static mesh_info parse_obj_mesh_info(unsigned char* buffer, uint32_t size, uint3
         cursor = read_line(buffer, line, cursor, LINE_SIZE);
 
         if (strncmp(line, "v ", 2) == 0)
-            data.vertex_count++;
+            result.vertex_count++;
         else if (strncmp(line, "vt ", 3) == 0)
-            data.texcoord_count++;
+            result.texcoord_count++;
         else if (strncmp(line, "vn ", 3) == 0)
-            data.normal_count++;
+            result.normal_count++;
         else if (strncmp(line, "f ", 2) == 0)
-            data.index_count += 3;
+            result.index_count += 3;
         
         if (cursor > size || strncmp(&buffer[cursor], "o ", 2) == 0)
             break;
     }
-    return data;
+    return result;
 }
 
-static mesh* parse_obj_mesh(unsigned char* buffer, uint32_t size, uint32_t* cursor)
+static mesh* parse_obj_mesh(unsigned char* buffer, int size, int* cursor)
 {
 
-    // get sizes
     mesh_info current_mesh_info = parse_obj_mesh_info(buffer, size, *cursor);
 
-    // parse contents
     vec* vertices = malloc(sizeof(vec) * current_mesh_info.vertex_count);
     vec* texcoords = malloc(sizeof(vec) * current_mesh_info.texcoord_count);
     vec* normals = malloc(sizeof(vec) * current_mesh_info.normal_count);
     int* vertex_indices = malloc(sizeof(int) * current_mesh_info.index_count);
     int* texcoord_indices = malloc(sizeof(int) * current_mesh_info.index_count);
     int* normal_indices = malloc(sizeof(int) * current_mesh_info.index_count);
-    uint32_t vertex_index = 0;
-    uint32_t texcoord_index = 0;
-    uint32_t normal_index = 0;
-    uint32_t vi_index = 0;
-    uint32_t ti_index = 0;
-    uint32_t ni_index = 0;
+    int vertex_index = 0;
+    int texcoord_index = 0;
+    int normal_index = 0;
+    int vi_index = 0;
+    int ti_index = 0;
+    int ni_index = 0;
     
     int items;
+    vec input_vec;
     char line[LINE_SIZE];
     char name[MESH_NAME_SIZE];
     while(true)
@@ -91,27 +91,21 @@ static mesh* parse_obj_mesh(unsigned char* buffer, uint32_t size, uint32_t* curs
         *cursor = read_line(buffer, line, *cursor, LINE_SIZE);
         if (strncmp(line, "v ", 2) == 0)
         {
-            vec vertex;
-            items = sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+            items = sscanf(line, "v %f %f %f", &input_vec.x, &input_vec.y, &input_vec.z);
             assert(items == 3);
-            vertices[vertex_index] = vertex;
-            vertex_index++;
+            vertices[vertex_index++] = input_vec;
         }
         else if (strncmp(line, "vt ", 3) == 0)
         {
-            vec vertex;
-            items = sscanf(line, "vt %f %f", &vertex.x, &vertex.y);
+            items = sscanf(line, "vt %f %f", &input_vec.x, &input_vec.y);
             assert(items == 2);
-            texcoords[texcoord_index] = vertex;
-            texcoord_index++;
+            texcoords[texcoord_index++] = input_vec;
         }
         else if (strncmp(line, "vn ", 3) == 0)
         {
-            vec normal;
-            items = sscanf(line, "vn %f %f %f", &normal.x, &normal.y, &normal.z);
+            items = sscanf(line, "vn %f %f %f", &input_vec.x, &input_vec.y, &input_vec.z);
             assert(items == 3);
-            normals[normal_index] = normal;
-            normal_index++;
+            normals[normal_index++] = input_vec;
         }
         else if (strncmp(line, "f ", 2) == 0)
         {
@@ -134,13 +128,13 @@ static mesh* parse_obj_mesh(unsigned char* buffer, uint32_t size, uint32_t* curs
             break;
     }
 
-    // assert that everything has been read
-    assert(current_mesh_info.vertex_count == vertex_index);
+    /* assert that everything has been read */
+    assert(current_mesh_info.vertex_count   == vertex_index);
     assert(current_mesh_info.texcoord_count == texcoord_index);
-    assert(current_mesh_info.normal_count == normal_index);
-    assert(current_mesh_info.index_count == vi_index);
-    assert(current_mesh_info.index_count == ti_index);
-    assert(current_mesh_info.index_count == ni_index);
+    assert(current_mesh_info.normal_count   == normal_index);
+    assert(current_mesh_info.index_count    == vi_index);
+    assert(current_mesh_info.index_count    == ti_index);
+    assert(current_mesh_info.index_count    == ni_index);
 
     return mesh_new(name, vertices, texcoords, normals, current_mesh_info.vertex_count, 
                     current_mesh_info.texcoord_count, current_mesh_info.normal_count,
@@ -150,20 +144,20 @@ static mesh* parse_obj_mesh(unsigned char* buffer, uint32_t size, uint32_t* curs
 void parse_obj_scene(const char* file_name)
 {
 
-    // open file
+    /* open file */
     FILE* file = fopen(file_name, "r");
     assert(file != NULL);
 
-    // get file size
+    /* get file size */
     fseek(file, 0, SEEK_END);
-    uint32_t file_size = ftell(file);
+    int file_size = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    // copy file contents into buffer
+    /* copy file contents into buffer */
     unsigned char* buffer = malloc(file_size);
     fread(buffer, sizeof(unsigned char), file_size, file);
 
-    uint32_t cursor = 0;
+    int cursor = 0;
 
     while (cursor < file_size)
     {
