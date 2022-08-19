@@ -8,22 +8,22 @@
 typedef struct
 {
     char        name[MESH_NAME_SIZE];
-    vec*        vertices;
-    vec*        texcoords;
-    vec*        normals;
-    uint32_t    vertices_size;
-    uint32_t    texcoords_size;
-    uint32_t    normals_size;
+    vec_t*      vertices;
+    vec_t*      texcoords;
+    vec_t*      normals;
+    int         vertices_size;
+    int         texcoords_size;
+    int         normals_size;
     int*        vertex_indices;
     int*        texcoord_indices;
     int*        normal_indices;
-    uint32_t    indices_size;
+    int    indices_size;
 
-} mesh;
+} mesh_t;
 
-mesh* mesh_new(char* name, vec* vertices, vec* texcoords, vec* normals, 
-               uint32_t vertices_size, uint32_t texcoords_size, uint32_t normals_size,
-               int* vertex_indices, int* texcoord_indices, int* normal_indices, 
-               uint32_t indices_size);
+mesh_t* mesh_new(char* name, vec_t* vertices, vec_t* texcoords, vec_t* normals, 
+                 int vertices_size, int texcoords_size, int normals_size,
+                 int* vertex_indices, int* texcoord_indices, int* normal_indices, 
+                 int indices_size);
 
-void mesh_free(mesh* mesh);
+void mesh_free(mesh_t* mesh);

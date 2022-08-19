@@ -10,18 +10,18 @@ typedef struct
     float y;
     float z;
     float w;
-} vec;
+} vec_t;
 
-vec vec_new(float x, float y, float z);
-vec vec_add(vec v1, vec v2);
-vec vec_sub(vec v1, vec v2);
-vec vec_cross(vec v1, vec v2);
-vec vec_scale(vec v, float scale);
-vec vec_negate(vec v);
-vec vec_normalize(vec v);
-float vec_dot(vec v1, vec v2);
-float vec_magnitude(vec v);
-void vec_print(vec v);
+vec_t vec_new(float x, float y, float z);
+vec_t vec_add(vec_t v1, vec_t v2);
+vec_t vec_sub(vec_t v1, vec_t v2);
+vec_t vec_cross(vec_t v1, vec_t v2);
+vec_t vec_scale(vec_t v, float scale);
+vec_t vec_negate(vec_t v);
+vec_t vec_normalize(vec_t v);
+float vec_dot(vec_t v1, vec_t v2);
+float vec_magnitude(vec_t v);
+void vec_print(vec_t v);
 
 /*
  * Matrix
@@ -30,16 +30,16 @@ void vec_print(vec v);
 typedef struct
 {
     float data[4][4];
-} mat;
+} mat_t;
 
-mat mat_new(float a, float b, float c, float d,
-            float e, float f, float g, float h,
-            float i, float j, float k, float l,
-            float m, float n, float o, float p);
-mat mat_new_identity();
-mat mat_add(mat m1, mat m2);
-mat mat_sub(mat m1, mat m2);
-mat mat_mul_mat(mat m1, mat m2);
-vec mat_mul_vec(mat m, vec v);
-mat mat_inverse(mat m);
-mat mat_transpose(mat m);
+mat_t mat_new(float a, float b, float c, float d,
+              float e, float f, float g, float h,
+              float i, float j, float k, float l,
+              float m, float n, float o, float p);
+mat_t mat_new_identity();
+mat_t mat_add(mat_t m1, mat_t m2);
+mat_t mat_sub(mat_t m1, mat_t m2);
+mat_t mat_mul_mat(mat_t m1, mat_t m2);
+vec_t mat_mul_vec(mat_t m, vec_t v);
+mat_t mat_inverse(mat_t m);
+mat_t mat_transpose(mat_t m);

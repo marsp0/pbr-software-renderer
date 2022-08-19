@@ -13,10 +13,10 @@ TSTSRCNAMES 	:= $(filter-out main.c, $(notdir $(SRCFILES)))
 TSTOBJFILES 	:= $(TSTSRCNAMES:%.c=$(OBJDIR)/%.o)
 
 # LDFLAGS       	:= -lX11 -lXi -lSDL2 -lm
-LDFLAGS       	:= -lX11 -lXi -lm
+LDFLAGS       	:= -lX11 -lXi -lm -lX11
 space 			:=
 VPATH 			:= $(subst $(space),:,$(shell find . -type d))
-GCCFLAGS      	:= -std=c17
+GCCFLAGS      	:= -std=c17 -Wall -Wno-pointer-sign -Wextra -Wshadow
 
 .PHONY: all
 all: out/$(EXECUTABLE) out/$(TSTEXECUTABLE)

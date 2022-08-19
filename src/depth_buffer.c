@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <assert.h>
 
-depthbuffer* depthbuffer_new(uint16_t width, uint16_t height)
+depth_buffer_t* depth_buffer_new(int width, int height)
 {
     assert(width > 0 && height > 0);
 
-    depthbuffer* buffer = malloc(sizeof(depthbuffer));
+    depth_buffer_t* buffer = malloc(sizeof(depth_buffer_t));
     buffer->width = width;
     buffer->height = height;
     buffer->data = malloc(width * height * sizeof(float));
@@ -15,17 +15,17 @@ depthbuffer* depthbuffer_new(uint16_t width, uint16_t height)
     return buffer;
 }
 
-void depthbuffer_set(depthbuffer* buffer, int x, int y, float val)
+void depth_buffer_set(depth_buffer_t* buffer, int x, int y, float val)
 {
 
 }
 
-float depthbuffer_get(depthbuffer* buffer, int x, int y)
+float depth_buffer_get(depth_buffer_t* buffer, int x, int y)
 {
     return 0.f;
 }
 
-void depthbuffer_free(depthbuffer* buffer)
+void depth_buffer_free(depth_buffer_t* buffer)
 {
     free(buffer->data);
     free(buffer);

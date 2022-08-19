@@ -4,13 +4,13 @@
 
 typedef struct
 {
-    uint16_t width;
-    uint16_t height;
+    int width;
+    int height;
     float* data;
 
-} depthbuffer;
+} depth_buffer_t;
 
-depthbuffer* depthbuffer_new(uint16_t width, uint16_t height);
-void depthbuffer_set(depthbuffer* buffer, int x, int y, float val);
-float depthbuffer_get(depthbuffer* buffer, int x, int y);
-void depthbuffer_free(depthbuffer* buffer);
+depth_buffer_t* depth_buffer_new(int width, int height);
+void depth_buffer_set(depth_buffer_t* buffer, int x, int y, float val);
+float depth_buffer_get(depth_buffer_t* buffer, int x, int y);
+void depth_buffer_free(depth_buffer_t* buffer);

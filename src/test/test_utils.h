@@ -4,10 +4,10 @@
 #include "../color.h"
 
 
-void assert_vec(vec expected, vec actual, const char* message, const char* file_name, int line_number);
+void assert_vec(vec_t expected, vec_t actual, const char* message, const char* file_name, int line_number);
 void assert_float(float expected, float actual, const char* message, const char* file_name, int line_number);
 void assert_int(int expected, int actual, const char* message, const char* file_name, int line_number);
-void assert_mat(mat expected, mat actual, const char* message, const char* file_name, int line_number);
+void assert_mat(mat_t expected, mat_t actual, const char* message, const char* file_name, int line_number);
 void assert_col(color expected, color actual, const char* message, const char* file_name, int line_number);
 
 #define ASSERT_VEC(expected, actual) assert_vec(expected, actual, "", __FILE__, __LINE__);
