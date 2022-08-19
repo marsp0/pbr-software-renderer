@@ -4,3 +4,4 @@
 #define LINE_SIZE 256
 /* XCreateImage fails if this is different than 1, 2 or 4 */
 #define RGB_CHANNELS 4
+#define MAX_MESHES 20

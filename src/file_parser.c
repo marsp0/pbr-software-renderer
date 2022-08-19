@@ -18,14 +18,14 @@ typedef struct
     int index_count;
 } mesh_info_t;
 
-static int read_line(unsigned char* src, char* dst, int cursor, int size)
+static int read_line(unsigned char* src, char* dst, int dst_size, int cursor)
 {
-    memset(dst, 0, size);
+    memset(dst, 0, dst_size);
 
-    int end_pos = size;
+    int end_pos = dst_size;
     
     /* its size - 1 because of null termination */
-    for (int i = 0; i < size - 1; i++)
+    for (int i = 0; i < dst_size - 1; i++)
     {
         if (src[cursor + i] == '\n')
         {
@@ -39,14 +39,14 @@ static int read_line(unsigned char* src, char* dst, int cursor, int size)
     return cursor + end_pos + 1;
 }
 
-static mesh_info_t get_mesh_info(unsigned char* buffer, int size, int cursor)
+static mesh_info_t get_mesh_info(unsigned char* buffer, int buffer_size, int cursor)
 {
     mesh_info_t result = { 0, 0, 0, 0 };
     char line[LINE_SIZE];
     while(true)
     {
 
-        cursor = read_line(buffer, line, cursor, LINE_SIZE);
+        cursor = read_line(buffer, line, LINE_SIZE, cursor);
 
         if (strncmp(line, "v ", 2) == 0)
             result.vertex_count++;
@@ -57,16 +57,16 @@ static mesh_info_t get_mesh_info(unsigned char* buffer, int size, int cursor)
         else if (strncmp(line, "f ", 2) == 0)
             result.index_count += 3;
         
-        if (cursor > size || strncmp(&buffer[cursor], "o ", 2) == 0)
+        if (cursor > buffer_size || strncmp(&buffer[cursor], "o ", 2) == 0)
             break;
     }
     return result;
 }
 
-static mesh_t* parse_obj_mesh(unsigned char* buffer, int size, int* cursor)
+static mesh_t* parse_obj_mesh(unsigned char* buffer, int buffer_size, int* cursor)
 {
 
-    mesh_info_t mesh_info = get_mesh_info(buffer, size, *cursor);
+    mesh_info_t mesh_info = get_mesh_info(buffer, buffer_size, *cursor);
 
     vec_t* vertices = malloc(sizeof(vec_t) * mesh_info.vertex_count);
     vec_t* texcoords = malloc(sizeof(vec_t) * mesh_info.texcoord_count);
@@ -88,7 +88,7 @@ static mesh_t* parse_obj_mesh(unsigned char* buffer, int size, int* cursor)
     while(true)
     {
 
-        *cursor = read_line(buffer, line, *cursor, LINE_SIZE);
+        *cursor = read_line(buffer, line, LINE_SIZE, *cursor);
         if (strncmp(line, "v ", 2) == 0) /* vertices */
         {
             items = sscanf(line, "v %f %f %f", &input_vec.x, &input_vec.y, &input_vec.z);
@@ -125,7 +125,7 @@ static mesh_t* parse_obj_mesh(unsigned char* buffer, int size, int* cursor)
         }
 
         /* buffer has finished or the next line contains a new mesh */
-        if (*cursor > size || strncmp(&buffer[*cursor], "o ", 2) == 0)
+        if (*cursor > buffer_size || strncmp(&buffer[*cursor], "o ", 2) == 0)
             break;
     }
 
@@ -142,7 +142,7 @@ static mesh_t* parse_obj_mesh(unsigned char* buffer, int size, int* cursor)
                     vertex_indices, texcoord_indices, normal_indices, mesh_info.index_count);
 }
 
-void parse_obj_scene(const char* file_name)
+int parse_obj_scene(const char* file_name, mesh_t* meshes[], int meshes_size)
 {
 
     /* open file */
