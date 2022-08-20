@@ -142,7 +142,7 @@ static mesh_t* parse_obj_mesh(unsigned char* buffer, int buffer_size, int* curso
                     vertex_indices, texcoord_indices, normal_indices, mesh_info.index_count);
 }
 
-int parse_obj_scene(const char* file_name, mesh_t* meshes[], int meshes_size)
+int parse_obj_scene(const char* file_name, mesh_t* meshes[], int max_meshes_size)
 {
 
     /* open file */
@@ -159,15 +159,19 @@ int parse_obj_scene(const char* file_name, mesh_t* meshes[], int meshes_size)
     fread(buffer, sizeof(unsigned char), file_size, file);
 
     int cursor = 0;
+    int meshes_size = 0;
 
     while (cursor < file_size)
     {
-        if (strncmp(&buffer[cursor], "o ", 2) == 0)
-        {
-            mesh_t* mesh = parse_obj_mesh(buffer, file_size, &cursor);
+        if ((strncmp(&buffer[cursor], "o ", 2) == 0) && (meshes_size < max_meshes_size))
+        { 
+            meshes[meshes_size] = parse_obj_mesh(buffer, file_size, &cursor);
+            meshes_size++;
+            continue;
         }
         cursor++;
     }
 
     fclose(file);
+    return meshes_size;
 }

@@ -17,7 +17,7 @@ typedef struct
     int*        vertex_indices;
     int*        texcoord_indices;
     int*        normal_indices;
-    int    indices_size;
+    int         indices_size;
 
 } mesh_t;
 
