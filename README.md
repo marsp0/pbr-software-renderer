@@ -13,6 +13,7 @@ The references are pretty much the same as the [Phong Software Renderer](https:/
 the above diagram shows how the execution of the program flows
 
 ``` mermaid
+%%{init: { 'theme':'forest' } }%%
 sequenceDiagram
     autonumber
     main ->>+ renderer: renderer_new

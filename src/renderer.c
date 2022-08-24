@@ -5,15 +5,15 @@
 renderer_t* renderer_new(int width, int height, const char* file_name)
 {
 
-	renderer_t* renderer = malloc(sizeof(renderer_t));
+    renderer_t* renderer = malloc(sizeof(renderer_t));
 
-	renderer->meshes_size = parse_obj_scene(file_name, renderer->meshes, MAX_MESHES);
-	/* 
-	 * TODO 
-	 * allocate framebuffer
-	 * allocate depthbuffer
-	 */
-	return renderer;
+    /*renderer->meshes_size = parse_obj_scene(file_name, renderer->meshes, MESHES_CAPACITY);*/
+    /* 
+     * TODO 
+     * allocate framebuffer
+     * allocate depthbuffer
+     */
+    return renderer;
 }
 
 void renderer_run(renderer_t* renderer)
@@ -38,7 +38,7 @@ void renderer_clear(renderer_t* renderer)
 
 void renderer_free(renderer_t* renderer)
 {
-	/*free framebuffer*/
-	/*free deothbuffer*/
-	free(renderer);
+    /*free framebuffer*/
+    /*free deothbuffer*/
+    free(renderer);
 }

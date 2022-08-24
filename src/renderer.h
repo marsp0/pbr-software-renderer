@@ -10,7 +10,7 @@ typedef struct
     int width;
     int height;
     int meshes_size;
-    mesh_t* meshes[MAX_MESHES];
+    mesh_t* meshes[MESHES_CAPACITY];
     frame_buffer_t* frame_buffer;
     depth_buffer_t* depth_buffer;
 } renderer_t;

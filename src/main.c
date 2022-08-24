@@ -8,11 +8,10 @@
 
 int main()
 {
-    /*const char* file_name = "/home/martin/Documents/Projects/pbr-software-renderer/assets/test.obj";
-    parse_obj_scene(file_name);*/
+    const char* file_name = "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb";
+    renderer_t* renderer = renderer_new(800, 600, "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb");
+    parse_scene(file_name,renderer->meshes, MESHES_CAPACITY);
 
-    renderer_t* renderer = renderer_new(800, 600, "/home/martin/Documents/Projects/pbr-software-renderer/assets/test.obj");
-    printf("meshes loaded: %d\n", renderer->meshes_size);
     renderer_free(renderer);
 
     /*display_t* dsp = display_new(800, 600);
