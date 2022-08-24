@@ -11,6 +11,10 @@
 #include "mesh.h"
 
 /*
+ * GLTF 2 specification - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
+ */
+
+/*
  * GLB structs
  */
 
@@ -133,6 +137,7 @@ static void parse_json(chunk_t chunk)
     token_index = 0;
     json_size = chunk.size;
     parse_object(chunk.data, token_index);
+    printf("Parsed %d JSON tokens\n", token_index);
 }
 
 static void parse_key(unsigned char* buffer, int index)
@@ -234,7 +239,7 @@ static int parse_object(unsigned char* buffer, int index)
     
     while (buffer[cursor] != '}' && cursor < json_size)
     {
-        printf("%c", buffer[cursor]);
+
         if (status == JSON_STATUS_BEFORE_KEY && buffer[cursor] == '"')
         {
             status = JSON_STATUS_BEFORE_VALUE;
@@ -256,7 +261,7 @@ static int parse_object(unsigned char* buffer, int index)
         }
         cursor++;
     }
-    printf("%c", buffer[cursor]);
+
     return 0;
 }
 
@@ -284,10 +289,6 @@ static int parse_string(unsigned char* buffer, int index)
     tokens[index].value_size = cursor - tokens[index].value_start;
     return 0;
 }
-
-/*
- * main func of module
- */
 
 int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
 {
