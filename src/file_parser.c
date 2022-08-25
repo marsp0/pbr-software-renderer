@@ -38,7 +38,8 @@ typedef struct
 
 typedef enum
 {
-    JSON_NUMBER = 0,
+    JSON_NONE = 0,
+    JSON_NUMBER,
     JSON_STRING,
     JSON_OBJECT,
     JSON_ARRAY
@@ -133,6 +134,9 @@ static int parse_array(unsigned char* buffer, int index);
  */
 static void parse_json(chunk_t chunk)
 {
+    /* clear tokens */
+    memset(tokens, 0, sizeof(tokens));
+
     cursor = 0;
     token_index = 0;
     json_size = chunk.size;
