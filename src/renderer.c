@@ -1,6 +1,7 @@
 #include "renderer.h"
 
 #include <stddef.h>
+#include <stdlib.h>
 
 renderer_t* renderer_new(int width, int height, const char* file_name)
 {

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #include "constants.h"
 #include "mesh.h"
@@ -15,7 +16,7 @@
  */
 
 /*
- * GLB structs
+ * GLB
  */
 
 typedef struct
@@ -32,47 +33,6 @@ typedef struct
     unsigned char* data;
 } chunk_t;
 
-/*
- * JSON structs
- */
-
-typedef enum
-{
-    JSON_NONE = 0,
-    JSON_NUMBER,
-    JSON_STRING,
-    JSON_OBJECT,
-    JSON_ARRAY
-} type_e;   /* mostly used for arrays */
-
-typedef enum
-{
-    JSON_STATUS_NONE = 0,
-    JSON_STATUS_BEFORE_KEY,
-    JSON_STATUS_IN_KEY,
-    JSON_STATUS_BEFORE_VALUE,
-    JSON_STATUS_IN_VALUE,
-} status_e;     /* used internally to facilitate parsing */
-
-typedef struct
-{
-    int     key_start;      /* starting byte of key */
-    int     key_size;       /* size of key */
-    int     value_start;    /* starting byte of value. same use as child in JSON_ARRAY */
-    int     value_size;     /* size of value. indicates array length in JSON_ARRAY. Not used in JSON_OBJECT */
-    int     child;          /* index in tokens array of the first child of the node*/
-    int     sibling;        /* index in tokens array of the next item on the same level */
-    type_e  type;
-} token_t;
-
-static int cursor = 0;
-static int token_index = 0; /* size of tokens */
-static int json_size = 0;
-static token_t tokens[JSON_TOKENS_CAPACITY]; /* holds all parsed json tokens */
-
-/*
- * GLB functions
- */
 
 static int parse_int(unsigned char* buffer, int n);
 
@@ -117,8 +77,43 @@ static int parse_int(unsigned char* buffer, int n)
 }
 
 /*
- * JSON FUNCTIONS
+ * JSON
  */
+
+typedef enum
+{
+    JSON_NONE = 0,
+    JSON_NUMBER,
+    JSON_STRING,
+    JSON_OBJECT,
+    JSON_ARRAY
+} type_e;   /* mostly used for arrays */
+
+typedef enum
+{
+    JSON_STATUS_NONE = 0,
+    JSON_STATUS_BEFORE_KEY,
+    JSON_STATUS_IN_KEY,
+    JSON_STATUS_BEFORE_VALUE,
+    JSON_STATUS_IN_VALUE,
+} status_e;     /* used internally to facilitate parsing */
+
+typedef struct
+{
+    int     key_start;      /* starting byte of key */
+    int     key_size;       /* size of key */
+    int     value_start;    /* starting byte of value. same use as child in JSON_ARRAY */
+    int     value_size;     /* size of value. indicates array length in JSON_ARRAY. Not used in JSON_OBJECT */
+    int     child;          /* index in tokens array of the first child of the node*/
+    int     sibling;        /* index in tokens array of the next item on the same level */
+    type_e  type;
+} token_t;
+
+static int cursor = 0;
+static int token_index = 0; /* size of tokens */
+static int json_size = 0;
+static token_t tokens[JSON_TOKENS_CAPACITY]; /* holds all parsed json tokens */
+
 
 static void parse_key(unsigned char* buffer, int index);
 static void parse_value(unsigned char* buffer, int index);
@@ -126,7 +121,6 @@ static int parse_number(unsigned char* buffer, int index);
 static int parse_string(unsigned char* buffer, int index);
 static int parse_object(unsigned char* buffer, int index);
 static int parse_array(unsigned char* buffer, int index);
-
 
 /*
  * parse_json - takes an already allocated buffer of json data, parses it and populates
