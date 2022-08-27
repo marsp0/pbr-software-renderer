@@ -4,6 +4,8 @@ TODO: nice description
 
 ## Features
 
+- simple glTF/JSON/PNG parsers
+
 ## References
 
 The references are pretty much the same ones listed in the [Phong Software Renderer](https://github.com/marsp0/phong-software-renderer) and can be found [here](https://github.com/marsp0/software-renderer/wiki/References)
