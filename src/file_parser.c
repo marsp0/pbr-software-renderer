@@ -37,16 +37,14 @@ typedef struct
 } glb_chunk_t;
 
 
-static int glb_parse_int(unsigned char* buffer, int n);
+static uint32_t glb_parse_int(unsigned char* buffer, int n);
 
 static glb_header_t glb_parse_header(unsigned char* buffer)
 {
     glb_header_t header;
-    header.magic = glb_parse_int(&buffer[cursor], 4);
-    header.version = glb_parse_int(&buffer[cursor + 4], 4);
-    header.size = glb_parse_int(&buffer[cursor + 8], 4);
-    
-    cursor += 12;
+    header.magic = glb_parse_int(buffer, 4);
+    header.version = glb_parse_int(buffer, 4);
+    header.size = glb_parse_int(buffer, 4);
 
     assert(header.version == 2);
     assert(header.magic == 0x46546C67);
@@ -57,11 +55,11 @@ static glb_header_t glb_parse_header(unsigned char* buffer)
 static glb_chunk_t glb_parse_chunk(unsigned char* buffer)
 {
     glb_chunk_t chunk;
-    chunk.size = glb_parse_int(&buffer[cursor], 4);
-    chunk.type = glb_parse_int(&buffer[cursor + 4], 4);
-    chunk.data = &buffer[cursor + 8];
+    chunk.size = glb_parse_int(buffer, 4);
+    chunk.type = glb_parse_int(buffer, 4);
+    chunk.data = &buffer[cursor];
 
-    cursor += 8 + chunk.size;
+    cursor += chunk.size;
 
     /* assert that chunk is either bin or json */
     assert(chunk.type == 0x4E4F534A || chunk.type == 0x004E4942);
@@ -69,13 +67,14 @@ static glb_chunk_t glb_parse_chunk(unsigned char* buffer)
     return chunk;
 }
 
-static int glb_parse_int(unsigned char* buffer, int n)
+static uint32_t glb_parse_int(unsigned char* buffer, int n)
 {
     uint32_t result = 0;
-    for (int i = 0; i < n; i++)
+    for (int i = cursor; i < cursor + n; i++)
     {
-        result += buffer[i] << (i * 8);
+        result += buffer[i] << ((i - cursor) * 8);
     }
+    cursor += n;
     return result;
 }
 
@@ -294,14 +293,89 @@ static int json_parse_string(unsigned char* buffer, int index)
  * PNG
  */
 
+typedef struct
+{
+    uint32_t        size;
+    uint32_t        type;
+    uint32_t        crc;
+    unsigned char*  data;
+} png_chunk_t;
+
+typedef struct
+{
+    uint32_t    width;
+    uint32_t    height;
+    uint8_t     bits_per_pixel;
+    uint8_t     color_type;
+    uint8_t     compression;
+    uint8_t     filter;
+    uint8_t     interlace;
+} png_header_t;
+
+static png_chunk_t png_parse_chunk(unsigned char* buffer);
+static png_header_t png_parse_header(unsigned char* buffer);
+static uint32_t png_parse_int(unsigned char* buffer, int n);
+
 static void parse_png_buffer(unsigned char* buffer)
 {
-    cursor = 0;
 
     /* verify that the buffer is a png */
-    assert(buffer[0] == 137 && buffer[1] == 80 && buffer[2] == 78 && buffer[3] == 71 && 
-           buffer[4] == 13  && buffer[5] == 10 && buffer[6] == 26 && buffer[7] == 10);
+    assert(buffer[0] == 137);
+    assert(buffer[1] == 80);
+    assert(buffer[2] == 78);
+    assert(buffer[3] == 71);
+    assert(buffer[4] == 13);
+    assert(buffer[5] == 10);
+    assert(buffer[6] == 26);
+    assert(buffer[7] == 10);
+    
+    cursor = 8;
 
+    png_header_t header = png_parse_header(buffer);
+    printf("width: %d\n", header.width);
+    printf("height: %d\n", header.height);
+
+}
+
+static png_chunk_t png_parse_chunk(unsigned char* buffer)
+{
+    png_chunk_t chunk;
+
+    return chunk;
+}
+
+static png_header_t png_parse_header(unsigned char* buffer)
+{
+    uint32_t size = png_parse_int(buffer, 4);
+    uint32_t type = png_parse_int(buffer, 4);
+
+    /* size of header and type */
+    assert(size == 13);
+    assert(type == 1229472850); /* IHDR */
+
+    png_header_t header;
+    header.width = png_parse_int(buffer, 4);
+    header.height = png_parse_int(buffer, 4);
+    header.bits_per_pixel = (uint8_t)png_parse_int(buffer, 1);
+    header.color_type = (uint8_t)png_parse_int(buffer, 1);
+    header.compression = (uint8_t)png_parse_int(buffer, 1);
+    header.filter = (uint8_t)png_parse_int(buffer, 1);
+    header.interlace = (uint8_t)png_parse_int(buffer, 1);
+
+    cursor += 4; /* crc bytes */
+
+    return header;
+}
+
+static uint32_t png_parse_int(unsigned char* buffer, int n)
+{
+    uint32_t result = 0;
+    for (int i = cursor; i < cursor + n; i++)
+    {
+        result += buffer[i] << ((n - i - cursor - 1) * 8);
+    }
+    cursor += n;
+    return result;
 }
 
 
@@ -330,11 +404,14 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
 
     printf("Allocating %.02fMB for %s\n", file_size / 1024.0 / 1024.0, file_name);
 
+    cursor = 0;
     const glb_header_t header = glb_parse_header(buffer);
     const glb_chunk_t json = glb_parse_chunk(buffer);
     const glb_chunk_t binary = glb_parse_chunk(buffer);
 
     parse_json_buffer(json);
+
+    parse_png_buffer(binary.data);
 
     /* free the buffer */
     free(buffer);
