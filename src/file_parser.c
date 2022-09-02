@@ -10,10 +10,10 @@
 
 #include "constants.h"
 #include "mesh.h"
+#include "parsers/png.h"
 
 /*
  * GLTF 2 specification - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
- * PNG spec - http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
  */
 
 static int cursor = 0;
@@ -289,95 +289,6 @@ static int json_parse_string(unsigned char* buffer, int index)
     return 0;
 }
 
-/*
- * PNG
- */
-
-typedef struct
-{
-    uint32_t        size;
-    uint32_t        type;
-    uint32_t        crc;
-    unsigned char*  data;
-} png_chunk_t;
-
-typedef struct
-{
-    uint32_t    width;
-    uint32_t    height;
-    uint8_t     bits_per_pixel;
-    uint8_t     color_type;
-    uint8_t     compression;
-    uint8_t     filter;
-    uint8_t     interlace;
-} png_header_t;
-
-static png_chunk_t png_parse_chunk(unsigned char* buffer);
-static png_header_t png_parse_header(unsigned char* buffer);
-static uint32_t png_parse_int(unsigned char* buffer, int n);
-
-static void parse_png_buffer(unsigned char* buffer)
-{
-
-    /* verify that the buffer is a png */
-    assert(buffer[0] == 137);
-    assert(buffer[1] == 80);
-    assert(buffer[2] == 78);
-    assert(buffer[3] == 71);
-    assert(buffer[4] == 13);
-    assert(buffer[5] == 10);
-    assert(buffer[6] == 26);
-    assert(buffer[7] == 10);
-    
-    cursor = 8;
-
-    png_header_t header = png_parse_header(buffer);
-    printf("width: %d\n", header.width);
-    printf("height: %d\n", header.height);
-
-}
-
-static png_chunk_t png_parse_chunk(unsigned char* buffer)
-{
-    png_chunk_t chunk;
-
-    return chunk;
-}
-
-static png_header_t png_parse_header(unsigned char* buffer)
-{
-    uint32_t size = png_parse_int(buffer, 4);
-    uint32_t type = png_parse_int(buffer, 4);
-
-    /* size of header and type */
-    assert(size == 13);
-    assert(type == 1229472850); /* IHDR */
-
-    png_header_t header;
-    header.width = png_parse_int(buffer, 4);
-    header.height = png_parse_int(buffer, 4);
-    header.bits_per_pixel = (uint8_t)png_parse_int(buffer, 1);
-    header.color_type = (uint8_t)png_parse_int(buffer, 1);
-    header.compression = (uint8_t)png_parse_int(buffer, 1);
-    header.filter = (uint8_t)png_parse_int(buffer, 1);
-    header.interlace = (uint8_t)png_parse_int(buffer, 1);
-
-    cursor += 4; /* crc bytes */
-
-    return header;
-}
-
-static uint32_t png_parse_int(unsigned char* buffer, int n)
-{
-    uint32_t result = 0;
-    for (int i = cursor; i < cursor + n; i++)
-    {
-        result += buffer[i] << ((n - i - cursor - 1) * 8);
-    }
-    cursor += n;
-    return result;
-}
-
 
 /*
  * parse_scene
@@ -411,7 +322,7 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
 
     parse_json_buffer(json);
 
-    parse_png_buffer(binary.data);
+    parse_png(binary.data, binary.size);
 
     /* free the buffer */
     free(buffer);

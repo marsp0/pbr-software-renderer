@@ -4,7 +4,9 @@ TODO: nice description
 
 ## Features
 
-- simple glTF/JSON/PNG parsers
+- simple GLB(glTF) parser
+    - JSON parser with no dynamic memory allocation
+    - PNG parser with DEFLATE decoder
 
 ## References
 
