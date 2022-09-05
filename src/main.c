@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "file_parser.h"
+#include "parsers/glb.h"
 #include "linux/display.h"
 #include "renderer.h"
 
