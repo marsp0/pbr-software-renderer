@@ -111,6 +111,8 @@ typedef struct
     json_type_e type;
 } json_token_t;
 
+#define JSON_TOKENS_CAPACITY 1000
+
 static int token_index = 0; /* size of tokens */
 static int json_size = 0;
 static json_token_t tokens[JSON_TOKENS_CAPACITY]; /* holds all parsed json tokens */
