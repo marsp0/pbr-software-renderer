@@ -33,13 +33,13 @@ typedef struct
 {
     uint32_t size;
     uint32_t type; /* 0x4E4F534A or 0x004E4942 */
-    unsigned char* data;
+    const unsigned char* data;
 } glb_chunk_t;
 
 
-static uint32_t glb_parse_int(unsigned char* buffer, int n);
+static uint32_t glb_parse_int(const unsigned char* buffer, int n);
 
-static glb_header_t glb_parse_header(unsigned char* buffer)
+static glb_header_t glb_parse_header(const unsigned char* buffer)
 {
     glb_header_t header;
     header.magic = glb_parse_int(buffer, 4);
@@ -52,7 +52,7 @@ static glb_header_t glb_parse_header(unsigned char* buffer)
     return header;
 }
 
-static glb_chunk_t glb_parse_chunk(unsigned char* buffer)
+static glb_chunk_t glb_parse_chunk(const unsigned char* buffer)
 {
     glb_chunk_t chunk;
     chunk.size = glb_parse_int(buffer, 4);
@@ -67,7 +67,7 @@ static glb_chunk_t glb_parse_chunk(unsigned char* buffer)
     return chunk;
 }
 
-static uint32_t glb_parse_int(unsigned char* buffer, int n)
+static uint32_t glb_parse_int(const unsigned char* buffer, int n)
 {
     uint32_t result = 0;
     for (int i = cursor; i < cursor + n; i++)
@@ -116,12 +116,12 @@ static int json_size = 0;
 static json_token_t tokens[JSON_TOKENS_CAPACITY]; /* holds all parsed json tokens */
 
 
-static void json_parse_key(unsigned char* buffer, int index);
-static void json_parse_value(unsigned char* buffer, int index);
-static int json_parse_number(unsigned char* buffer, int index);
-static int json_parse_string(unsigned char* buffer, int index);
-static int json_parse_object(unsigned char* buffer, int index);
-static int json_parse_array(unsigned char* buffer, int index);
+static void json_parse_key(const unsigned char* buffer, int index);
+static void json_parse_value(const unsigned char* buffer, int index);
+static int  json_parse_number(const unsigned char* buffer, int index);
+static int  json_parse_string(const unsigned char* buffer, int index);
+static int  json_parse_object(const unsigned char* buffer, int index);
+static int  json_parse_array(const unsigned char* buffer, int index);
 
 /*
  * parse_json_buffer - takes an already allocated buffer of json data, parses it and populates
@@ -139,7 +139,7 @@ static void parse_json_buffer(glb_chunk_t chunk)
     printf("Parsed %d JSON tokens\n", token_index);
 }
 
-static void json_parse_key(unsigned char* buffer, int index)
+static void json_parse_key(const unsigned char* buffer, int index)
 {
     json_status_e status = JSON_STATUS_BEFORE_KEY;
 
@@ -159,7 +159,7 @@ static void json_parse_key(unsigned char* buffer, int index)
     }
 }
 
-static void json_parse_value(unsigned char* buffer, int index)
+static void json_parse_value(const unsigned char* buffer, int index)
 {
     int next = 1;
     while (next)
@@ -181,7 +181,7 @@ static void json_parse_value(unsigned char* buffer, int index)
     }
 }
 
-static int json_parse_array(unsigned char* buffer, int index)
+static int json_parse_array(const unsigned char* buffer, int index)
 {
     int child = token_index;
     tokens[index].value_start = token_index;
@@ -224,7 +224,7 @@ static int json_parse_array(unsigned char* buffer, int index)
     return 0;
 }
 
-static int json_parse_object(unsigned char* buffer, int index)
+static int json_parse_object(const unsigned char* buffer, int index)
 {
     int child = token_index;
     json_status_e status = JSON_STATUS_BEFORE_KEY;
@@ -264,7 +264,7 @@ static int json_parse_object(unsigned char* buffer, int index)
     return 0;
 }
 
-static int json_parse_number(unsigned char* buffer, int index)
+static int json_parse_number(const unsigned char* buffer, int index)
 {
     tokens[index].type = JSON_NUMBER;
     tokens[index].value_start = cursor;
@@ -276,7 +276,7 @@ static int json_parse_number(unsigned char* buffer, int index)
     return 0;
 }
 
-static int json_parse_string(unsigned char* buffer, int index)
+static int json_parse_string(const unsigned char* buffer, int index)
 {
     cursor++;
     tokens[index].value_start = cursor;
@@ -322,7 +322,7 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
 
     parse_json_buffer(json);
 
-    parse_png(binary.data, binary.size);
+    parse_png(binary.data, 2165850);
 
     /* free the buffer */
     free(buffer);

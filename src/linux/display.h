@@ -19,5 +19,5 @@ typedef struct
 } display_t;
 
 display_t* display_new(int width, int height);
-void display_draw(display_t* dsp, frame_buffer_t* frame_buffer);
+void display_draw(display_t* dsp, const frame_buffer_t* frame_buffer);
 void display_free(display_t* dsp);

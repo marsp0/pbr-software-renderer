@@ -69,7 +69,7 @@ display_t* display_new(int width, int height)
     return dsp;
 }
 
-void display_draw(display_t* dsp, frame_buffer_t* frame_buffer)
+void display_draw(display_t* dsp, const frame_buffer_t* frame_buffer)
 {
     /*  
      * Copy contents from framebuffer to ximage

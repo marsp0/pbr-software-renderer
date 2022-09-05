@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "../constants.h"
+
 /*
  * List of resources that helped with the parsing of png
  * - PNG spec - http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
@@ -16,8 +18,6 @@
 /*
  * Huffman
  */
-
-
 
 
 /*
@@ -40,49 +40,49 @@ typedef struct
     uint32_t        size;
     uint32_t        type;
     uint32_t        crc;
-    unsigned char*  data;
+    const unsigned char*  data;
 } chunk_t;
 
 
-const int DEFLATE_COMPRESSION = 0x8;
-const int HEADER_CTRL_VAR = 31;
-static int cursor = 0;
+const uint32_t ZLIB_DEFLATE_COMPRESSION  = 0x8;
+const uint32_t ZLIB_HEADER_CONTROL_VAL   = 31;
+const uint32_t PNG_HEADER_CHUNK          = 1229472850;
+const uint32_t PNG_DATA_CHUNK            = 1229209940;
+const uint32_t PNG_END_CHUNK             = 1229278788;
 
+static uint32_t cursor       = 0;
+static uint32_t chunks_index = 0;
+static chunk_t chunks[PNG_CHUNK_CAPACITY];
 
-static chunk_t parse_chunk(unsigned char* buffer);
-static header_t parse_header(unsigned char* buffer);
-static uint32_t parse_int(unsigned char* buffer, int n);
-static void assert_png(unsigned char* buffer);
-static void assert_zlib(unsigned char* buffer);
+static void     parse_chunk(const unsigned char* buffer);
+static header_t parse_header(const unsigned char* buffer);
+static uint32_t parse_int(const unsigned char* buffer, int n);
+static void     assert_png(const unsigned char* buffer);
+static void     assert_zlib(const unsigned char* buffer);
 
-void parse_png(unsigned char* buffer, size_t size)
+void parse_png(const unsigned char* buffer, size_t size)
 {
     assert_png(buffer);
 
+    chunks_index = 0;
+
     header_t header = parse_header(buffer);
-    chunk_t chunk = parse_chunk(buffer);
+    do
+    {
+        parse_chunk(buffer);
+    } while (chunks[chunks_index - 1].type != PNG_END_CHUNK);
 
-    assert_zlib(chunk.data);
-    printf("cursor %d\n", cursor);
-    printf("chunk.size: %d\n", chunk.size);
-
-
-    printf("%x\n", chunk.data[2]);
-    printf("%x\n", chunk.data[3]);
-    printf("%x\n", chunk.data[4]);
-    printf("%x\n", chunk.data[5]);
-    printf("%x\n", chunk.data[6]);
+    assert_zlib(chunks[0].data);
 
 }
 
-static header_t parse_header(unsigned char* buffer)
+static header_t parse_header(const unsigned char* buffer)
 {
     uint32_t size = parse_int(buffer, 4);
     uint32_t type = parse_int(buffer, 4);
 
-    /* size of header and type */
     assert(size == 13);
-    assert(type == 1229472850); /* IHDR */
+    assert(type == PNG_HEADER_CHUNK);
 
     header_t header;
     header.width = parse_int(buffer, 4);
@@ -98,24 +98,23 @@ static header_t parse_header(unsigned char* buffer)
     return header;
 }
 
-static chunk_t parse_chunk(unsigned char* buffer)
+static void parse_chunk(const unsigned char* buffer)
 {
-    chunk_t chunk;
-    chunk.size = parse_int(buffer, 4);
-    chunk.type = parse_int(buffer, 4);
-    chunk.data = &buffer[cursor];
+    chunks[chunks_index].size = parse_int(buffer, 4);
+    chunks[chunks_index].type = parse_int(buffer, 4);
+    chunks[chunks_index].data = &buffer[cursor];
 
-    cursor += chunk.size; /* data size */
+    cursor += chunks[chunks_index].size;
 
-    chunk.crc = parse_int(buffer, 4);
+    chunks[chunks_index].crc = parse_int(buffer, 4);
 
-    /*IDAT or IEND*/
-    assert(chunk.type == 1229209940 || chunk.type == 1229278788);
+    assert(chunks[chunks_index].type == PNG_DATA_CHUNK || 
+           chunks[chunks_index].type == PNG_END_CHUNK);
 
-    return chunk;
+    chunks_index++;
 }
 
-static uint32_t parse_int(unsigned char* buffer, int n)
+static uint32_t parse_int(const unsigned char* buffer, int n)
 {
     uint32_t result = 0;
     for (int i = cursor; i < cursor + n; i++)
@@ -126,7 +125,7 @@ static uint32_t parse_int(unsigned char* buffer, int n)
     return result;
 }
 
-static void assert_png(unsigned char* buffer)
+static void assert_png(const unsigned char* buffer)
 {
     assert(buffer[0] == 137);
     assert(buffer[1] == 80);
@@ -140,9 +139,9 @@ static void assert_png(unsigned char* buffer)
     cursor = 8;
 }
 
-static void assert_zlib(unsigned char* buffer)
+static void assert_zlib(const unsigned char* buffer)
 {
-    assert(buffer[0] & DEFLATE_COMPRESSION);
+    assert(buffer[0] & ZLIB_DEFLATE_COMPRESSION);
     uint16_t tmp = (buffer[0] << 8) + buffer[1];
-    assert(tmp % HEADER_CTRL_VAR == 0);
+    assert(tmp % ZLIB_HEADER_CONTROL_VAL == 0);
 }
