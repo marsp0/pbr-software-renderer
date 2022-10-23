@@ -16,7 +16,7 @@ TSTOBJFILES 	:= $(TSTSRCNAMES:%.c=$(OBJDIR)/%.o)
 LDFLAGS       	:= -lX11 -lXi -lm -lX11
 space 			:=
 VPATH 			:= $(subst $(space),:,$(shell find . -type d))
-GCCFLAGS      	:= -std=c17 -Wall -Wno-pointer-sign -Wextra -Wshadow
+GCCFLAGS      	:= -std=c17 -Wall -Wno-pointer-sign -Wextra -Wshadow -g3
 
 .PHONY: all
 all: out/$(EXECUTABLE) out/$(TSTEXECUTABLE)

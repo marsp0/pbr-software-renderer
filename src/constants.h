@@ -4,3 +4,8 @@
 
 #define MESH_NAME_SIZE 256
 #define MESHES_CAPACITY 20 /* max number of meshes to render */
+
+/* file parsing */
+#define JSON_TOKENS_CAPACITY 1000
+#define PNG_CHUNK_CAPACITY 700
+#define PNG_ALPHABET_CAPACITY 287

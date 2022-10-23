@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../constants.h"
+
+/* TODO: describe what is happening here */
+
 typedef enum
 {
     TYPE_NONE = 0,
@@ -49,7 +53,7 @@ static int  parse_array(const unsigned char* buffer, int index);
  * parse_json_buffer - takes an already allocated buffer of json data, parses it and populates
  *                     the statically allocated *tokens* array;
  */
-void parse_json_buffer(const unsigned char* buffer, int buffer_size)
+void parse_json(const unsigned char* buffer, int buffer_size)
 {
     /* clear tokens */
     memset(tokens, 0, sizeof(tokens));

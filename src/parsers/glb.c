@@ -13,6 +13,8 @@
  * GLTF 2 specification - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
  */
 
+/* TODO: describe what is happening here */
+
 static int cursor = 0;
 
 typedef struct
@@ -102,7 +104,7 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
     const chunk_t json = parse_chunk(buffer);
     const chunk_t binary = parse_chunk(buffer);
 
-    parse_json_buffer(json.data, json.size);
+    parse_json(json.data, json.size);
 
     parse_png(binary.data, 2165850);
 
