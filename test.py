@@ -81,23 +81,6 @@ def binary_string_big_endian(v, num_bits):
     return result
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class DecodingException(Exception):
     pass
 
@@ -116,6 +99,9 @@ class BitStream:
     def read_bit(self):
         if self.working_bits_read//8 >= len(self.working_bytes):
             self.working_bytes = self.input_file.read(self.buffer_size)
+            import sys
+            for my_byte in self.working_bytes:
+                print(f'{my_byte:0>8b}', end=' ')
             if len(self.working_bytes) == 0:
                 raise BitStream.EndOfStream
             self.working_bits_read = 0
@@ -411,7 +397,7 @@ def decode_dynamic(stream,output_buffer):
     for idx in CL_code_length_encoding_order[0:num_cl_codes]:
         CL_code_lengths[idx] = stream.read_bits(3)
     
-
+    print(num_cl_codes)
     decode_print("CL code lengths (0 - 18): " + ' '.join(str(i) for i in CL_code_lengths))
     CL_codes = code_lengths_to_code_table(CL_code_lengths)
     decode_print("CL codes:")
@@ -440,6 +426,7 @@ def decode_dynamic(stream,output_buffer):
         node = CL_tree_root
         assert(symbol >= 0 and symbol < 19)
         if symbol <= 15:
+            decode_print("Found symbol: %d"%symbol)
             #The symbol is an actual length
             if codes_read >= num_ll_codes:
                 dist_code_lengths[codes_read-num_ll_codes] = symbol
@@ -595,11 +582,11 @@ if __name__ == '__main__':
     argument_parser.add_argument('--print-block-codes',action="store_true",help='Print code information for blocks of type 2.')
     argument_parser.add_argument('--decode-blocks',action="store_true",help='Print full decoding information for each block.')
 
-    args = argument_parser.parse_args()
-    print_gzip_headers = not args.no_headers
-    print_block_stats = not args.no_block_stats
-    print_block_codes = args.print_block_codes
-    decode_blocks = args.decode_blocks
+    # args = argument_parser.parse_args()
+    # print_gzip_headers = not args.no_headers
+    # print_block_stats = not args.no_block_stats
+    # print_block_codes = args.print_block_codes
+    # decode_blocks = args.decode_blocks
 
     try:
         stream = BitStream(open("compressed.gz", "rb")) # sys.stdin.buffer is a version of sys.stdin open in binary mode

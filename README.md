@@ -10,11 +10,11 @@ TODO: nice description
 
 ## References
 
-The references are pretty much the same ones listed in the [Phong Software Renderer](https://github.com/marsp0/phong-software-renderer) and can be found [here](https://github.com/marsp0/software-renderer/wiki/References)
+The references are pretty much the same ones listed in the [Phong Software Renderer](https://github.com/marsp0/phong-software-renderer) and can be found [here](https://github.com/marsp0/software-renderer/wiki/References).
 
 ## Code flow
 
-the above diagram shows how the execution of the program flows
+the below diagram shows how the execution of the program flows
 
 ``` mermaid
 %%{init: { 'theme':'forest' } }%%
