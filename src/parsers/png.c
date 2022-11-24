@@ -61,16 +61,19 @@ const uint32_t ZLIB_HEADER_CONTROL_VAL   = 31;
 const uint32_t PNG_HEADER_CHUNK          = 1229472850;
 const uint32_t PNG_DATA_CHUNK            = 1229209940;
 const uint32_t PNG_END_CHUNK             = 1229278788;
+const uint32_t MAP_CODE_IDX              = 0;
+const uint32_t MAP_BITS_IDX              = 1;
+const uint32_t MAP_LEN_IDX               = 2;
 
 static uint8_t  bit_buffer   = 0;
 static uint8_t  bit_count    = 0;
 static uint32_t cursor       = 0;
 static uint32_t chunks_index = 0;
 static chunk_t chunks[PNG_CHUNK_CAPACITY];
-static alphabet_t cl_alphabet = { 0 };
-static alphabet_t ll_alphabet = { 0 };
-static alphabet_t d_alphabet = { 0 };
-static uint32_t ll_map[29][3] = {
+static alphabet_t cl_alphabet   = { 0 };
+static alphabet_t ll_alphabet   = { 0 };
+static alphabet_t d_alphabet    = { 0 };
+static uint32_t ll_map[29][3]   = {
     {257, 0, 3},    {258, 0, 4},    {259, 0, 5},    {260, 0, 6},    {261, 0, 7}, 
     {262, 0, 8},    {263, 0, 9},    {264, 0, 10},   {265, 1, 11},   {266, 1, 13},
     {267, 1, 15},   {268, 1, 17},   {269, 2, 19},   {270, 2, 23},   {271, 2, 27},
@@ -132,6 +135,16 @@ static uint32_t parse_bits(const unsigned char* buffer, int n)
     return result;
 }
 
+static int find_code_index(alphabet_t* alphabet, uint32_t code, uint32_t code_len)
+{
+    for (int i = 0; i < alphabet->size; i++)
+    {
+        if (alphabet->lengths[i] == code_len && alphabet->codes[i] == code)
+            return i;
+    }
+    return -1;
+}
+
 static void decode(const unsigned char* buffer)
 {
     int ll_index = -1;
@@ -141,15 +154,7 @@ static void decode(const unsigned char* buffer)
     {
         code = (code << 1) + parse_bits(buffer, 1);
         code_len++;
-
-        for (int i = 0; i < ll_alphabet.size; i++)
-        {
-            if (ll_alphabet.lengths[i] == code_len && ll_alphabet.codes[i] == code)
-            {
-                ll_index = i;
-                break;
-            }
-        }
+        ll_index = find_code_index(&ll_alphabet, code, code_len);
 
         if (ll_index == -1)
             continue;
@@ -170,10 +175,10 @@ static void decode(const unsigned char* buffer)
             uint32_t len = 0;
             for (int i = 0; i < 29; i++)
             {
-                if (ll_map[i][0] != ll_index)
+                if (ll_map[i][MAP_CODE_IDX] != ll_index)
                     continue;
 
-                len = ll_map[i][2] + parse_bits(buffer, ll_map[i][1]);
+                len = ll_map[i][MAP_LEN_IDX] + parse_bits(buffer, ll_map[i][MAP_BITS_IDX]);
                 printf("length is %d\n", len);
             }
 
@@ -186,25 +191,17 @@ static void decode(const unsigned char* buffer)
             {
                 d_code = (d_code << 1) + parse_bits(buffer, 1);
                 d_code_len++;
-
-                for (int i = 0; i < d_alphabet.size; i++)
-                {
-                    if (d_alphabet.lengths[i] == d_code_len && d_alphabet.codes[i] == d_code)
-                    {
-                        d_index = i;
-                        break;
-                    }
-                }
+                d_index = find_code_index(&d_alphabet, d_code, d_code_len);
 
                 if (d_index == -1)
                     continue;
 
                 for (int i = 0; i < 30; i++)
                 {
-                    if (d_map[i][0] != d_index)
+                    if (d_map[i][MAP_CODE_IDX] != d_index)
                         continue;
 
-                    distance = d_map[i][2] + parse_bits(buffer, d_map[i][1]);
+                    distance = d_map[i][MAP_LEN_IDX] + parse_bits(buffer, d_map[i][MAP_BITS_IDX]);
                     break;
                 }
 
@@ -280,16 +277,7 @@ static void parse_alphabet(const unsigned char* buffer, alphabet_t* alphabet)
         /* parse code (MSB) */
         code = (code << 1) + parse_bits(buffer, 1);
         code_len++;
-
-        /* check if code matches any of the cl codes*/
-        for (int i = 0; i < cl_alphabet.size; i++)
-        {
-            if (cl_alphabet.lengths[i] == code_len && cl_alphabet.codes[i] == code)
-            {
-                cl_index = i;
-                break;
-            }
-        }
+        cl_index = find_code_index(&cl_alphabet, code, code_len);
 
         /* continue parsing bits if the current code is not in the table */
         if (cl_index == -1)
