@@ -65,7 +65,7 @@ const uint32_t PNG_END_CHUNK             = 1229278788;
 static uint8_t  bit_buffer   = 0;
 static uint8_t  bit_count    = 0;
 static uint32_t cursor       = 0;
-static uint32_t chunks_index = 0;
+static uint32_t chunk_index = 0;
 static chunk_t chunks[PNG_CHUNK_CAPACITY];
 static alphabet_t cl_alphabet   = { 0 };
 static alphabet_t ll_alphabet   = { 0 };
@@ -272,19 +272,19 @@ static void parse_cl_alphabet(const unsigned char* buffer, int cl_size)
 
 static void parse_chunk(const unsigned char* buffer)
 {
-    chunks[chunks_index].size = parse_int(buffer, 4);
-    chunks[chunks_index].type = parse_int(buffer, 4);
-    chunks[chunks_index].data = &buffer[cursor];
+    chunks[chunk_index].size = parse_int(buffer, 4);
+    chunks[chunk_index].type = parse_int(buffer, 4);
+    chunks[chunk_index].data = &buffer[cursor];
 
-    cursor += chunks[chunks_index].size;
+    cursor += chunks[chunk_index].size;
 
-    chunks[chunks_index].crc = parse_int(buffer, 4);
+    chunks[chunk_index].crc = parse_int(buffer, 4);
 
-    assert(chunks[chunks_index].type == PNG_DATA_CHUNK || 
-           chunks[chunks_index].type == PNG_END_CHUNK);
+    assert(chunks[chunk_index].type == PNG_DATA_CHUNK || 
+           chunks[chunk_index].type == PNG_END_CHUNK);
 
-    chunks_index++;
-    assert(chunks_index < PNG_CHUNK_CAPACITY);
+    chunk_index++;
+    assert(chunk_index < PNG_CHUNK_CAPACITY);
 }
 
 static header_t parse_header(const unsigned char* buffer)
@@ -322,13 +322,13 @@ void parse_png(const unsigned char* buffer, size_t size)
     assert(buffer[7] == 10);
 
     cursor = 8;
-    chunks_index = 0;
+    chunk_index = 0;
 
     header_t header = parse_header(buffer);
     do
     {
         parse_chunk(buffer);
-    } while (chunks[chunks_index - 1].type != PNG_END_CHUNK);
+    } while (chunks[chunk_index - 1].type != PNG_END_CHUNK);
 
     /* assert that first chunk has zlib header */
     assert(chunks[0].data[0] & ZLIB_DEFLATE_COMPRESSION);
