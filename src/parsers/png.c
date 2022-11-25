@@ -61,9 +61,6 @@ const uint32_t ZLIB_HEADER_CONTROL_VAL   = 31;
 const uint32_t PNG_HEADER_CHUNK          = 1229472850;
 const uint32_t PNG_DATA_CHUNK            = 1229209940;
 const uint32_t PNG_END_CHUNK             = 1229278788;
-const uint32_t MAP_CODE_IDX              = 0;
-const uint32_t MAP_BITS_IDX              = 1;
-const uint32_t MAP_LEN_IDX               = 2;
 
 static uint8_t  bit_buffer   = 0;
 static uint8_t  bit_count    = 0;
@@ -73,21 +70,21 @@ static chunk_t chunks[PNG_CHUNK_CAPACITY];
 static alphabet_t cl_alphabet   = { 0 };
 static alphabet_t ll_alphabet   = { 0 };
 static alphabet_t d_alphabet    = { 0 };
-static uint32_t ll_map[29][3]   = {
-    {257, 0, 3},    {258, 0, 4},    {259, 0, 5},    {260, 0, 6},    {261, 0, 7}, 
-    {262, 0, 8},    {263, 0, 9},    {264, 0, 10},   {265, 1, 11},   {266, 1, 13},
-    {267, 1, 15},   {268, 1, 17},   {269, 2, 19},   {270, 2, 23},   {271, 2, 27},
-    {272, 2, 31},   {273, 3, 35},   {274, 3, 43},   {275, 3, 51},   {276, 3, 59},
-    {277, 4, 67},   {278, 4, 83},   {279, 4, 99},   {280, 4, 115},  {281, 5, 131},
-    {282, 5, 163},  {283, 5, 195},  {284, 5, 227},  {285, 0, 258}
+static uint32_t ll_map[29][2]   = {
+    {0, 3},    {0, 4},    {0, 5},    {0, 6},    {0, 7}, 
+    {0, 8},    {0, 9},    {0, 10},   {1, 11},   {1, 13},
+    {1, 15},   {1, 17},   {2, 19},   {2, 23},   {2, 27},
+    {2, 31},   {3, 35},   {3, 43},   {3, 51},   {3, 59},
+    {4, 67},   {4, 83},   {4, 99},   {4, 115},  {5, 131},
+    {5, 163},  {5, 195},  {5, 227},  {0, 258}
 };
-static uint32_t d_map[30][3] = {
-    {0, 0, 1},      {1, 0, 2},      {2, 0, 3},      {3, 0, 4},      {4, 1, 5},
-    {5, 1, 7},      {6, 2, 9},      {7, 2, 13},     {8, 3, 17},     {9, 3, 25},
-    {10, 4, 33},    {11, 4, 49},    {12, 5, 65},    {13, 5, 97},    {14, 6, 129},
-    {15, 6, 193},   {16, 7, 257},   {17, 7, 385},   {18, 8, 513},   {19, 8, 769},
-    {20, 9, 1025},  {21, 9, 1537},  {22, 10, 2049}, {23, 10, 3073}, {24, 11, 4097},
-    {25, 11, 6145}, {26, 12, 8193}, {27, 12, 12289},{28, 13, 16385},{29, 13, 24577},
+static uint32_t d_map[30][2] = {
+    {0, 1},     {0, 2},     {0, 3},     {0, 4},     {1, 5},
+    {1, 7},     {2, 9},     {2, 13},    {3, 17},    {3, 25},
+    {4, 33},    {4, 49},    {5, 65},    {5, 97},    {6, 129},
+    {6, 193},   {7, 257},   {7, 385},   {8, 513},   {8, 769},
+    {9, 1025},  {9, 1537},  {10, 2049}, {10, 3073}, {11, 4097},
+    {11, 6145}, {12, 8193}, {12, 12289},{13, 16385},{13, 24577},
 };
 
 /*
@@ -99,9 +96,8 @@ static uint32_t parse_int(const unsigned char* buffer, int n)
 
     uint32_t result = 0;
     for (uint32_t i = cursor; i < cursor + n; i++)
-    {
         result += buffer[i] << ((n - (i - cursor) - 1) * 8);
-    }
+
     cursor += n;
     return result;
 }
@@ -135,94 +131,62 @@ static uint32_t parse_bits(const unsigned char* buffer, int n)
     return result;
 }
 
-static int find_code_index(alphabet_t* alphabet, uint32_t code, uint32_t code_len)
+static uint32_t parse_symbol(const unsigned char* buffer, alphabet_t* alphabet)
 {
-    for (int i = 0; i < alphabet->size; i++)
+    uint32_t result = 0;
+    uint32_t code = 0;
+    uint32_t code_len = 0;
+
+    while (true)
     {
-        if (alphabet->lengths[i] == code_len && alphabet->codes[i] == code)
-            return i;
+        /* parse code (MSB) */
+        code = (code << 1) + parse_bits(buffer, 1);
+        code_len++;
+        
+        for (int i = 0; i < alphabet->size; i++)
+        {
+            if (alphabet->lengths[i] == code_len && alphabet->codes[i] == code)
+                return i;
+        }
+
+        if (result == -1)
+            continue;
     }
-    return -1;
+
+    return result;
 }
 
 static void decode(const unsigned char* buffer)
 {
-    int ll_index = -1;
-    uint32_t code = 0;
-    uint32_t code_len = 0;
+    uint32_t ll_symbol = 0;
     while (true)
     {
-        code = (code << 1) + parse_bits(buffer, 1);
-        code_len++;
-        ll_index = find_code_index(&ll_alphabet, code, code_len);
+        ll_symbol = parse_symbol(buffer, &ll_alphabet);
 
-        if (ll_index == -1)
-            continue;
-
-        if (ll_index <= 255)
+        if (ll_symbol <= 255)                                                   /* the symbol is a literal */
         {
-            result[result_index] = ll_index;
+            result[result_index] = ll_symbol;
             result_index++;
-            printf("index: %d, value: %d\n", result_index, ll_index);
+            printf("index: %d, value: %d\n", result_index, ll_symbol);
         }
-        else if (ll_index == 256)
+        else if (ll_symbol == 256)                                              /* end of block symbol */
             break;
 
-        else
+        else                                                                    /* symbol is a length (followed by distance) */
         {
-            /* parse len */
-            printf("found length char %d\n", ll_index);
-            uint32_t len = 0;
-            for (int i = 0; i < 29; i++)
-            {
-                if (ll_map[i][MAP_CODE_IDX] != ll_index)
-                    continue;
+            uint32_t ll_index = ll_symbol - 257;                                /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
+            uint32_t len = ll_map[ll_index][1] + parse_bits(buffer, ll_map[ll_index][0]);
 
-                len = ll_map[i][MAP_LEN_IDX] + parse_bits(buffer, ll_map[i][MAP_BITS_IDX]);
-                printf("length is %d\n", len);
-            }
+            uint32_t d_symbol = parse_symbol(buffer, &d_alphabet);
+            uint32_t distance = d_map[d_symbol][1] + parse_bits(buffer, d_map[d_symbol][0]);
 
-            /* parse distance */
-            int d_index = -1;
-            uint32_t distance = 0;
-            uint32_t d_code = 0;
-            uint32_t d_code_len = 0;
-            while(true)
-            {
-                d_code = (d_code << 1) + parse_bits(buffer, 1);
-                d_code_len++;
-                d_index = find_code_index(&d_alphabet, d_code, d_code_len);
-
-                if (d_index == -1)
-                    continue;
-
-                for (int i = 0; i < 30; i++)
-                {
-                    if (d_map[i][MAP_CODE_IDX] != d_index)
-                        continue;
-
-                    distance = d_map[i][MAP_LEN_IDX] + parse_bits(buffer, d_map[i][MAP_BITS_IDX]);
-                    break;
-                }
-
-                if (distance != 0)
-                    break;
-            }
-            /* TODO: handle multi block distance */
             int start = result_index - distance;
-            printf("%d - %d / %d\n", start, (start + len), len);
             for (int i = start; i < start + len; i++)
             {
                 result[result_index] = result[i];
-                printf("index: %d, value: %d\n", result_index, result[i]);
                 result_index++;
             }
-            printf("distance is %d\n", distance);
         }
-
-        code = 0;
-        ll_index = -1;
-        code_len = 0;
     }
 
     for (int i = 0; i < 50; i++)
@@ -239,9 +203,7 @@ static void generate_huffman_codes(alphabet_t* alphabet)
     uint8_t base_vals[15] = {0};
 
     for (int i = 0; i < alphabet->size; i++)
-    {
         len_counts[alphabet->lengths[i]]++;
-    }
 
     /* find base code for each length */
     int code = 0;
@@ -266,29 +228,19 @@ static void generate_huffman_codes(alphabet_t* alphabet)
 
 static void parse_alphabet(const unsigned char* buffer, alphabet_t* alphabet)
 {
-    int cl_index = -1;
+    uint32_t symbol = 0;
     uint32_t index = 0;
-    uint32_t code_len = 0;
-    uint32_t code = 0;
-    uint32_t temp_buf = 0;
 
     while (index < alphabet->size)
     {
-        /* parse code (MSB) */
-        code = (code << 1) + parse_bits(buffer, 1);
-        code_len++;
-        cl_index = find_code_index(&cl_alphabet, code, code_len);
+        symbol = parse_symbol(buffer, &cl_alphabet);
 
-        /* continue parsing bits if the current code is not in the table */
-        if (cl_index == -1)
-            continue;
-
-        if (cl_index <= 15)
+        if (symbol <= 15)                                               /* symbol is literal */
         {
-            alphabet->lengths[index] = cl_index;
+            alphabet->lengths[index] = symbol;
             index += 1;
         }
-        else if (cl_index == 16)
+        else if (symbol == 16)                                          /* repeat last symbol x times */
         {
             uint32_t count = parse_bits(buffer, 2) + 3;
             
@@ -297,15 +249,11 @@ static void parse_alphabet(const unsigned char* buffer, alphabet_t* alphabet)
 
             index += count;
         }
-        else if (cl_index == 17)
+        else if (symbol == 17)                                          /* repeat zero x times */
             index += parse_bits(buffer, 3) + 3;
 
-        else
+        else                                                            /* repeat zero y times */
             index += parse_bits(buffer, 7) + 11;
-
-        code = 0;
-        cl_index = -1;
-        code_len = 0;
     }
 
     generate_huffman_codes(alphabet);
@@ -316,7 +264,6 @@ static void parse_cl_alphabet(const unsigned char* buffer, int cl_size)
     cl_alphabet.size = 19;
     const uint8_t order[] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 
-    /* parse cl lengths and count the lengths*/
     for (int i = 0; i < cl_size; i++)
         cl_alphabet.lengths[order[i]] = parse_bits(buffer, 3);
 
