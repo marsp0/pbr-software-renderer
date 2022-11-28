@@ -65,9 +65,11 @@ const uint32_t PNG_HEADER_CHUNK          = 1229472850;
 const uint32_t PNG_DATA_CHUNK            = 1229209940;
 const uint32_t PNG_END_CHUNK             = 1229278788;
 
-static uint8_t  bit_buffer      = 0;
-static uint8_t  bit_count       = 0;
-static uint32_t cursor          = 0;
+static uint8_t  bit_buffer          = 0;
+static uint8_t  bit_count           = 0;
+static uint32_t cursor              = 0;
+static uint32_t buffer_size         = 0;
+static const unsigned char* buffer  = NULL;
 
 static header_t header          = { 0 };
 static chunk_t chunk            = { 0 };
@@ -96,7 +98,7 @@ static uint32_t d_map[30][2] = {
 /*
  * parse_int - parses up to 4 bytes from the stream. MSB
  */
-static uint32_t parse_int(const unsigned char* buffer, int n)
+static uint32_t parse_int(int n)
 {
     assert(n <= 4);
 
@@ -108,14 +110,14 @@ static uint32_t parse_int(const unsigned char* buffer, int n)
     return result;
 }
 
-static void parse_chunk(const unsigned char* buffer);
+static void parse_chunk();
 /*
  * parse_bits - parses up to 32 bits from the stream.
  * we read 8 bits at a time until we've read at least n bits.
  * Since we are reading multiples of 8 bits but might not actually need them all, we need a place to store the 
  * remaining bits for the next parse (bit_buffer, bit_count)
  */
-static uint32_t parse_bits(const unsigned char* buffer, int n)
+static uint32_t parse_bits(int n)
 {
     assert(n <= 32);
 
@@ -130,7 +132,7 @@ static uint32_t parse_bits(const unsigned char* buffer, int n)
 
         if (cursor == chunk.end)
         {
-            parse_chunk(buffer);
+            parse_chunk();
         }
     }
 
@@ -143,7 +145,7 @@ static uint32_t parse_bits(const unsigned char* buffer, int n)
     return result;
 }
 
-static uint32_t parse_symbol(const unsigned char* buffer, alphabet_t* alphabet)
+static uint32_t parse_symbol(alphabet_t* alphabet)
 {
     uint32_t result = 0;
     uint32_t code = 0;
@@ -152,7 +154,7 @@ static uint32_t parse_symbol(const unsigned char* buffer, alphabet_t* alphabet)
     while (true)
     {
         /* parse code (MSB) */
-        code = (code << 1) + parse_bits(buffer, 1);
+        code = (code << 1) + parse_bits(1);
         code_len++;
         
         for (uint32_t i = 0; i < alphabet->size; i++)
@@ -172,12 +174,12 @@ static uint32_t parse_symbol(const unsigned char* buffer, alphabet_t* alphabet)
     return result;
 }
 
-static void decode(const unsigned char* buffer)
+static void decode()
 {
     uint32_t ll_symbol = 0;
     while (true)
     {
-        ll_symbol = parse_symbol(buffer, &ll_alphabet);
+        ll_symbol = parse_symbol(&ll_alphabet);
 
         if (ll_symbol <= 255)                                                   /* the symbol is a literal */
         {
@@ -191,10 +193,10 @@ static void decode(const unsigned char* buffer)
         else                                                                    /* symbol is a length (followed by distance) */
         {
             uint32_t ll_index = ll_symbol - 257;                                /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
-            uint32_t len = ll_map[ll_index][1] + parse_bits(buffer, ll_map[ll_index][0]);
+            uint32_t len = ll_map[ll_index][1] + parse_bits(ll_map[ll_index][0]);
 
-            uint32_t d_symbol = parse_symbol(buffer, &d_alphabet);
-            uint32_t distance = d_map[d_symbol][1] + parse_bits(buffer, d_map[d_symbol][0]);
+            uint32_t d_symbol = parse_symbol(&d_alphabet);
+            uint32_t distance = d_map[d_symbol][1] + parse_bits(d_map[d_symbol][0]);
 
             int start = result_index - distance;
             for (int i = start; i < start + len; i++)
@@ -246,14 +248,14 @@ static void generate_huffman_codes(alphabet_t* alphabet)
     }
 }
 
-static void parse_alphabet(const unsigned char* buffer, alphabet_t* alphabet)
+static void parse_alphabet(alphabet_t* alphabet)
 {
     uint32_t symbol = 0;
     uint32_t index = 0;
 
     while (index < alphabet->size)
     {
-        symbol = parse_symbol(buffer, &cl_alphabet);
+        symbol = parse_symbol(&cl_alphabet);
 
         if (symbol <= 15)                                               /* symbol is literal */
         {
@@ -262,7 +264,7 @@ static void parse_alphabet(const unsigned char* buffer, alphabet_t* alphabet)
         }
         else if (symbol == 16)                                          /* repeat last symbol x times */
         {
-            uint32_t count = parse_bits(buffer, 2) + 3;
+            uint32_t count = parse_bits(2) + 3;
             
             for (int i = index; i < (index + count); i++)
                 alphabet->lengths[i] = alphabet->lengths[index - 1];
@@ -271,56 +273,56 @@ static void parse_alphabet(const unsigned char* buffer, alphabet_t* alphabet)
         }
         else if (symbol == 17)                                          /* repeat zero x times */
         {
-            index += parse_bits(buffer, 3) + 3;
+            index += parse_bits(3) + 3;
         }
         else                                                            /* repeat zero y times */
         {
-            index += parse_bits(buffer, 7) + 11;
+            index += parse_bits(7) + 11;
         }
     }
 
     generate_huffman_codes(alphabet);
 }
 
-static void parse_cl_alphabet(const unsigned char* buffer, int cl_size)
+static void parse_cl_alphabet(int cl_size)
 {
     cl_alphabet.size = 19;
     const uint8_t order[] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 
     for (int i = 0; i < cl_size; i++)
     {
-        cl_alphabet.lengths[order[i]] = parse_bits(buffer, 3);
+        cl_alphabet.lengths[order[i]] = parse_bits(3);
     }
 
     generate_huffman_codes(&cl_alphabet);
 }
 
-static void parse_chunk(const unsigned char* buffer)
+static void parse_chunk()
 {
     cursor += 4; /* crc bytes from previous chunk */
-    chunk.size = parse_int(buffer, 4);
-    chunk.type = parse_int(buffer, 4);
+    chunk.size = parse_int(4);
+    chunk.type = parse_int(4);
     chunk.end = cursor + chunk.size;
 }
 
-static void parse_header(const unsigned char* buffer)
+static void parse_header()
 {
-    uint32_t size = parse_int(buffer, 4);
-    uint32_t type = parse_int(buffer, 4);
+    uint32_t size = parse_int(4);
+    uint32_t type = parse_int(4);
 
     assert(size == 13);
     assert(type == PNG_HEADER_CHUNK);
 
-    header.width = parse_int(buffer, 4);
-    header.height = parse_int(buffer, 4);
-    header.bits_per_pixel = (uint8_t)parse_int(buffer, 1);
-    header.color_type = (uint8_t)parse_int(buffer, 1);
-    header.compression = (uint8_t)parse_int(buffer, 1);
-    header.filter = (uint8_t)parse_int(buffer, 1);
-    header.interlace = (uint8_t)parse_int(buffer, 1);
+    header.width = parse_int(4);
+    header.height = parse_int(4);
+    header.bits_per_pixel = (uint8_t)parse_int(1);
+    header.color_type = (uint8_t)parse_int(1);
+    header.compression = (uint8_t)parse_int(1);
+    header.filter = (uint8_t)parse_int(1);
+    header.interlace = (uint8_t)parse_int(1);
 }
 
-static void parse_deflate_stream(const unsigned char* buffer)
+static void parse_deflate_stream()
 {
     uint16_t ctrl_val = (uint16_t)(buffer[cursor] << 8) + (uint16_t)buffer[cursor + 1];
     assert(buffer[cursor] & ZLIB_DEFLATE_COMPRESSION);
@@ -336,8 +338,8 @@ static void parse_deflate_stream(const unsigned char* buffer)
     do
     {
         printf("parsing deflate\n");
-        last = parse_bits(buffer, 1);
-        type = parse_bits(buffer, 2);
+        last = parse_bits(1);
+        type = parse_bits(2);
 
         if (type != 2)
         {
@@ -345,20 +347,24 @@ static void parse_deflate_stream(const unsigned char* buffer)
             exit(1);
         }
 
-        ll_alphabet.size = parse_bits(buffer, 5) + 257;
-        d_alphabet.size = parse_bits(buffer, 5) + 1;
-        uint32_t cl_size = parse_bits(buffer, 4) + 4;
+        ll_alphabet.size = parse_bits(5) + 257;
+        d_alphabet.size = parse_bits(5) + 1;
+        uint32_t cl_size = parse_bits(4) + 4;
 
-        parse_cl_alphabet(buffer, cl_size);
-        parse_alphabet(buffer, &ll_alphabet);
-        parse_alphabet(buffer, &d_alphabet);
-        decode(buffer);
+        parse_cl_alphabet(cl_size);
+        parse_alphabet(&ll_alphabet);
+        parse_alphabet(&d_alphabet);
+        decode();
 
     } while (!last);
 }
 
-void parse_png(const unsigned char* buffer, size_t size)
+void parse_png(const unsigned char* buf, size_t size)
 {
+    /* set up static vars */
+    buffer = buf;
+    buffer_size = size;
+
     /* assert that buffer is PNG*/
     assert(buffer[0] == 137);
     assert(buffer[1] == 80);
@@ -371,18 +377,18 @@ void parse_png(const unsigned char* buffer, size_t size)
 
     cursor = 8;
     printf("cursor: %d\n", cursor);
-    parse_header(buffer);
+    parse_header();
     printf("cursor: %d\n", cursor);
 
     while (chunk.type != PNG_END_CHUNK)
     {
         printf("cursor: %d\n", cursor);
-        parse_chunk(buffer);
+        parse_chunk();
         printf("cursor: %d\n", cursor);
 
         if (chunk.type == PNG_DATA_CHUNK)
         {
-            parse_deflate_stream(buffer);
+            parse_deflate_stream();
         }
 
         cursor = chunk.end;
