@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include "../constants.h"
+#include "../texture.h"
 
 /*
  * List of resources that helped with the parsing of png
@@ -16,6 +17,8 @@
  * - Deflate blog post - https://zlib.net/feldspar.html
  * - GZIP post containing deflate information
  *      - www.infinitepartitions.com/art001.html
+ * - gzip parser that i used to validate my code
+ *      - https://github.com/billbird/gzstat
  * - So questions - 
  *      https://stackoverflow.com/questions/32419086/the-structure-of-deflate-compressed-block 
  *      https://stackoverflow.com/questions/53108124/understanding-idat-reading-deflates-dynamic-huffman-tree
@@ -55,15 +58,11 @@ typedef struct
     uint16_t codes[PNG_ALPHABET_CAPACITY];
 } alphabet_t;
 
-/*temporary*/
-static unsigned char result[50] = { 0 };
-static uint32_t result_index = 0;
-
-const uint32_t ZLIB_DEFLATE_COMPRESSION  = 0x8;
-const uint32_t ZLIB_HEADER_CONTROL_VAL   = 31;
-const uint32_t PNG_HEADER_CHUNK          = 1229472850;
-const uint32_t PNG_DATA_CHUNK            = 1229209940;
-const uint32_t PNG_END_CHUNK             = 1229278788;
+const uint32_t ZLIB_COMPRESSION = 8;
+const uint32_t ZLIB_CTRL_VAL    = 31;
+const uint32_t PNG_HEADER_CHUNK = 1229472850;
+const uint32_t PNG_DATA_CHUNK   = 1229209940;
+const uint32_t PNG_END_CHUNK    = 1229278788;
 
 static uint8_t  bit_buffer          = 0;
 static uint8_t  bit_count           = 0;
@@ -71,9 +70,11 @@ static uint32_t cursor              = 0;
 static uint32_t buffer_size         = 0;
 static const unsigned char* buffer  = NULL;
 
+static texture_t* texture           = NULL;
+static uint32_t tex_cursor          = 0;
+
 static header_t header          = { 0 };
 static chunk_t chunk            = { 0 };
-static bool zlib_header_checked = false;
 
 static alphabet_t cl_alphabet   = { 0 };
 static alphabet_t ll_alphabet   = { 0 };
@@ -147,7 +148,6 @@ static uint32_t parse_bits(int n)
 
 static uint32_t parse_symbol(alphabet_t* alphabet)
 {
-    uint32_t result = 0;
     uint32_t code = 0;
     uint32_t code_len = 0;
 
@@ -164,33 +164,23 @@ static uint32_t parse_symbol(alphabet_t* alphabet)
                 return i;
             }
         }
-
-        if (result == -1)
-        {
-            continue;
-        }
     }
-
-    return result;
+    assert(false);
 }
 
 static void decode()
 {
     uint32_t ll_symbol = 0;
-    while (true)
+    while (ll_symbol != 256)
     {
         ll_symbol = parse_symbol(&ll_alphabet);
 
         if (ll_symbol <= 255)                                                   /* the symbol is a literal */
         {
-            result[result_index] = ll_symbol;
-            result_index++;
+            texture->data[tex_cursor] = ll_symbol;
+            tex_cursor++;
         }
-        else if (ll_symbol == 256)                                              /* end of block symbol */
-        {
-            break;
-        }
-        else                                                                    /* symbol is a length (followed by distance) */
+        else if (ll_symbol > 256)                                               /* symbol is a length (followed by distance) */
         {
             uint32_t ll_index = ll_symbol - 257;                                /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
             uint32_t len = ll_map[ll_index][1] + parse_bits(ll_map[ll_index][0]);
@@ -198,27 +188,21 @@ static void decode()
             uint32_t d_symbol = parse_symbol(&d_alphabet);
             uint32_t distance = d_map[d_symbol][1] + parse_bits(d_map[d_symbol][0]);
 
-            int start = result_index - distance;
+            int start = tex_cursor - distance;
             for (int i = start; i < start + len; i++)
             {
-                result[result_index] = result[i];
-                result_index++;
+                texture->data[tex_cursor] = texture->data[i];
+                tex_cursor++;
             }
         }
     }
-
-    for (int i = 0; i < 50; i++)
-    {
-        printf("%c", result[i]);
-    }
-    printf("\n");
 }
 
 static void generate_huffman_codes(alphabet_t* alphabet)
 {
     /* count alphabet lens */
-    uint8_t len_counts[15] = {0};
-    uint8_t base_vals[15] = {0};
+    uint32_t len_counts[15] = {0};
+    uint32_t base_vals[15] = {0};
 
     for (int i = 0; i < alphabet->size; i++)
     {
@@ -320,24 +304,26 @@ static void parse_header()
     header.compression = (uint8_t)parse_int(1);
     header.filter = (uint8_t)parse_int(1);
     header.interlace = (uint8_t)parse_int(1);
+
+    assert(header.bits_per_pixel == 8);
+    assert(header.color_type == 2 || header.color_type == 6);
 }
 
 static void parse_deflate_stream()
 {
-    uint16_t ctrl_val = (uint16_t)(buffer[cursor] << 8) + (uint16_t)buffer[cursor + 1];
-    assert(buffer[cursor] & ZLIB_DEFLATE_COMPRESSION);
-    assert(ctrl_val % ZLIB_HEADER_CONTROL_VAL == 0);
+    assert(buffer[cursor] & ZLIB_COMPRESSION);
+    assert(((buffer[cursor] << 8) + buffer[cursor + 1]) % ZLIB_CTRL_VAL == 0);
     
     cursor += 2;
 
     int last = 0;
     int type = 0;
-    /*const unsigned char buffer[] = {0x78, 0xDA, 0x1d, 0xc6, 0x49, 0x01, 0x00, 0x00, 0x10, 0x40, 0xc0, 0xac, 0xa3, 0x7f, 0x88, 
-                                    0x3d, 0x3c, 0x20, 0x2a, 0x97, 0x9d, 0x37, 0x5e, 0x1d, 0x0c};
-    cursor = 2;*/
     do
     {
-        printf("parsing deflate\n");
+        memset(&cl_alphabet, 0, sizeof(cl_alphabet));
+        memset(&ll_alphabet, 0, sizeof(ll_alphabet));
+        memset(&d_alphabet, 0, sizeof(d_alphabet));
+
         last = parse_bits(1);
         type = parse_bits(2);
 
@@ -374,23 +360,23 @@ void parse_png(const unsigned char* buf, size_t size)
     assert(buffer[5] == 10);
     assert(buffer[6] == 26);
     assert(buffer[7] == 10);
-
     cursor = 8;
-    printf("cursor: %d\n", cursor);
+
     parse_header();
-    printf("cursor: %d\n", cursor);
+
+    int stride = header.color_type == 2 ? 3 : 4;                    /* RGB or RGBA */
+    texture = texture_new(header.width, header.height, stride);
 
     while (chunk.type != PNG_END_CHUNK)
     {
-        printf("cursor: %d\n", cursor);
         parse_chunk();
-        printf("cursor: %d\n", cursor);
 
-        if (chunk.type == PNG_DATA_CHUNK)
+        if (chunk.type != PNG_DATA_CHUNK)
         {
-            parse_deflate_stream();
+            cursor = chunk.end;
+            continue;
         }
 
-        cursor = chunk.end;
+        parse_deflate_stream();
     } 
 }
