@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "../constants.h"
 #include "../texture.h"
@@ -371,12 +372,11 @@ void parse_png(const unsigned char* buf, size_t size)
     {
         parse_chunk();
 
-        if (chunk.type != PNG_DATA_CHUNK)
+        if (chunk.type == PNG_DATA_CHUNK)
         {
-            cursor = chunk.end;
-            continue;
+            parse_deflate_stream();
         }
 
-        parse_deflate_stream();
+        cursor = chunk.end;
     } 
 }
