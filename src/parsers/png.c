@@ -376,20 +376,21 @@ void parse_png(const unsigned char* buf, size_t size)
         src_cursor = chunk.end;
     }
 
-    /* move data from dst_buffer into a texture and remove filter_type bytes */
-    int stride = header.color_type == 2 ? 3 : 4;                /* RGB or RGBA */
-    int tex_cursor = 0;
+    /* 
+     * move data from dst_buffer into a texture and remove filter_type bytes,
+     * each scanline has 1
+     */
+
+    uint32_t buf_cursor = 1;
+    uint32_t tex_cursor = 0;
+    uint32_t stride = header.color_type == 2 ? 3 : 4;                            /* RGB or RGBA */
+    uint32_t row_width = header.width * stride;
     texture_t* texture = texture_new(header.width, header.height, stride);
-    for (int i = 0; i < dst_cursor; i++)
+    
+    while (buf_cursor < dst_cursor)
     {
-        if (i % (texture->width * texture->stride) == 0)        /* filter-type byte at start of scanline */
-        {
-            continue;
-        }
-
-        texture->data[tex_cursor] = dst_buffer[dst_cursor];
-        tex_cursor++;
+        memcpy(&(dst_buffer[buf_cursor]), &(texture->data[tex_cursor]), row_width);
+        buf_cursor += row_width + 1;
+        tex_cursor += row_width;
     }
-
-    printf("%d / %d / %d\n", dst_cursor, texture->width * texture->height * texture->stride + texture->height, tex_cursor);
 }
