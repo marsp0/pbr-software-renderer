@@ -65,11 +65,14 @@ const uint32_t PNG_HEADER_CHUNK = 1229472850;
 const uint32_t PNG_DATA_CHUNK   = 1229209940;
 const uint32_t PNG_END_CHUNK    = 1229278788;
 
-static uint8_t  bit_buffer          = 0;
-static uint8_t  bit_count           = 0;
-static uint32_t cursor              = 0;
-static uint32_t buffer_size         = 0;
-static const unsigned char* buffer  = NULL;
+static uint8_t  bit_buffer              = 0;
+static uint8_t  bit_count               = 0;
+static uint32_t src_cursor              = 0;
+static uint32_t src_buffer_size         = 0;
+static const unsigned char* src_buffer  = NULL;
+
+static uint32_t dst_cursor              = 0;
+static const unsigned char* dst_buffer  = 0;
 
 static texture_t* texture           = NULL;
 static uint32_t tex_cursor          = 0;
@@ -105,10 +108,10 @@ static uint32_t parse_int(int n)
     assert(n <= 4);
 
     uint32_t result = 0;
-    for (uint32_t i = cursor; i < cursor + n; i++)
-        result += buffer[i] << ((n - (i - cursor) - 1) * 8);
+    for (uint32_t i = src_cursor; i < src_cursor + n; i++)
+        result += src_buffer[i] << ((n - (i - src_cursor) - 1) * 8);
 
-    cursor += n;
+    src_cursor += n;
     return result;
 }
 
@@ -126,13 +129,13 @@ static uint32_t parse_bits(int n)
     uint32_t result = bit_buffer;
     while (bit_count < n)
     {
-        result += buffer[cursor] << bit_count;
+        result += src_buffer[src_cursor] << bit_count;
 
         bit_count += 8;
-        bit_buffer = buffer[cursor];
-        cursor += 1;
+        bit_buffer = src_buffer[src_cursor];
+        src_cursor += 1;
 
-        if (cursor == chunk.end)
+        if (src_cursor == chunk.end)
         {
             parse_chunk();
         }
@@ -281,10 +284,10 @@ static void parse_cl_alphabet(int cl_size)
 
 static void parse_chunk()
 {
-    cursor += 4; /* crc bytes from previous chunk */
+    src_cursor += 4; /* crc bytes from previous chunk */
     chunk.size = parse_int(4);
     chunk.type = parse_int(4);
-    chunk.end = cursor + chunk.size;
+    chunk.end = src_cursor + chunk.size;
 }
 
 static void parse_header()
@@ -309,10 +312,11 @@ static void parse_header()
 
 static void parse_deflate_stream()
 {
-    assert(buffer[cursor] & ZLIB_COMPRESSION);
-    assert(((buffer[cursor] << 8) + buffer[cursor + 1]) % ZLIB_CTRL_VAL == 0);
+    assert(src_buffer[src_cursor] & ZLIB_COMPRESSION);
+    assert(((src_buffer[src_cursor] << 8) + \
+            src_buffer[src_cursor + 1]) % ZLIB_CTRL_VAL == 0);
     
-    cursor += 2;
+    src_cursor += 2;
 
     int last = 0;
     int type = 0;
@@ -346,19 +350,19 @@ static void parse_deflate_stream()
 void parse_png(const unsigned char* buf, size_t size)
 {
     /* set up static vars */
-    buffer = buf;
-    buffer_size = size;
+    src_buffer = buf;
+    src_buffer_size = size;
 
     /* assert that buffer is PNG*/
-    assert(buffer[0] == 137);
-    assert(buffer[1] == 80);
-    assert(buffer[2] == 78);
-    assert(buffer[3] == 71);
-    assert(buffer[4] == 13);
-    assert(buffer[5] == 10);
-    assert(buffer[6] == 26);
-    assert(buffer[7] == 10);
-    cursor = 8;
+    assert(src_buffer[0] == 137);
+    assert(src_buffer[1] == 80);
+    assert(src_buffer[2] == 78);
+    assert(src_buffer[3] == 71);
+    assert(src_buffer[4] == 13);
+    assert(src_buffer[5] == 10);
+    assert(src_buffer[6] == 26);
+    assert(src_buffer[7] == 10);
+    src_cursor = 8;
 
     parse_header();
 
@@ -375,6 +379,6 @@ void parse_png(const unsigned char* buf, size_t size)
             parse_deflate_stream();
         }
 
-        cursor = chunk.end;
+        src_cursor = chunk.end;
     } 
 }
