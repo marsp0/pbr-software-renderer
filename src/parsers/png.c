@@ -72,10 +72,7 @@ static uint32_t src_buffer_size         = 0;
 static const unsigned char* src_buffer  = NULL;
 
 static uint32_t dst_cursor              = 0;
-static const unsigned char* dst_buffer  = 0;
-
-static texture_t* texture           = NULL;
-static uint32_t tex_cursor          = 0;
+static unsigned char dst_buffer[PNG_MAX_BUFFER_SIZE];
 
 static header_t header          = { 0 };
 static chunk_t chunk            = { 0 };
@@ -181,8 +178,8 @@ static void decode()
 
         if (ll_symbol <= 255)                                                   /* the symbol is a literal */
         {
-            texture->data[tex_cursor] = ll_symbol;
-            tex_cursor++;
+            dst_buffer[dst_cursor] = ll_symbol;
+            dst_cursor++;
         }
         else if (ll_symbol > 256)                                               /* symbol is a length (followed by distance) */
         {
@@ -192,10 +189,10 @@ static void decode()
             uint32_t d_symbol = parse_symbol(&d_alphabet);
             uint32_t distance = d_map[d_symbol][1] + parse_bits(d_map[d_symbol][0]);
 
-            memcpy(&(texture->data[tex_cursor]), &(texture->data[tex_cursor - distance]), len);
-            tex_cursor += len;
+            memcpy(&(dst_buffer[dst_cursor]), &(dst_buffer[dst_cursor - distance]), len);
+            dst_cursor += len;
         }
-        assert(tex_cursor <= (texture->width * texture->height * texture->stride));
+        assert(dst_cursor <= PNG_MAX_BUFFER_SIZE);
     }
 }
 
@@ -365,10 +362,7 @@ void parse_png(const unsigned char* buf, size_t size)
     src_cursor = 8;
 
     parse_header();
-
-    int stride = header.color_type == 2 ? 3 : 4;                    /* RGB or RGBA */
-    texture = texture_new(header.width, header.height, stride);
-    tex_cursor = 0;
+    dst_cursor = 0;
 
     while (chunk.type != PNG_END_CHUNK)
     {
@@ -380,5 +374,22 @@ void parse_png(const unsigned char* buf, size_t size)
         }
 
         src_cursor = chunk.end;
-    } 
+    }
+
+    /* move data from dst_buffer into a texture and remove filter_type bytes */
+    int stride = header.color_type == 2 ? 3 : 4;                /* RGB or RGBA */
+    int tex_cursor = 0;
+    texture_t* texture = texture_new(header.width, header.height, stride);
+    for (int i = 0; i < dst_cursor; i++)
+    {
+        if (i % (texture->width * texture->stride) == 0)        /* filter-type byte at start of scanline */
+        {
+            continue;
+        }
+
+        texture->data[tex_cursor] = dst_buffer[dst_cursor];
+        tex_cursor++;
+    }
+
+    printf("%d / %d / %d\n", dst_cursor, texture->width * texture->height * texture->stride + texture->height, tex_cursor);
 }
