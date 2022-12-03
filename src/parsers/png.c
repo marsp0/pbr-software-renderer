@@ -189,13 +189,10 @@ static void decode()
             uint32_t d_symbol = parse_symbol(&d_alphabet);
             uint32_t distance = d_map[d_symbol][1] + parse_bits(d_map[d_symbol][0]);
 
-            int start = tex_cursor - distance;
-            for (int i = start; i < start + len; i++)
-            {
-                texture->data[tex_cursor] = texture->data[i];
-                tex_cursor++;
-            }
+            memcpy(&(texture->data[tex_cursor]), &(texture->data[tex_cursor - distance]), len);
+            tex_cursor += len;
         }
+        assert(tex_cursor <= (texture->width * texture->height * texture->stride));
     }
 }
 
@@ -367,6 +364,7 @@ void parse_png(const unsigned char* buf, size_t size)
 
     int stride = header.color_type == 2 ? 3 : 4;                    /* RGB or RGBA */
     texture = texture_new(header.width, header.height, stride);
+    tex_cursor = 0;
 
     while (chunk.type != PNG_END_CHUNK)
     {
