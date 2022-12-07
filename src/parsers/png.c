@@ -30,8 +30,6 @@
 
 /* TODO: 
  * 1. describe what is happening here 
- * 2. rather than passing buffer around, just assign it to a static variable
- * 3. assign texture pointer to a static variable for easy access
 */
 
 typedef struct
@@ -59,27 +57,36 @@ typedef struct
     uint16_t codes[PNG_ALPHABET_CAPACITY];
 } alphabet_t;
 
-const uint32_t ZLIB_COMPRESSION = 8;
-const uint32_t ZLIB_CTRL_VAL    = 31;
-const uint32_t PNG_HEADER_CHUNK = 1229472850;
-const uint32_t PNG_DATA_CHUNK   = 1229209940;
-const uint32_t PNG_END_CHUNK    = 1229278788;
+typedef struct node_t
+{
+    uint32_t symbol;
+    struct node_t* left;
+    struct node_t* right;
+} node_t;
 
-static uint8_t  bit_buffer              = 0;
-static uint8_t  bit_count               = 0;
-static uint32_t src_cursor              = 0;
-static uint32_t src_buffer_size         = 0;
-static const unsigned char* src_buffer  = NULL;
+const uint32_t ZLIB_COMPRESSION                         = 8;
+const uint32_t ZLIB_CTRL_VAL                            = 31;
+const uint32_t PNG_HEADER_CHUNK                         = 1229472850;
+const uint32_t PNG_DATA_CHUNK                           = 1229209940;
+const uint32_t PNG_END_CHUNK                            = 1229278788;
 
-static uint32_t dst_cursor              = 0;
-static unsigned char dst_buffer[PNG_MAX_BUFFER_SIZE];
+static header_t header                                  = { 0 };
+static chunk_t chunk                                    = { 0 };
 
-static header_t header          = { 0 };
-static chunk_t chunk            = { 0 };
+static uint8_t  bit_buffer                              = 0;
+static uint8_t  bit_count                               = 0;
+static uint32_t src_cursor                              = 0;
+static uint32_t src_buffer_size                         = 0;
+static const unsigned char* src_buffer                  = NULL;
 
-static alphabet_t cl_alphabet   = { 0 };
-static alphabet_t ll_alphabet   = { 0 };
-static alphabet_t d_alphabet    = { 0 };
+static uint32_t dst_cursor                              = 0;
+static unsigned char dst_buffer[PNG_MAX_BUFFER_SIZE]    = { 0 };
+
+static uint32_t node_index                              = 0;
+static node_t* cl_alphabet                              = NULL;
+static node_t* ll_alphabet                              = NULL;
+static node_t* d_alphabet                               = NULL;
+static node_t node_pool[PNG_NODE_POOL_SIZE]             = { 0 };
 static uint32_t ll_map[29][2]   = {
     {0, 3},    {0, 4},    {0, 5},    {0, 6},    {0, 7}, 
     {0, 8},    {0, 9},    {0, 10},   {1, 11},   {1, 13},
@@ -121,6 +128,7 @@ static void parse_chunk();
  */
 static uint32_t parse_bits(int n)
 {
+    /* TODO: refactor this into a more readable piece like before */
     assert(n <= 32);
 
     uint32_t result = bit_buffer;
@@ -147,24 +155,16 @@ static uint32_t parse_bits(int n)
     return result;
 }
 
-static uint32_t parse_symbol(alphabet_t* alphabet)
+static uint32_t parse_symbol(node_t* alphabet)
 {
-    uint32_t code = 0;
-    uint32_t code_len = 0;
-
+    node_t* current = alphabet;
     while (true)
     {
-        /* parse code (MSB) */
-        code = (code << 1) + parse_bits(1);
-        code_len++;
-        
-        for (uint32_t i = 0; i < alphabet->size; i++)
+        if (!current->right && !current->left)
         {
-            if (alphabet->lengths[i] == code_len && alphabet->codes[i] == code)
-            {
-                return i;
-            }
+            return current->symbol;
         }
+        current = parse_bits(1) & 1 ? current->right : current->left;
     }
     assert(false);
 }
@@ -174,7 +174,7 @@ static void decode()
     uint32_t ll_symbol = 0;
     while (ll_symbol != 256)
     {
-        ll_symbol = parse_symbol(&ll_alphabet);
+        ll_symbol = parse_symbol(ll_alphabet);
 
         if (ll_symbol <= 255)                                                   /* the symbol is a literal */
         {
@@ -186,9 +186,8 @@ static void decode()
             uint32_t ll_index = ll_symbol - 257;                                /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
             uint32_t len = ll_map[ll_index][1] + parse_bits(ll_map[ll_index][0]);
 
-            uint32_t d_symbol = parse_symbol(&d_alphabet);
+            uint32_t d_symbol = parse_symbol(d_alphabet);
             uint32_t distance = d_map[d_symbol][1] + parse_bits(d_map[d_symbol][0]);
-
             memcpy(&(dst_buffer[dst_cursor]), &(dst_buffer[dst_cursor - distance]), len);
             dst_cursor += len;
         }
@@ -196,15 +195,15 @@ static void decode()
     }
 }
 
-static void generate_huffman_codes(alphabet_t* alphabet)
+static void generate_huffman_codes(node_t* alphabet, uint32_t* lengths, uint32_t size)
 {
     /* count alphabet lens */
-    uint32_t len_counts[15] = {0};
-    uint32_t base_vals[15] = {0};
+    uint32_t len_counts[15] = { 0 };
+    uint32_t base_values[15] = { 0 };
 
-    for (int i = 0; i < alphabet->size; i++)
+    for (int i = 0; i < size; i++)
     {
-        len_counts[alphabet->lengths[i]]++;
+        len_counts[lengths[i]]++;
     }
 
     /* find base code for each length */
@@ -213,35 +212,59 @@ static void generate_huffman_codes(alphabet_t* alphabet)
     for (int i = 1; i < 16; i++)
     {
         code = (code + len_counts[i - 1]) << 1;
-        base_vals[i] = code;
+        base_values[i] = code;
     }
 
     /* give each code a value based on the base value */
-    for (int i = 0; i < alphabet->size; i++)
+    for (int i = 0; i < size; i++)
     {
-        int code_len = alphabet->lengths[i];
+        int code_len = lengths[i];
         if (code_len == 0)
         {
             continue;
         }
 
-        alphabet->codes[i] = base_vals[code_len];
-        base_vals[code_len]++;
+        node_t* current = alphabet;
+        code = base_values[code_len];
+        int temp = code;
+        base_values[code_len]++;
+
+        while (true)
+        {
+            if (code_len == 0)
+            {
+                current->symbol = i;
+                break;
+            }
+
+            uint32_t barrier = 1 << (code_len - 1);
+
+            node_t** node = code & barrier ? &current->right : &current->left;
+
+            if (*node == NULL)
+            {
+                *node = &node_pool[node_index];
+                node_index++;
+            }
+
+            current = *node;
+            code_len--;
+        }
     }
 }
 
-static void parse_alphabet(alphabet_t* alphabet)
+static void parse_alphabet(node_t* alphabet, uint32_t* lengths, uint32_t size)
 {
     uint32_t symbol = 0;
     uint32_t index = 0;
 
-    while (index < alphabet->size)
+    while (index < size)
     {
-        symbol = parse_symbol(&cl_alphabet);
+        symbol = parse_symbol(cl_alphabet);
 
         if (symbol <= 15)                                               /* symbol is literal */
         {
-            alphabet->lengths[index] = symbol;
+            lengths[index] = symbol;
             index += 1;
         }
         else if (symbol == 16)                                          /* repeat last symbol x times */
@@ -249,7 +272,9 @@ static void parse_alphabet(alphabet_t* alphabet)
             uint32_t count = parse_bits(2) + 3;
             
             for (int i = index; i < (index + count); i++)
-                alphabet->lengths[i] = alphabet->lengths[index - 1];
+            {
+                lengths[i] = lengths[index - 1];
+            }
 
             index += count;
         }
@@ -263,20 +288,39 @@ static void parse_alphabet(alphabet_t* alphabet)
         }
     }
 
-    generate_huffman_codes(alphabet);
+    generate_huffman_codes(alphabet, lengths, size);
+}
+
+static void parse_ll_alphabet(int ll_size)
+{
+    uint32_t lengths[286] = { 0 };
+    ll_alphabet = &(node_pool[node_index]);
+    node_index++;
+    parse_alphabet(ll_alphabet, &lengths, ll_size);
+}
+
+static void parse_d_alphabet(int d_size)
+{
+    uint32_t lengths[32] = { 0 };
+    d_alphabet = &(node_pool[node_index]);
+    node_index++;
+    parse_alphabet(d_alphabet, &lengths, d_size);
 }
 
 static void parse_cl_alphabet(int cl_size)
 {
-    cl_alphabet.size = 19;
     const uint8_t order[] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
+    uint32_t lengths[19] = { 0 };
 
     for (int i = 0; i < cl_size; i++)
     {
-        cl_alphabet.lengths[order[i]] = parse_bits(3);
+        lengths[order[i]] = parse_bits(3);
     }
 
-    generate_huffman_codes(&cl_alphabet);
+    cl_alphabet = &(node_pool[node_index]);
+    node_index++;
+    
+    generate_huffman_codes(cl_alphabet, &lengths, 19);
 }
 
 static void parse_chunk()
@@ -319,9 +363,11 @@ static void parse_deflate_stream()
     int type = 0;
     do
     {
-        memset(&cl_alphabet, 0, sizeof(cl_alphabet));
-        memset(&ll_alphabet, 0, sizeof(ll_alphabet));
-        memset(&d_alphabet, 0, sizeof(d_alphabet));
+        node_index = 0;
+        cl_alphabet = NULL;
+        ll_alphabet = NULL;
+        d_alphabet = NULL;
+        memset(&node_pool, 0, sizeof(node_pool));
 
         last = parse_bits(1);
         type = parse_bits(2);
@@ -332,13 +378,13 @@ static void parse_deflate_stream()
             exit(1);
         }
 
-        ll_alphabet.size = parse_bits(5) + 257;
-        d_alphabet.size = parse_bits(5) + 1;
+        uint32_t ll_size = parse_bits(5) + 257;
+        uint32_t d_size = parse_bits(5) + 1;
         uint32_t cl_size = parse_bits(4) + 4;
 
         parse_cl_alphabet(cl_size);
-        parse_alphabet(&ll_alphabet);
-        parse_alphabet(&d_alphabet);
+        parse_ll_alphabet(ll_size);
+        parse_d_alphabet(d_size);
         decode();
 
     } while (!last);
