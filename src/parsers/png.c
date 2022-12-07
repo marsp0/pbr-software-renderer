@@ -155,15 +155,11 @@ static uint32_t parse_bits_lsb(int n)
 static uint32_t parse_symbol(node_t* alphabet)
 {
     node_t* current = alphabet;
-    while (true)
+    while (current->right || current->left)
     {
-        if (!current->right && !current->left)
-        {
-            return current->symbol;
-        }
         current = parse_bits_lsb(1) & 1 ? current->right : current->left;
     }
-    assert(false);
+    return current->symbol;
 }
 
 static void decode()
