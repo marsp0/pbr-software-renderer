@@ -169,14 +169,14 @@ static void decode()
     {
         ll_symbol = parse_symbol(ll_alphabet);
 
-        if (ll_symbol <= 255)                                                   /* the symbol is a literal */
+        if (ll_symbol <= 255)                                                           /* the symbol is a literal */
         {
             dst_buffer[dst_cursor] = ll_symbol;
             dst_cursor++;
         }
-        else if (ll_symbol > 256)                                               /* symbol is a length (followed by distance) */
+        else if (ll_symbol > 256)                                                       /* symbol is a length (followed by distance) */
         {
-            uint32_t ll_index = ll_symbol - 257;                                /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
+            uint32_t ll_index = ll_symbol - 257;                                        /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
             uint32_t len = ll_map[ll_index][1] + parse_bits_lsb(ll_map[ll_index][0]);
 
             uint32_t d_symbol = parse_symbol(d_alphabet);
@@ -222,16 +222,9 @@ static void generate_huffman_codes(node_t* alphabet, uint32_t* lengths, uint32_t
         int temp = code;
         base_values[code_len]++;
 
-        while (true)
+        while (code_len > 0)
         {
-            if (code_len == 0)
-            {
-                current->symbol = i;
-                break;
-            }
-
             uint32_t barrier = 1 << (code_len - 1);
-
             node_t** node = code & barrier ? &current->right : &current->left;
 
             if (*node == NULL)
@@ -243,6 +236,8 @@ static void generate_huffman_codes(node_t* alphabet, uint32_t* lengths, uint32_t
             current = *node;
             code_len--;
         }
+
+        current->symbol = i;
     }
 }
 
@@ -415,11 +410,7 @@ void parse_png(const unsigned char* buf, size_t size)
         src_cursor = chunk.end;
     }
 
-    /* 
-     * move data from dst_buffer into a texture and remove filter_type bytes,
-     * each scanline has 1
-     */
-
+    /* move data from dst_buffer into a texture and remove filter_type bytes, each scanline has 1 */
     uint32_t buf_cursor = 1;
     uint32_t tex_cursor = 0;
     uint32_t stride = header.color_type == 2 ? 3 : 4;                            /* RGB or RGBA */
