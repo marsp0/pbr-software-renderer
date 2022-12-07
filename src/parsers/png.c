@@ -121,23 +121,22 @@ static uint32_t parse_int(int n)
 
 static void parse_chunk();
 /*
- * parse_bits - parses up to 32 bits from the stream.
+ * parse_bits_lsb - parses up to 32 bits from the stream.
  * we read 8 bits at a time until we've read at least n bits.
  * Since we are reading multiples of 8 bits but might not actually need them all, we need a place to store the 
  * remaining bits for the next parse (bit_buffer, bit_count)
  */
-static uint32_t parse_bits(int n)
+static uint32_t parse_bits_lsb(int n)
 {
-    /* TODO: refactor this into a more readable piece like before */
-    assert(n <= 32);
+    assert(n <= 24);
 
     uint32_t result = bit_buffer;
-    while (bit_count < n)
-    {
-        result += src_buffer[src_cursor] << bit_count;
+    uint32_t bits_read = bit_count;
 
-        bit_count += 8;
-        bit_buffer = src_buffer[src_cursor];
+    while (bits_read < n)
+    {
+        result += src_buffer[src_cursor] << bits_read;
+        bits_read += 8;
         src_cursor += 1;
 
         if (src_cursor == chunk.end)
@@ -147,9 +146,7 @@ static uint32_t parse_bits(int n)
     }
 
     bit_buffer = result >> n;
-    bit_count -= n;
-
-    /* remove bits that were extra */
+    bit_count = bits_read - n;
     result &= (1L << n) - 1;
 
     return result;
@@ -164,7 +161,7 @@ static uint32_t parse_symbol(node_t* alphabet)
         {
             return current->symbol;
         }
-        current = parse_bits(1) & 1 ? current->right : current->left;
+        current = parse_bits_lsb(1) & 1 ? current->right : current->left;
     }
     assert(false);
 }
@@ -184,10 +181,10 @@ static void decode()
         else if (ll_symbol > 256)                                               /* symbol is a length (followed by distance) */
         {
             uint32_t ll_index = ll_symbol - 257;                                /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
-            uint32_t len = ll_map[ll_index][1] + parse_bits(ll_map[ll_index][0]);
+            uint32_t len = ll_map[ll_index][1] + parse_bits_lsb(ll_map[ll_index][0]);
 
             uint32_t d_symbol = parse_symbol(d_alphabet);
-            uint32_t distance = d_map[d_symbol][1] + parse_bits(d_map[d_symbol][0]);
+            uint32_t distance = d_map[d_symbol][1] + parse_bits_lsb(d_map[d_symbol][0]);
             memcpy(&(dst_buffer[dst_cursor]), &(dst_buffer[dst_cursor - distance]), len);
             dst_cursor += len;
         }
@@ -269,7 +266,7 @@ static void parse_alphabet(node_t* alphabet, uint32_t* lengths, uint32_t size)
         }
         else if (symbol == 16)                                          /* repeat last symbol x times */
         {
-            uint32_t count = parse_bits(2) + 3;
+            uint32_t count = parse_bits_lsb(2) + 3;
             
             for (int i = index; i < (index + count); i++)
             {
@@ -280,11 +277,11 @@ static void parse_alphabet(node_t* alphabet, uint32_t* lengths, uint32_t size)
         }
         else if (symbol == 17)                                          /* repeat zero x times */
         {
-            index += parse_bits(3) + 3;
+            index += parse_bits_lsb(3) + 3;
         }
         else                                                            /* repeat zero y times */
         {
-            index += parse_bits(7) + 11;
+            index += parse_bits_lsb(7) + 11;
         }
     }
 
@@ -314,7 +311,7 @@ static void parse_cl_alphabet(int cl_size)
 
     for (int i = 0; i < cl_size; i++)
     {
-        lengths[order[i]] = parse_bits(3);
+        lengths[order[i]] = parse_bits_lsb(3);
     }
 
     cl_alphabet = &(node_pool[node_index]);
@@ -369,8 +366,8 @@ static void parse_deflate_stream()
         d_alphabet = NULL;
         memset(&node_pool, 0, sizeof(node_pool));
 
-        last = parse_bits(1);
-        type = parse_bits(2);
+        last = parse_bits_lsb(1);
+        type = parse_bits_lsb(2);
 
         if (type != 2)
         {
@@ -378,9 +375,9 @@ static void parse_deflate_stream()
             exit(1);
         }
 
-        uint32_t ll_size = parse_bits(5) + 257;
-        uint32_t d_size = parse_bits(5) + 1;
-        uint32_t cl_size = parse_bits(4) + 4;
+        uint32_t ll_size = parse_bits_lsb(5) + 257;
+        uint32_t d_size = parse_bits_lsb(5) + 1;
+        uint32_t cl_size = parse_bits_lsb(4) + 4;
 
         parse_cl_alphabet(cl_size);
         parse_ll_alphabet(ll_size);
