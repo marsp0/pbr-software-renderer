@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include "../constants.h"
-#include "../texture.h"
 
 /*
  * List of resources that helped with the parsing of png
@@ -162,7 +161,7 @@ static uint32_t parse_symbol(node_t* alphabet)
     return current->symbol;
 }
 
-static void decode()
+static void decode_block()
 {
     uint32_t ll_symbol = 0;
     while (ll_symbol != 256)
@@ -373,12 +372,12 @@ static void parse_deflate_stream()
         parse_cl_alphabet(cl_size);
         parse_ll_alphabet(ll_size);
         parse_d_alphabet(d_size);
-        decode();
+        decode_block();
 
     } while (!last);
 }
 
-void parse_png(const unsigned char* buf, size_t size)
+texture_t* parse_png(const unsigned char* buf, size_t size)
 {
     /* set up static vars */
     src_buffer = buf;
@@ -423,4 +422,6 @@ void parse_png(const unsigned char* buf, size_t size)
         buf_cursor += row_width + 1;
         tex_cursor += row_width;
     }
+
+    return texture;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
 #include <stddef.h>
+#include "../texture.h"
 
-/*TODO: return texture_t* here*/
-void parse_png(const unsigned char* buffer, size_t size);
+texture_t* parse_png(const unsigned char* buffer, size_t size);
