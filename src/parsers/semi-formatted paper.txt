@@ -775,3 +775,160 @@ Editorial comments on this specification can be sent by email to:
 
 L. Peter Deutsch <ghost@aladdin.com> and
 Glenn Randers-Pehrson <randeg@alumni.rpi.edu>
+
+
+
+
+## Simple PNG parser
+
+I am working on a [pbr-software-renderer](https://github.com/marsp0/pbr-software-renderer) and needed a png parser. I have not written one until now, so I decided to give it a go. The parser is **very basic** and does not handle all different types of PNG. It has enough functionality to cover my needs, so bear that in mind. I'll list the major limitations below:
+
+*   can only handle files with dynamic huffman codes (more on this later)
+*   only files with RGB and RGBA data with 8 bits per pixel
+*   no filtering
+*   up to 2048x2048 (this is really just an implementation detail)
+
+Another thing to note is that the only dynamic allocation the parser does is for the parsed texture. All other allocations are either static or on the stack.
+
+### PNG Format
+
+I'll start by describing the overall structure of PNG files and then look into the individual components in more detail. Each file contains a signature and a series of chunks. There are different types of chunks holding different kinds of information but the three major ones that we will focus on are `IHDR`, `IDAT`, `IEND`. The signature is the following 8 bytes - `0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A`. 
+
+Each chunk has the following structure
+
+```plaintext
+       4 bytes               4 bytes         chunk size bytes          4 bytes
++--------------------+--------------------+--------------------+--------------------+
+|     chunk size     |     chunk type     |         data       |         CRC        |
++--------------------+--------------------+--------------------+--------------------+
+
+Chunk types
+IHDR - 1229472850
+IDAT - 1229209940
+IEND - 1229278788
+```
+
+#### Byte Order
+
+As per the PNG spec, all multi-byte integers are ordered starting with the most significant byte. 
+
+#### IHDR
+
+This is the header chunk that contains information about the image. This is the first chunk that appears in the PNG file after the signature. It contains the following, which totals 13 bytes.
+
+```plaintext
+       4 bytes               4 bytes              4 bytes              4 bytes
++--------------------+--------------------+--------------------+--------------------+
+|         13         |     1229472850     |        width       |       height       |
++--------------------+--------------------+--------------------+--------------------+
+
+      1 byte           1 byte           1 byte           1 byte           1 byte
++----------------+----------------+----------------+----------------+----------------+
+| bits per pixel |   color type   |  compression   |     filter     |    interlace   |
++----------------+----------------+----------------+----------------+----------------+
+         |                |                |
+         |                |                | PNG implements only method 0 (deflate)
+         |                |
+         |                | parser supports only color type 2 (RGB) and 6 (RGBA)
+         |
+         | parser supports only 8 bits per pixel
+
+        4 bytes
++--------------------+
+|         CRC        |
++--------------------+
+```
+
+#### IDAT
+
+PNG files are compressed and the compressed data stream is contained within a series of IDAT chunks. These chunks are continuous. A different type of chunk cannot appear in the middle of two IDAT chunks. The compressed data stream will be discussed below.
+
+```plaintext
+       4 bytes               4 bytes              n bytes              4 bytes
++--------------------+--------------------+--------------------+--------------------+
+|         n          |     1229209940     |        data1       |         CRC        |
++--------------------+--------------------+--------------------+--------------------+
+
+       4 bytes               4 bytes              n bytes              4 bytes
++--------------------+--------------------+--------------------+--------------------+
+|         n          |     1229209940     |        data2       |         CRC        |
++--------------------+--------------------+--------------------+--------------------+
+
+.
+.
+.
+
+       4 bytes               4 bytes              n bytes              4 bytes
++--------------------+--------------------+--------------------+--------------------+
+|         n          |     1229209940     |        dataN       |         CRC        |
++--------------------+--------------------+--------------------+--------------------+
+```
+
+The concatenation of `data1 + data2 + … + dataN` represents the compressed data stream. The data segments should not be looked at individually but as a whole. I'll come back to this point later.
+
+#### IEND
+
+This chunk marks the end of the file. The data size for this chunk is 0.
+
+```plaintext
+       4 bytes               4 bytes              4 bytes
++--------------------+--------------------+--------------------+
+|         0          |     1229278788     |         CRC        |
++--------------------+--------------------+--------------------+
+```
+
+### Deflate Format
+
+Looking at the PNG format, we can see that it's just a container for the compressed data stream. The data is compressed using the deflate compression method, which is the only compression method PNG supports. Let us ignore for a second the fact that the data stream is chopped up into segments and let's imagine that it's just one continuous stream of bytes that we can read. At a later point I'll discuss the “stitching” of the segments.
+
+```plaintext
+       2-6 bytes             n bytes              4 bytes
++--------------------+--------------------+--------------------+
+|       header       |         data       |       trailer      |
++--------------------+--------------------+--------------------+
+```
+
+#### Bit and Byte Order
+
+```plaintext
+         | first byte
+         |                 | second byte
+  _______|_______   _______|_______ 
++-----------------+-----------------+
+| 0 0 0 0 1 0 0 0 | 0 0 0 0 1 0 0 0 |
++-----------------+-----------------+
+  |       |   | |   |             | 9th bit
+  |       |   | |   | 16th bit
+  |       |   | |
+  |       |   | | 1st bit
+  |       |   |
+  |       |   | 2nd bit
+  |       |
+  |       | 4th bit
+  |
+  | 8th bit
+```
+
+#### Header
+
+The size of the header varies based on the information in the header. It goes from 2 bytes to 6 bytes.
+
+```plaintext
+   1 byte       1 byte  
++-----------+------------+
+| 0000 1000 | 00 0 01000 |
++-----------+------------+
+   |    |     |  |
+   |    |     |  |
+   |    |     |  | 
+   |    |     |  
+   |    |     | compression level
+   |    |
+   |    | compression method
+   |
+   |compression info
+```
+
+#### Trailer
+
+#### Data

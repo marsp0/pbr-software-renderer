@@ -412,13 +412,14 @@ texture_t* parse_png(const unsigned char* buf, size_t size)
     /* move data from dst_buffer into a texture and remove filter_type bytes, each scanline has 1 */
     uint32_t buf_cursor = 1;
     uint32_t tex_cursor = 0;
-    uint32_t stride = header.color_type == 2 ? 3 : 4;                            /* RGB or RGBA */
+    uint32_t stride = header.color_type == 2 ? 3 : 4;                               /* RGB or RGBA */
     uint32_t row_width = header.width * stride;
     texture_t* texture = texture_new(header.width, header.height, stride);
     
     while (buf_cursor < dst_cursor)
     {
         memcpy(&(dst_buffer[buf_cursor]), &(texture->data[tex_cursor]), row_width);
+        assert(dst_buffer[row_width + 1] == 0);                                     /* filter type 0 */
         buf_cursor += row_width + 1;
         tex_cursor += row_width;
     }
