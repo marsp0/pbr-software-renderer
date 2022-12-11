@@ -381,7 +381,7 @@ texture_t* parse_png(const unsigned char* buf, size_t size)
     src_buffer = buf;
     src_buffer_size = size;
 
-    /* assert that buffer is PNG*/
+    /* assert PNG signature */
     assert(src_buffer[0] == 137);
     assert(src_buffer[1] == 80);
     assert(src_buffer[2] == 78);
