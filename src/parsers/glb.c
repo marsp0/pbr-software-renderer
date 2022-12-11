@@ -13,8 +13,6 @@
  * GLTF 2 specification - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
  */
 
-/* TODO: describe what is happening here */
-
 static int cursor = 0;
 
 typedef struct
@@ -31,20 +29,17 @@ typedef struct
     const unsigned char* data;
 } chunk_t;
 
-
-static uint32_t parse_int(const unsigned char* buffer, int n);
-
-static header_t parse_header(const unsigned char* buffer)
+static uint32_t parse_int(const unsigned char* buffer, int n)
 {
-    header_t header;
-    header.magic = parse_int(buffer, 4);
-    header.version = parse_int(buffer, 4);
-    header.size = parse_int(buffer, 4);
+    assert(n <= 4);
 
-    assert(header.version == 2);
-    assert(header.magic == 0x46546C67);
-
-    return header;
+    uint32_t result = 0;
+    for (int i = cursor; i < cursor + n; i++)
+    {
+        result += buffer[i] << ((i - cursor) * 8);
+    }
+    cursor += n;
+    return result;
 }
 
 static chunk_t parse_chunk(const unsigned char* buffer)
@@ -62,21 +57,18 @@ static chunk_t parse_chunk(const unsigned char* buffer)
     return chunk;
 }
 
-static uint32_t parse_int(const unsigned char* buffer, int n)
+static header_t parse_header(const unsigned char* buffer)
 {
-    uint32_t result = 0;
-    for (int i = cursor; i < cursor + n; i++)
-    {
-        result += buffer[i] << ((i - cursor) * 8);
-    }
-    cursor += n;
-    return result;
+    header_t header;
+    header.magic = parse_int(buffer, 4);
+    header.version = parse_int(buffer, 4);
+    header.size = parse_int(buffer, 4);
+
+    assert(header.version == 2);
+    assert(header.magic == 0x46546C67);
+
+    return header;
 }
-
-
-/*
- * parse_scene
- */
 
 int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
 {
