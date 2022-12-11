@@ -68,26 +68,20 @@ typedef struct
     unsigned char* buffer;
 } buffer_t;
 
-const uint32_t ZLIB_COMPRESSION                         = 8;
-const uint32_t ZLIB_CTRL_VAL                            = 31;
-const uint32_t PNG_HEADER_CHUNK                         = 1229472850;
-const uint32_t PNG_DATA_CHUNK                           = 1229209940;
-const uint32_t PNG_END_CHUNK                            = 1229278788;
+static header_t header                            = { 0 };
+static chunk_t chunk                              = { 0 };
 
-static header_t header                                  = { 0 };
-static chunk_t chunk                                    = { 0 };
+static uint8_t  bit_buffer                        = 0;
+static uint8_t  bit_count                         = 0;
+static buffer_t src                               = { 0 };
+static buffer_t dst                               = { 0 };
+static unsigned char data_buffer[PNG_BUFFER_SIZE] = { 0 };
 
-static uint8_t  bit_buffer                              = 0;
-static uint8_t  bit_count                               = 0;
-static buffer_t src                                     = { 0 };
-static buffer_t dst                                     = { 0 };
-static unsigned char data_buffer[PNG_MAX_BUFFER_SIZE]   = { 0 };
-
-static uint32_t node_index                              = 0;
-static node_t* cl_alphabet                              = NULL;
-static node_t* ll_alphabet                              = NULL;
-static node_t* d_alphabet                               = NULL;
-static node_t node_pool[PNG_NODE_POOL_SIZE]             = { 0 };
+static uint32_t node_index                        = 0;
+static node_t* cl_alphabet                        = NULL;
+static node_t* ll_alphabet                        = NULL;
+static node_t* d_alphabet                         = NULL;
+static node_t node_pool[PNG_NODE_POOL_SIZE]       = { 0 };
 static uint32_t ll_map[29][2]   = {
     {0, 3},    {0, 4},    {0, 5},    {0, 6},    {0, 7}, 
     {0, 8},    {0, 9},    {0, 10},   {1, 11},   {1, 13},
