@@ -17,7 +17,9 @@
  * - Deflate blog post - https://zlib.net/feldspar.html
  * - GZIP post containing deflate information
  *      - www.infinitepartitions.com/art001.html
- * - gzip parser that i used to validate my code
+ * - gzip parser
+ *      - was able to find multiple bugs thanks to this tool.
+ *      - having a correct implementation that i could compare my output to was very very helpful
  *      - https://github.com/billbird/gzstat
  * - So questions - 
  *      https://stackoverflow.com/questions/32419086/the-structure-of-deflate-compressed-block 
@@ -26,10 +28,6 @@
  *      https://stackoverflow.com/questions/72144290/puff-c-how-does-the-huffman-decoding-work
  *      https://stackoverflow.com/questions/27713498/examples-of-deflate-compression
  */
-
-/* TODO: 
- * 1. describe what is happening here 
-*/
 
 typedef struct
 {

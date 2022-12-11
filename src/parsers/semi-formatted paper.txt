@@ -914,13 +914,13 @@ Looking at the PNG format, we can see that it's just a container for the compres
 The size of the header varies based on the information in the header. It goes from 2 bytes to 6 bytes.
 
 ```plaintext
-   1 byte       1 byte  
+      CMF         FLG
 +-----------+------------+
-| 0000 1000 | 00 0 01000 |
+| 0000 1000 | 00 0 00000 |
 +-----------+------------+
+   |    |     |  |   | check bits
    |    |     |  |
-   |    |     |  |
-   |    |     |  | 
+   |    |     |  | preset dictionary
    |    |     |  
    |    |     | compression level
    |    |
@@ -929,6 +929,30 @@ The size of the header varies based on the information in the header. It goes fr
    |compression info
 ```
 
+- compression method - this is always equal to 8 and represents the deflate compression
+- compression info - this is additional information about the size of the buffer used during compression. Im not using this information during decompression
+- compression level - the possible values are 0, 1, 2, 3. Lower level indicates lower compression ratio and faster compression.
+- preset dictionary - if this bit is set then the header will contain additional 4 bytes. For the images ive tested this was never set.
+- check bits - the check bits are set such that the following equation makes sense ((CMF << 8) + FLG) % 31 == 0
+
+I'll link the RFC for ZLIB in the end. The RFC explains all the flags in detail
+
 #### Trailer
+
+```plaintext
+      CMF         FLG
++-----------+------------+
+| 0000 1000 | 00 0 00000 |
++-----------+------------+
+   |    |     |  |   | check bits
+   |    |     |  |
+   |    |     |  | preset dictionary
+   |    |     |  
+   |    |     | compression level
+   |    |
+   |    | compression method
+   |
+   |compression info
+```
 
 #### Data
