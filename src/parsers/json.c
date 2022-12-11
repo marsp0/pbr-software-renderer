@@ -91,19 +91,26 @@ static void parse_value(const unsigned char* buffer, int index)
     while (next)
     {
         if (isdigit(buffer[cursor]))
+        {
             next = parse_number(buffer, index);
-
+        }
         else if (buffer[cursor] == '"')
+        {
             next = parse_string(buffer, index);
-
+        }
         else if (buffer[cursor] == '{')
+        {
             next = parse_object(buffer, index);
-
+        }
         else if (buffer[cursor] == '[')
+        {
             next = parse_array(buffer, index);
+        }
 
         if (next)
+        {
             cursor++;
+        }
     }
 }
 
@@ -129,13 +136,17 @@ static int parse_array(const unsigned char* buffer, int index)
         }
 
         if (buffer[cursor] == '{')
+        {
             parse_object(buffer, child);
-
+        }
         else if (buffer[cursor] == '"')
+        {
             parse_string(buffer, child);
-
+        }
         else if (isdigit(buffer[cursor]))
+        {
             parse_number(buffer, child);
+        }
 
         if (buffer[cursor] == ',')
         {
@@ -196,7 +207,9 @@ static int parse_number(const unsigned char* buffer, int index)
     tokens[index].value_start = cursor;
 
     while (isdigit(buffer[cursor]) || buffer[cursor] == '.')
+    {
         cursor++;
+    }
 
     tokens[index].value_size = cursor - tokens[index].value_start;
     return 0;
@@ -209,7 +222,9 @@ static int parse_string(const unsigned char* buffer, int index)
     tokens[index].type = TYPE_STRING;
 
     while (buffer[cursor] != '"')
+    {
         cursor++;
+    }
 
     tokens[index].value_size = cursor - tokens[index].value_start;
     return 0;
