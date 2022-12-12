@@ -1,5 +1,6 @@
 #include "json.h"
 
+#include <stdint.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -37,35 +38,38 @@ typedef struct
     type_e 	type;
 } token_t;
 
-static int cursor = 0;
-static int json_size = 0;
-static int token_index = 0; /* size of tokens */
-static token_t tokens[JSON_TOKENS_CAPACITY]; /* holds all parsed json tokens */
+static uint32_t cursor                      = 0;
+static uint32_t buffer_size                 = 0;
+static const unsigned char* buffer          = NULL;
 
-static void parse_key(const unsigned char* buffer, int index);
-static void parse_value(const unsigned char* buffer, int index);
-static int  parse_number(const unsigned char* buffer, int index);
-static int  parse_string(const unsigned char* buffer, int index);
-static int  parse_object(const unsigned char* buffer, int index);
-static int  parse_array(const unsigned char* buffer, int index);
+static uint32_t token_index                 = 0; /* size of tokens */
+static token_t tokens[JSON_TOKENS_CAPACITY] = { 0 }; /* holds all parsed json tokens */
+
+static void parse_key(int index);
+static void parse_value(int index);
+static int  parse_number(int index);
+static int  parse_string(int index);
+static int  parse_object(int index);
+static int  parse_array(int index);
 
 /*
  * parse_json_buffer - takes an already allocated buffer of json data, parses it and populates
  *                     the statically allocated *tokens* array;
  */
-void parse_json(const unsigned char* buffer, int buffer_size)
+void parse_json(const unsigned char* buf, int buf_size)
 {
     /* clear tokens */
     memset(tokens, 0, sizeof(tokens));
 
     cursor = 0;
+    buffer_size = buf_size;
+    buffer = buf;
     token_index = 0;
-    json_size = buffer_size;
-    parse_object(buffer, token_index);
+    parse_object(token_index);
     printf("Parsed %d JSON tokens\n", token_index);
 }
 
-static void parse_key(const unsigned char* buffer, int index)
+static void parse_key(int index)
 {
     status_e status = STATUS_BEFORE_KEY;
 
@@ -85,26 +89,26 @@ static void parse_key(const unsigned char* buffer, int index)
     }
 }
 
-static void parse_value(const unsigned char* buffer, int index)
+static void parse_value(int index)
 {
     int next = 1;
     while (next)
     {
         if (isdigit(buffer[cursor]))
         {
-            next = parse_number(buffer, index);
+            next = parse_number(index);
         }
         else if (buffer[cursor] == '"')
         {
-            next = parse_string(buffer, index);
+            next = parse_string(index);
         }
         else if (buffer[cursor] == '{')
         {
-            next = parse_object(buffer, index);
+            next = parse_object(index);
         }
         else if (buffer[cursor] == '[')
         {
-            next = parse_array(buffer, index);
+            next = parse_array(index);
         }
 
         if (next)
@@ -114,7 +118,7 @@ static void parse_value(const unsigned char* buffer, int index)
     }
 }
 
-static int parse_array(const unsigned char* buffer, int index)
+static int parse_array(int index)
 {
     int child = token_index;
     tokens[index].value_start = token_index;
@@ -124,7 +128,7 @@ static int parse_array(const unsigned char* buffer, int index)
     token_index++;
     assert(token_index < JSON_TOKENS_CAPACITY);
 
-    while (buffer[cursor] != ']' && cursor < json_size)
+    while (buffer[cursor] != ']' && cursor < buffer_size)
     {
         /* common work needed for all types */
         if (buffer[cursor] == '{' || buffer[cursor] == '"' || isdigit(buffer[cursor]))
@@ -137,15 +141,15 @@ static int parse_array(const unsigned char* buffer, int index)
 
         if (buffer[cursor] == '{')
         {
-            parse_object(buffer, child);
+            parse_object(child);
         }
         else if (buffer[cursor] == '"')
         {
-            parse_string(buffer, child);
+            parse_string(child);
         }
         else if (isdigit(buffer[cursor]))
         {
-            parse_number(buffer, child);
+            parse_number(child);
         }
 
         if (buffer[cursor] == ',')
@@ -161,7 +165,7 @@ static int parse_array(const unsigned char* buffer, int index)
     return 0;
 }
 
-static int parse_object(const unsigned char* buffer, int index)
+static int parse_object(int index)
 {
     int child = token_index;
     status_e status = STATUS_BEFORE_KEY;
@@ -173,18 +177,18 @@ static int parse_object(const unsigned char* buffer, int index)
     token_index++;
     assert(token_index < JSON_TOKENS_CAPACITY);
     
-    while (buffer[cursor] != '}' && cursor < json_size)
+    while (buffer[cursor] != '}' && cursor < buffer_size)
     {
 
         if (status == STATUS_BEFORE_KEY && buffer[cursor] == '"')
         {
             status = STATUS_BEFORE_VALUE;
-            parse_key(buffer, child);
+            parse_key(child);
         }
         else if (status == STATUS_BEFORE_VALUE)
         {
             status = STATUS_NONE;
-            parse_value(buffer, child);
+            parse_value(child);
         }
         
         if (status == STATUS_NONE && buffer[cursor] == ',')
@@ -201,7 +205,7 @@ static int parse_object(const unsigned char* buffer, int index)
     return 0;
 }
 
-static int parse_number(const unsigned char* buffer, int index)
+static int parse_number(int index)
 {
     tokens[index].type = TYPE_NUMBER;
     tokens[index].value_start = cursor;
@@ -215,7 +219,7 @@ static int parse_number(const unsigned char* buffer, int index)
     return 0;
 }
 
-static int parse_string(const unsigned char* buffer, int index)
+static int parse_string(int index)
 {
     cursor++;
     tokens[index].value_start = cursor;
