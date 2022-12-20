@@ -124,3 +124,25 @@ void assert_col(color expected, color actual, const char* message, const char* f
 
     assert(result);
 }
+
+void assert_string(const char* expected, const char* actual, int size, const char* file_name, int line_number)
+{
+    bool result = true;
+    for (int i = 0; i < size; i++)
+    {
+        if (expected[i] != actual[i])
+        {
+            result = false;
+        }
+    }
+
+    if (!result)
+    {
+        printf("File:\t\t %s\n", file_name);
+        printf("Line:\t\t %i\n", line_number);
+        printf("Actual:\t\t %.*s\n", size, actual);
+        printf("Expected:\t %.*s\n", size, expected);
+    }
+
+    assert(result);
+}

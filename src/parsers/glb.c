@@ -96,7 +96,7 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
     const chunk_t json = parse_chunk(buffer);
     const chunk_t binary = parse_chunk(buffer);
 
-    parse_json(json.data, json.size);
+    json_t* tree = json_new(json.data, json.size);
 
     parse_png(binary.data, 2165850);
 

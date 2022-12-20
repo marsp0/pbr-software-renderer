@@ -7,6 +7,7 @@
 
 /* file parsing */
 #define JSON_TOKENS_CAPACITY 	1000
+#define JSON_DEPTH              512
 #define PNG_CHUNK_CAPACITY 		700
 #define PNG_ALPHABET_CAPACITY 	287
 #define PNG_NODE_POOL_SIZE 		2 * (286 + 32 + 19)		/* LL_SIZE + D_SIZE + CL_SIZE */

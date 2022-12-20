@@ -5,6 +5,8 @@
 #include "mesh.h"
 #include "constants.h"
 
+/*TODO: header files should not include other header files*/
+
 typedef struct
 {
     int             width;

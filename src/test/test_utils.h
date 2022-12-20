@@ -9,6 +9,7 @@ void assert_float(float expected, float actual, const char* message, const char*
 void assert_int(int expected, int actual, const char* message, const char* file_name, int line_number);
 void assert_mat(mat_t expected, mat_t actual, const char* message, const char* file_name, int line_number);
 void assert_col(color expected, color actual, const char* message, const char* file_name, int line_number);
+void assert_string(const char* expected, const char* actual, int size, const char* file_name, int line_number);
 
 #define ASSERT_VEC(expected, actual) assert_vec(expected, actual, "", __FILE__, __LINE__);
 #define ASSERT_VEC_MSG(expected, actual, message) assert_vec(expected, actual, message, __FILE__, __LINE__);
@@ -20,3 +21,4 @@ void assert_col(color expected, color actual, const char* message, const char* f
 #define ASSERT_MAT_MSG(expected, actual, message) assert_mat(expected, actual, message, __FILE__, __LINE__);
 #define ASSERT_COL(expected, actual) assert_col(expected, actual, "", __FILE__, __LINE__);
 #define ASSERT_COL_MSG(expected, actual, message) assert_col(expected, actual, message, __FILE__, __LINE__);
+#define ASSERT_STRING(expected, actual, size) assert_string(expected, actual, size, __FILE__, __LINE__);
