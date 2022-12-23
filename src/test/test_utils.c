@@ -146,3 +146,15 @@ void assert_string(const char* expected, const char* actual, int size, const cha
 
     assert(result);
 }
+
+void assert_pointer(void* expected, void* actual, const char* file_name, int line_number)
+{
+    if (expected != actual)
+    {
+        printf("File:\t\t %s\n", file_name);
+        printf("Line:\t\t %i\n", line_number);
+        printf("Actual:\t\t %p\n", actual);
+        printf("Expected:\t %p\n", expected);
+        assert(false);
+    }
+}

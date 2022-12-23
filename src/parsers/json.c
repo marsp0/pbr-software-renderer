@@ -29,20 +29,47 @@ typedef enum
 
 static bool is_real()
 {
-    uint32_t temp_cursor = cursor;
+    uint32_t cur = cursor;
     bool is_real = false;
 
-    while (isdigit(buffer[temp_cursor]) || buffer[temp_cursor] == '.')
+    while(isdigit(buffer[cur]) || buffer[cur] == '.')
     {
 
-        if (buffer[temp_cursor] == '.')
+        if (buffer[cur] == '.')
         {
             is_real = true;
         }
-        temp_cursor++;
+        cur++;
     }
 
     return is_real;
+}
+
+static bool skip_if_empty(unsigned char end)
+{
+    uint32_t cur = cursor;
+    while(isspace(buffer[cur]))
+    {
+        cur++;
+    }
+
+    if (buffer[cur] == end)
+    {
+        cursor = ++cur;
+        return true;
+    }
+
+    return false;
+}
+
+static void skip_whitespace()
+{
+    unsigned char c = buffer[cursor];
+    while(isspace(c) || c == ',' || c == ':')
+    {
+        cursor++;
+        c = buffer[cursor];
+    }
 }
 
 static void validate()
@@ -54,7 +81,7 @@ static void validate()
     unsigned char t;
     unsigned char stack[JSON_DEPTH] = { 0 };
 
-    while (cursor < buffer_size)
+    while(cursor < buffer_size)
     {
         c = buffer[cursor];
         
@@ -84,7 +111,7 @@ static void allocate_string_buffer()
     uint32_t size = 0;
     status_e status = BEFORE_KEY;
 
-    while (cursor < buffer_size)
+    while(cursor < buffer_size)
     {
 
         if (buffer[cursor] == '"' && status == BEFORE_KEY)
@@ -117,10 +144,22 @@ static void allocate_node_buffer()
     cursor = 0;
 
     int count = 0;
-    while (cursor < buffer_size)
+
+    unsigned char c;
+    unsigned char t;
+    while(cursor < buffer_size)
     {
-        unsigned char c = buffer[cursor];
-        count += (c == ',' || c == ']' || c == '}') ? 1 : 0;
+        c = buffer[cursor];
+        if (c == ',' || c == ']' || c == '}')
+        {
+            count += 1;
+        }
+        else if (c == '[' || c == '{')
+        {
+            cursor++;
+            t = c == '[' ? ']' : '}';
+            skip_if_empty(t);
+        }
         cursor++;
     }
 
@@ -136,10 +175,10 @@ static void allocate_node_buffer()
 static void parse_number(uint32_t index)
 {
     nodes[index].type = JSON_NUMBER;
-    nodes[index].num = atoi(&buffer[cursor]);
+    nodes[index].integer = atoi(&buffer[cursor]);
 
     /* update cursor to current position */
-    while (isdigit(buffer[cursor]))
+    while(isdigit(buffer[cursor]))
     {
         cursor++;
     }
@@ -152,7 +191,7 @@ static void parse_real(uint32_t index)
     nodes[index].real = (float)atof(&buffer[cursor]);
 
     /* update cursor to current position */
-    while (isdigit(buffer[cursor]) || buffer[cursor] == '.')
+    while(isdigit(buffer[cursor]) || buffer[cursor] == '.')
     {
         cursor++;
     }
@@ -195,52 +234,98 @@ static void parse_string_value(uint32_t index)
     parse_string(&(nodes[index].string), &(nodes[index].string_size));
 }
 
+static void parse_object(uint32_t index);
+static void parse_array(uint32_t index);
+static void parse_value(uint32_t index)
+{
+    skip_whitespace();
+    if (buffer[cursor] == '"')
+    {
+        parse_string_value(index);
+    }
+    else if (isdigit(buffer[cursor]))
+    {
+        is_real() ? parse_real(index) : parse_number(index);
+    }
+    else if (buffer[cursor] == '{')
+    {
+        parse_object(index);
+    }
+    else if (buffer[cursor] == '[')
+    {
+        parse_array(index);
+    }
+    skip_whitespace();
+}
+
+static void parse_array(uint32_t index)
+{
+    json_node_t* prev = NULL;
+    uint32_t current = 0;
+    nodes[index].type = JSON_ARRAY;
+
+    cursor++;
+
+    if (skip_if_empty(']'))
+    {
+        return;
+    }
+
+    while(buffer[cursor] != ']')
+    {
+        current = node_index;
+        node_index++;
+
+        parse_value(current);
+        
+        if (prev)
+        {
+            prev->next = &nodes[current];
+        }
+        else
+        {
+            nodes[index].child = &nodes[current];
+        }
+        prev = &nodes[current];
+    }
+
+    cursor++;
+}
+
 static void parse_object(uint32_t index)
 {
-    uint32_t child = 0;
     json_node_t* prev = NULL;
     status_e status = BEFORE_KEY;
     nodes[index].type = JSON_OBJECT;
+    cursor++;
 
-    while (buffer[cursor] != '}')
+    while(buffer[cursor] != '}')
     {
+        skip_whitespace();
         if (buffer[cursor] == '"' && status == BEFORE_KEY)
         {
-            child = node_index;
-            parse_string_key(child);
+            parse_string_key(node_index);
             status = BEFORE_VAL;
 
             if (prev)
             {
-                prev->next = &nodes[child];
+                prev->next = &nodes[node_index];
+            }
+            else if (!prev && index != 0) /* first child and no self reference (applicable only to top level object) */
+            {
+                nodes[index].child = &nodes[node_index];
             }
 
-            prev = &nodes[child];
-            node_index++;
+            prev = &nodes[node_index];
         }
-        else if (buffer[cursor] == '"' && status == BEFORE_VAL)
+        else if (status == BEFORE_VAL)
         {
-            parse_string_value(child);
+            parse_value(node_index++);
             status = BEFORE_KEY;
-        }
-        else if (isdigit(buffer[cursor]) && status == BEFORE_VAL)
-        {
-            if (is_real())
-            {
-                parse_real(child);
-            }
-            else
-            {
-                parse_number(child);
-            }
-
-            status = BEFORE_KEY;
-        }
-        else
-        {
-            cursor++;
         }
     }
+
+    cursor++;
 }
 
 json_t* json_new(const unsigned char* input, uint32_t input_size)

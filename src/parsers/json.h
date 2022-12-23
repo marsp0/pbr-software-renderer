@@ -23,7 +23,7 @@ typedef struct json_node_t
     union
     {
         float  real;
-        int    num;
+        int    integer;
         char*  string;
     };
 
