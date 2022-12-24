@@ -77,9 +77,9 @@ void test_number()
 
 void test_multiple_numbers()
 {
-    const unsigned char buff[] = "{ \"key1\":  123 , \"key2\": 3432}";
+    const unsigned char buff[] = "{ \"key1\":  123 , \"key2\": -3432}";
     
-    json_t* json = json_new(buff, 30);
+    json_t* json = json_new(buff, 31);
     ASSERT_INT(2, json->nodes_size);
     ASSERT_INT(8, json->strings_size);
     ASSERT_STRING("key1key2", json->strings, 8);
@@ -96,7 +96,7 @@ void test_multiple_numbers()
     node = json->nodes[1];
     ASSERT_INT(4, node.name_size);
     ASSERT_INT(0, node.string_size);
-    ASSERT_INT(3432, node.integer);
+    ASSERT_INT(-3432, node.integer);
     ASSERT_INT(0, node.type);
     ASSERT_STRING("key2", node.name, node.name_size);
     ASSERT_POINTER(NULL, node.child);
@@ -128,9 +128,9 @@ void test_real()
 
 void test_multiple_reals()
 {
-    const unsigned char buff[] = "{ \"key1\": 0.321 , \"key2\": 34.32}";
+    const unsigned char buff[] = "{ \"key1\": 0.321 , \"key2\": -34.32}";
     
-    json_t* json = json_new(buff, 32);
+    json_t* json = json_new(buff, 33);
     ASSERT_INT(2, json->nodes_size);
     ASSERT_INT(8, json->strings_size);
     ASSERT_STRING("key1key2", json->strings, 8);
@@ -147,7 +147,7 @@ void test_multiple_reals()
     node = json->nodes[1];
     ASSERT_INT(4, node.name_size);
     ASSERT_INT(0, node.string_size);
-    ASSERT_FLOAT(34.32f, node.real);
+    ASSERT_FLOAT(-34.32f, node.real);
     ASSERT_INT(1, node.type);
     ASSERT_STRING("key2", node.name, node.name_size);
     ASSERT_POINTER(NULL, node.child);

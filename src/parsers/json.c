@@ -30,19 +30,19 @@ typedef enum
 static bool is_real()
 {
     uint32_t cur = cursor;
-    bool is_real = false;
 
-    while(isdigit(buffer[cur]) || buffer[cur] == '.')
+    unsigned char c = buffer[cur];
+    while(isdigit(c) || c == '.' || c == '-')
     {
-
-        if (buffer[cur] == '.')
+        if (c == '.')
         {
-            is_real = true;
+            return true;
         }
         cur++;
+        c = buffer[cur];
     }
 
-    return is_real;
+    return false;
 }
 
 static bool skip_if_empty(unsigned char end)
@@ -106,6 +106,10 @@ static void validate()
 
 static void allocate_string_buffer()
 {
+    /*
+     * TODO: currently repeating strings are stored as different strings. 
+     * Try to optimize and store repeating strings only once.
+     */
     cursor = 0;
 
     uint32_t size = 0;
@@ -130,7 +134,7 @@ static void allocate_string_buffer()
         cursor++;
     }
 
-    printf("size: %d\n", size);
+    printf("string size: %d\n", size);
     json->strings = malloc(size + 1);
     json->strings_size = size;
     json->strings[size] = 0;
@@ -178,9 +182,11 @@ static void parse_number(uint32_t index)
     nodes[index].integer = atoi(&buffer[cursor]);
 
     /* update cursor to current position */
-    while(isdigit(buffer[cursor]))
+    unsigned char c = buffer[cursor];
+    while(isdigit(c) || c == '-')
     {
         cursor++;
+        c = buffer[cursor];
     }
 
 }
@@ -191,9 +197,11 @@ static void parse_real(uint32_t index)
     nodes[index].real = (float)atof(&buffer[cursor]);
 
     /* update cursor to current position */
-    while(isdigit(buffer[cursor]) || buffer[cursor] == '.')
+    unsigned char c = buffer[cursor];
+    while(isdigit(c) || c == '.' || c == '-')
     {
         cursor++;
+        c = buffer[cursor];
     }
 }
 
@@ -216,8 +224,6 @@ static void parse_string(char** result, uint32_t* size)
 
             memcpy(*result, &buffer[start], *size);
             string_index += *size;
-
-            printf("%s--\n", strings);
         }
         cursor++;
     }
@@ -243,7 +249,7 @@ static void parse_value(uint32_t index)
     {
         parse_string_value(index);
     }
-    else if (isdigit(buffer[cursor]))
+    else if (isdigit(buffer[cursor]) || buffer[cursor] == '-')
     {
         is_real() ? parse_real(index) : parse_number(index);
     }
@@ -348,9 +354,9 @@ json_t* json_new(const unsigned char* input, uint32_t input_size)
     return json;
 }
 
-void json_free(json_t* json)
+void json_free(json_t* data)
 {
-    free(json->strings);
-    free(json->nodes);
-    free(json);
+    free(data->strings);
+    free(data->nodes);
+    free(data);
 }

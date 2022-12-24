@@ -93,13 +93,13 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
 
     cursor = 0;
     const header_t header = parse_header(buffer);
-    const chunk_t json = parse_chunk(buffer);
-    const chunk_t binary = parse_chunk(buffer);
+    const chunk_t json_chunk = parse_chunk(buffer);
+    const chunk_t binary_chunk = parse_chunk(buffer);
+    json_t* json = json_new(json_chunk.data, json_chunk.size);
 
-    json_t* tree = json_new(json.data, json.size);
-
-    parse_png(binary.data, 2165850);
+    json->nodes[2].type = JSON_ARRAY;    
 
     /* free the buffer */
+    free(json);
     free(buffer);
 }
