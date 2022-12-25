@@ -269,7 +269,7 @@ static void parse_value(uint32_t index)
 static void parse_array(uint32_t index)
 {
     json_node_t* prev = NULL;
-    uint32_t current = 0;
+    json_node_t* curr = NULL;
     nodes[index].type = JSON_ARRAY;
 
     cursor++;
@@ -281,20 +281,20 @@ static void parse_array(uint32_t index)
 
     while(buffer[cursor] != ']')
     {
-        current = node_index;
-        node_index++;
+        curr = &nodes[node_index++];
+        curr->parent = &nodes[index];
 
-        parse_value(current);
-        
+        parse_value(node_index - 1);
+
         if (prev)
         {
-            prev->next = &nodes[current];
+            prev->next = curr;
         }
         else
         {
-            nodes[index].child = &nodes[current];
+            nodes[index].child = curr;
         }
-        prev = &nodes[current];
+        prev = curr;
     }
 
     cursor++;
@@ -316,6 +316,7 @@ static void parse_object(uint32_t index)
             parse_string_key(node_index);
             status = BEFORE_VAL;
             curr = &nodes[node_index];
+            curr->parent = &nodes[index];
 
             if (prev)
             {
