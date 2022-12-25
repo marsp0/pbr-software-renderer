@@ -12,7 +12,7 @@ static uint32_t cursor             = 0;
 static uint32_t buffer_size        = 0;
 static const unsigned char* buffer = NULL;
 
-static json_t* json                = NULL;
+static json_t* result              = NULL;
 static json_node_t* nodes          = NULL;
 static uint32_t node_index         = 0;
 static char* strings               = NULL;
@@ -137,10 +137,10 @@ static void allocate_string_buffer()
     }
 
     printf("string size: %d\n", size);
-    json->strings = malloc(size + 1);
-    json->strings_size = size;
-    json->strings[size] = 0;
-    memset(json->strings, 0, size);
+    result->strings = malloc(size + 1);
+    result->strings_size = size;
+    result->strings[size] = 0;
+    memset(result->strings, 0, size);
 
     cursor = 0;
 }
@@ -169,9 +169,9 @@ static void allocate_node_buffer()
         cursor++;
     }
 
-    json->nodes = malloc(count * sizeof(json_node_t));
-    json->nodes_size = count;
-    memset(json->nodes, 0, count * sizeof(json_node_t));
+    result->nodes = malloc(count * sizeof(json_node_t));
+    result->nodes_size = count;
+    memset(result->nodes, 0, count * sizeof(json_node_t));
 
     printf("node count: %d\n", count);
 
@@ -340,25 +340,25 @@ json_t* json_new(const unsigned char* input, uint32_t input_size)
 {
     buffer = input;
     buffer_size = input_size;
-    json = malloc(sizeof(json_t));
+    result = malloc(sizeof(json_t));
     
     validate();
     allocate_string_buffer();
     allocate_node_buffer();
 
-    nodes = json->nodes;
-    strings = json->strings;
+    nodes = result->nodes;
+    strings = result->strings;
     node_index = 0;
     string_index = 0;
 
     parse_object(node_index++);
 
-    return json;
+    return result;
 }
 
-void json_free(json_t* node)
+void json_free(json_t* json)
 {
-    free(node->strings);
-    free(node->nodes);
-    free(node);
+    free(json->strings);
+    free(json->nodes);
+    free(json);
 }
