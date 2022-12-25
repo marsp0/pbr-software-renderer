@@ -74,6 +74,8 @@ static void skip_whitespace()
 
 static void validate()
 {
+    /* TODO: improve validation */
+
     cursor = 0;
     
     int i = 0;
@@ -147,7 +149,7 @@ static void allocate_node_buffer()
 {
     cursor = 0;
 
-    int count = 0;
+    int count = 1; /* always 1 node for the root */
 
     unsigned char c;
     unsigned char t;
@@ -317,7 +319,7 @@ static void parse_object(uint32_t index)
             {
                 prev->next = &nodes[node_index];
             }
-            else if (!prev && index != 0) /* first child and no self reference (applicable only to top level object) */
+            else
             {
                 nodes[index].child = &nodes[node_index];
             }
@@ -349,14 +351,14 @@ json_t* json_new(const unsigned char* input, uint32_t input_size)
     node_index = 0;
     string_index = 0;
 
-    parse_object(0);
+    parse_object(node_index++);
 
     return json;
 }
 
-void json_free(json_t* data)
+void json_free(json_t* node)
 {
-    free(data->strings);
-    free(data->nodes);
-    free(data);
+    free(node->strings);
+    free(node->nodes);
+    free(node);
 }

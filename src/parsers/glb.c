@@ -95,9 +95,7 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
     const header_t header = parse_header(buffer);
     const chunk_t json_chunk = parse_chunk(buffer);
     const chunk_t binary_chunk = parse_chunk(buffer);
-    json_t* json = json_new(json_chunk.data, json_chunk.size);
-
-    json->nodes[2].type = JSON_ARRAY;    
+    json_t* json = json_new(json_chunk.data, json_chunk.size); 
 
     /* free the buffer */
     free(json);

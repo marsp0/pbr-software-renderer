@@ -38,4 +38,4 @@ typedef struct
 } json_t;
 
 json_t* json_new(const unsigned char* input, uint32_t input_size);
-void    json_free(json_t* data);
+void    json_free(json_t* node);
