@@ -16,8 +16,8 @@ typedef struct json_node_t
     struct json_node_t* child;
     struct json_node_t* next;
     struct json_node_t* parent;
-    char*               name;
-    uint32_t            name_size;
+    char*               key;
+    uint32_t            key_size;
     uint32_t            string_size;
     json_type_e         type;
 

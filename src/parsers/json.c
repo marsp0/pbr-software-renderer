@@ -234,7 +234,7 @@ static void parse_string(char** result, uint32_t* size)
 
 static void parse_string_key(uint32_t index)
 {
-    parse_string(&(nodes[index].name), &(nodes[index].name_size));
+    parse_string(&(nodes[index].key), &(nodes[index].key_size));
 }
 
 static void parse_string_value(uint32_t index)
@@ -381,13 +381,13 @@ json_node_t* json_find_node(json_t* json, uint32_t arg_count, ...)
 
         while(current)
         {
-            if (key_len != current->name_size)
+            if (key_len != current->key_size)
             {
                 current = current->next;
                 continue;
             }
 
-            int32_t match = strncmp(key, current->name, current->name_size);
+            int32_t match = strncmp(key, current->key, current->key_size);
             
             if (match == 0)
             {
