@@ -38,5 +38,6 @@ typedef struct
     uint32_t     nodes_size;
 } json_t;
 
-json_t* json_new(const unsigned char* input, uint32_t input_size);
-void    json_free(json_t* node);
+json_t*         json_new(const unsigned char* input, uint32_t input_size);
+void            json_free(json_t* json);
+json_node_t*    json_find_node(json_t* json, uint32_t arg_count, ...);

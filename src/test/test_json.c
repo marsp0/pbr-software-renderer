@@ -5,7 +5,7 @@
 
 #include "../parsers/json.h"
 
-void test_string()
+void test_string(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\"}";
     
@@ -35,7 +35,7 @@ void test_string()
     json_free(json);
 }
 
-void test_multiple_strings()
+void test_multiple_strings(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\", \"key2\": \"val2\"}";
 
@@ -75,7 +75,7 @@ void test_multiple_strings()
     json_free(json);
 }
 
-void test_number()
+void test_number(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 }";
     
@@ -105,7 +105,7 @@ void test_number()
     json_free(json);
 }
 
-void test_multiple_numbers()
+void test_multiple_numbers(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 , \"key2\": -3432}";
     
@@ -145,7 +145,7 @@ void test_multiple_numbers()
     json_free(json);
 }
 
-void test_real()
+void test_real(void)
 {
     const unsigned char buff[] = "{ \"key1\":  0.321 }";
     
@@ -175,7 +175,7 @@ void test_real()
     json_free(json);
 }
 
-void test_multiple_reals()
+void test_multiple_reals(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321 , \"key2\": -34.32}";
     
@@ -215,7 +215,7 @@ void test_multiple_reals()
     json_free(json);
 }
 
-void test_nested_objects()
+void test_nested_objects(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
@@ -264,7 +264,7 @@ void test_nested_objects()
     json_free(json);
 }
 
-void test_empty_containers()
+void test_empty_containers(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [  ]  , \"key2.2\"  : {} }";
     
@@ -302,7 +302,7 @@ void test_empty_containers()
     json_free(json);
 }
 
-void test_int_array()
+void test_int_array(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ 1, 2, 3 , 3] }";
     
@@ -367,7 +367,7 @@ void test_int_array()
     json_free(json);
 }
 
-void test_string_array()
+void test_string_array(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ \"one\", \"two\"] }";
     
@@ -414,7 +414,7 @@ void test_string_array()
     json_free(json);
 }
 
-void test_mixed_array()
+void test_mixed_array(void)
 {
     const unsigned char buff[] = "{ \"key1\": [ \"one\", 2, { \"key3\" : [ 0.23, 3222.432 ]}] }";
     
@@ -496,7 +496,73 @@ void test_mixed_array()
     json_free(json);
 }
 
-void test_json()
+void test_find_node(void)
+{
+    const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
+
+    json_t* json = json_new(buff, 56);
+    json_node_t* node = json_find_node(json, 1, "key1");
+
+    ASSERT_POINTER(&json->nodes[1], node);
+    ASSERT_INT(4, node->name_size);
+    ASSERT_INT(0, node->string_size);
+    ASSERT_INT(1, node->type);
+    ASSERT_FLOAT(0.321f, node->real);
+    ASSERT_POINTER(NULL, node->child);
+    ASSERT_POINTER(&json->nodes[2], node->next);
+    ASSERT_POINTER(&json->nodes[0], node->parent);
+
+    json_free(json);
+}
+
+void test_find_node_nested(void)
+{
+    const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
+
+    json_t* json = json_new(buff, 56);
+    json_node_t* node = json_find_node(json, 2, "key2", "inner_key1");
+
+    ASSERT_POINTER(&json->nodes[3], node);
+    ASSERT_INT(10, node->name_size);
+    ASSERT_INT(11, node->string_size);
+    ASSERT_INT(2, node->type);
+    ASSERT_STRING("inner_key1", node->name, node->name_size);
+    ASSERT_STRING("some string", node->string, node->string_size);
+    ASSERT_POINTER(NULL, node->child);
+    ASSERT_POINTER(NULL, node->next);
+    ASSERT_POINTER(&json->nodes[2], node->parent);
+
+    json_free(json);
+}
+
+void test_find_node_missing(void)
+{
+    const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
+
+    json_t* json = json_new(buff, 56);
+
+    json_node_t* node = json_find_node(json, 2, "doesnt_exist", "inner_key1");
+    ASSERT_POINTER(NULL, node);
+
+    node = json_find_node(json, 2, "key2", "doesnt_exist");
+    ASSERT_POINTER(NULL, node);
+
+    json_free(json);
+}
+
+void test_find_node_invalid(void)
+{
+    const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
+
+    json_t* json = json_new(buff, 56);
+
+    json_node_t* node = json_find_node(json, 0, "doesnt_exist", "inner_key1");
+    ASSERT_POINTER(NULL, node);
+
+    json_free(json);
+}
+
+void test_json(void)
 {
     test_string();
     test_multiple_strings();
@@ -509,4 +575,8 @@ void test_json()
     test_int_array();
     test_string_array();
     test_mixed_array();
+    test_find_node();
+    test_find_node_nested();
+    test_find_node_missing();
+    test_find_node_invalid();
 }

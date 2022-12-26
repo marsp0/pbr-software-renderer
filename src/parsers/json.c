@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "../constants.h"
 
@@ -27,7 +28,7 @@ typedef enum
     IN_VAL,
 } status_e;
 
-static bool is_real()
+static bool is_real(void)
 {
     uint32_t cur = cursor;
 
@@ -62,7 +63,7 @@ static bool skip_if_empty(unsigned char end)
     return false;
 }
 
-static void skip_whitespace()
+static void skip_whitespace(void)
 {
     unsigned char c = buffer[cursor];
     while(isspace(c) || c == ',' || c == ':')
@@ -72,7 +73,7 @@ static void skip_whitespace()
     }
 }
 
-static void validate()
+static void validate(void)
 {
     /* TODO: improve validation */
 
@@ -106,7 +107,7 @@ static void validate()
     cursor = 0;
 }
 
-static void allocate_string_buffer()
+static void allocate_string_buffer(void)
 {
     /*
      * TODO: currently repeating strings are stored as different strings. 
@@ -145,7 +146,7 @@ static void allocate_string_buffer()
     cursor = 0;
 }
 
-static void allocate_node_buffer()
+static void allocate_node_buffer(void)
 {
     cursor = 0;
 
@@ -364,4 +365,39 @@ void json_free(json_t* json)
     free(json->strings);
     free(json->nodes);
     free(json);
+}
+
+json_node_t* json_find_node(json_t* json, uint32_t arg_count, ...)
+{
+    va_list args;
+    va_start(args, arg_count);
+    json_node_t* current = arg_count > 0 ? &json->nodes[0] : NULL;
+
+    for (uint32_t i = 0; i < arg_count; i++)
+    {
+        const char* key = va_arg(args, const char*);
+        size_t key_len = strlen(key);
+        current = current ? current->child : NULL;
+
+        while(current)
+        {
+            if (key_len != current->name_size)
+            {
+                current = current->next;
+                continue;
+            }
+
+            int32_t match = strncmp(key, current->name, current->name_size);
+            
+            if (match == 0)
+            {
+                break;
+            }
+
+            current = current->next;
+        }
+    }
+
+    va_end(args);
+    return current;
 }

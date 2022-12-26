@@ -1,3 +1,3 @@
 #pragma once
 
-void test_json();
+void test_json(void);
