@@ -23,9 +23,10 @@ typedef struct json_node_t
 
     union
     {
-        float   real;
-        int32_t integer;
-        char*   string;
+        float    real;
+        int32_t  integer;
+        char*    string;
+        uint32_t size;      /*used for arrays and objects*/
     };
 
 } json_node_t;

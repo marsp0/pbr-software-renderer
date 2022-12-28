@@ -271,7 +271,9 @@ static void parse_array(uint32_t index)
 {
     json_node_t* prev = NULL;
     json_node_t* curr = NULL;
-    nodes[index].type = JSON_ARRAY;
+    json_node_t* parent = &nodes[index];
+    parent->type = JSON_ARRAY;
+    parent->size = 0;
 
     cursor++;
 
@@ -283,7 +285,7 @@ static void parse_array(uint32_t index)
     while(buffer[cursor] != ']')
     {
         curr = &nodes[node_index++];
-        curr->parent = &nodes[index];
+        curr->parent = parent;
 
         parse_value(node_index - 1);
 
@@ -293,9 +295,10 @@ static void parse_array(uint32_t index)
         }
         else
         {
-            nodes[index].child = curr;
+            parent->child = curr;
         }
         prev = curr;
+        parent->size++;
     }
 
     cursor++;
@@ -305,8 +308,10 @@ static void parse_object(uint32_t index)
 {
     json_node_t* prev = NULL;
     json_node_t* curr = NULL;
+    json_node_t* parent = &nodes[index];
     status_e status = BEFORE_KEY;
-    nodes[index].type = JSON_OBJECT;
+    parent->type = JSON_OBJECT;
+    parent->size = 0;
     cursor++;
 
     while(buffer[cursor] != '}')
@@ -317,7 +322,8 @@ static void parse_object(uint32_t index)
             parse_string_key(node_index);
             status = BEFORE_VAL;
             curr = &nodes[node_index];
-            curr->parent = &nodes[index];
+            curr->parent = parent;
+            parent->size++;
 
             if (prev)
             {
@@ -325,7 +331,7 @@ static void parse_object(uint32_t index)
             }
             else
             {
-                nodes[index].child = curr;
+                parent->child = curr;
             }
 
             prev = curr;
