@@ -21,15 +21,15 @@ GCCFLAGS        := -std=c17 -Wall -Wno-pointer-sign -Wextra -Wshadow -g3 -pg
 all: out/$(EXE) out/$(TEST_EXE)
 
 out/$(EXE): $(OBJ_FILES)
-    gcc $(GCCFLAGS) $(OBJ_FILES) -o $@ $(LDFLAGS)
+	gcc $(GCCFLAGS) $(OBJ_FILES) -o $@ $(LDFLAGS)
 
 out/$(TEST_EXE): $(TEST_OBJ_FILES)
-    gcc $(GCCFLAGS) $(TEST_OBJ_FILES) -o $@ $(LDFLAGS)
+	gcc $(GCCFLAGS) $(TEST_OBJ_FILES) -o $@ $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: %.c
-    gcc $(GCCFLAGS) -c $< -o $@
+	gcc $(GCCFLAGS) -c $< -o $@
 
 
 .PHONY: clean
 clean:
-    @rm -f out/* && echo "[CL]  out/"
+	@rm -f out/* && echo "[CL]  out/"
