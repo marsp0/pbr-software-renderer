@@ -11,8 +11,7 @@ typedef struct
 {
     int             width;
     int             height;
-    int             meshes_size;
-    mesh_t*         meshes[MESHES_CAPACITY];
+    mesh_t*         mesh;
     frame_buffer_t* frame_buffer;
     depth_buffer_t* depth_buffer;
 } renderer_t;

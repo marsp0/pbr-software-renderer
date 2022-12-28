@@ -70,7 +70,41 @@ static header_t parse_header(const unsigned char* buffer)
     return header;
 }
 
-int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
+static mesh_t* parse_mesh(json_t* json, chunk_t binary, int32_t index)
+{
+    /*
+     * 1. parse geometry
+     * 2. parse materials
+     */
+    json_node_t* nodes = json_find_node(json, 1, "nodes");
+    assert(nodes);
+    json_node_t* node = json_find_array_element(nodes, index);
+    assert(node);
+    json_node_t* mesh_index = json_find_child(node, "mesh");
+    assert(mesh_index);
+    json_node_t* mesh_name = json_find_child(node, "name");
+    assert(mesh_name);
+    json_node_t* meshes = json_find_node(json, 1, "meshes");
+    assert(meshes);
+    json_node_t* mesh = json_find_array_element(meshes, mesh_index->integer);
+    assert(mesh);
+    json_node_t* primitives = json_find_child(mesh, "primitives");
+    assert(primitives);
+    json_node_t* primitive = json_find_array_element(primitives, 0);
+    assert(primitive);
+    json_node_t* attributes = json_find_child(primitive, "attributes");
+    assert(attributes);
+    json_node_t* pos_index = json_find_child(attributes, "POSITION");
+    assert(pos_index);
+    json_node_t* tex_index = json_find_child(attributes, "TEXCOORD_0");
+    assert(tex_index);
+    json_node_t* normal_index = json_find_child(attributes, "NORMAL");
+    assert(normal_index);
+    json_node_t* tan_index = json_find_child(attributes, "TANGENT");
+    assert(tan_index);
+}
+
+mesh_t* parse_scene(const char* file_name)
 {
 
     /* open file */
@@ -92,12 +126,31 @@ int parse_scene(const char* file_name, mesh_t* meshes[], int meshes_capacity)
     printf("Allocating %.02fMB for %s\n", file_size / 1024.0 / 1024.0, file_name);
 
     cursor = 0;
-    const header_t header = parse_header(buffer);
-    const chunk_t json_chunk = parse_chunk(buffer);
-    const chunk_t binary_chunk = parse_chunk(buffer);
-    json_t* json = json_new(json_chunk.data, json_chunk.size); 
+    header_t header = parse_header(buffer);
+    chunk_t json_chunk = parse_chunk(buffer);
+    chunk_t binary_chunk = parse_chunk(buffer);
+    json_t* json = json_new(json_chunk.data, json_chunk.size);
+
+    json_node_t* scenes = json_find_node(json, 1, "scenes");
+    assert(scenes);
+    json_node_t* scene = scenes->child;
+    assert(scene);
+    json_node_t* scene_nodes = scene->child;
+    assert(scene_nodes);
+    json_node_t* node_index = scene_nodes->child;
+    assert(node_index);
+
+    mesh_t* result = NULL;
+
+    while(node_index)
+    {
+        result = parse_mesh(json, binary_chunk, node_index->integer);
+        node_index = node_index->next;
+    }
 
     /* free the buffer */
     free(json);
     free(buffer);
+
+    return result;
 }

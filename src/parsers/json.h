@@ -23,9 +23,9 @@ typedef struct json_node_t
 
     union
     {
-        float  real;
-        int    integer;
-        char*  string;
+        float   real;
+        int32_t integer;
+        char*   string;
     };
 
 } json_node_t;
