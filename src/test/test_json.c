@@ -562,6 +562,36 @@ void test_find_node_invalid(void)
     json_free(json);
 }
 
+void test_find_child(void)
+{
+    const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
+
+    json_t* json = json_new(buff, 56);
+
+    json_node_t* node = json_find_child(&json->nodes[0], "key2");
+    ASSERT_POINTER(&json->nodes[2], node);
+
+    node = json_find_child(&json->nodes[0], "key3");
+    ASSERT_POINTER(NULL, node);
+
+    json_free(json);
+}
+
+void test_find_array_element(void)
+{
+    const unsigned char buff[] = "{ \"key1\":  [ \"one\", \"two\"] }";
+    
+    json_t* json = json_new(buff, 28);
+
+    json_node_t* node = json_find_array_element(&json->nodes[1], 1);
+    ASSERT_POINTER(&json->nodes[3], node);
+
+    node = json_find_array_element(&json->nodes[0], 14);
+    ASSERT_POINTER(NULL, node);
+
+    json_free(json);
+}
+
 void test_json(void)
 {
     test_string();
@@ -579,4 +609,6 @@ void test_json(void)
     test_find_node_nested();
     test_find_node_missing();
     test_find_node_invalid();
+    test_find_child();
+    test_find_array_element();
 }

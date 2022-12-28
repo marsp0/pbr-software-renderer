@@ -367,37 +367,61 @@ void json_free(json_t* json)
     free(json);
 }
 
-json_node_t* json_find_node(json_t* json, uint32_t arg_count, ...)
+json_node_t* json_find_node(json_t* json, uint32_t count, ...)
 {
     va_list args;
-    va_start(args, arg_count);
-    json_node_t* current = arg_count > 0 ? &json->nodes[0] : NULL;
+    va_start(args, count);
+    json_node_t* curr = count > 0 ? &json->nodes[0] : NULL;
 
-    for (uint32_t i = 0; i < arg_count; i++)
+    for (uint32_t i = 0; i < count; i++)
     {
         const char* key = va_arg(args, const char*);
         size_t key_len = strlen(key);
-        current = current ? current->child : NULL;
+        curr = curr ? curr->child : NULL;
 
-        while(current)
+        while(curr)
         {
-            if (key_len != current->key_size)
-            {
-                current = current->next;
-                continue;
-            }
-
-            int32_t match = strncmp(key, current->key, current->key_size);
-            
-            if (match == 0)
-            {
+            if (key_len == curr->key_size && strncmp(key, curr->key, curr->key_size) == 0)
                 break;
-            }
 
-            current = current->next;
+            curr = curr->next;
         }
     }
 
     va_end(args);
-    return current;
+    return curr;
+}
+
+json_node_t* json_find_child(json_node_t* json, const char* key)
+{
+    if (!json)
+        return NULL;
+
+    json_node_t* curr = json->child;
+    size_t key_len = strlen(key);
+
+    while(curr)
+    {
+        if (key_len == curr->key_size && strncmp(key, curr->key, curr->key_size) == 0)
+            return curr;
+        
+        curr = curr->next;
+    }
+
+    return NULL;
+}
+
+json_node_t* json_find_array_element(json_node_t* json, uint32_t index)
+{
+    if (!json)
+        return NULL;
+
+    json_node_t* curr = json->child;
+
+    for (uint32_t i = 0; i < index; i++)
+    {
+        curr = curr ? curr->next : NULL;
+    }
+
+    return curr;
 }
