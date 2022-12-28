@@ -9,8 +9,8 @@
 
 typedef struct
 {
-    int             width;
-    int             height;
+    int32_t         width;
+    int32_t         height;
     mesh_t*         mesh;
     frame_buffer_t* frame_buffer;
     depth_buffer_t* depth_buffer;

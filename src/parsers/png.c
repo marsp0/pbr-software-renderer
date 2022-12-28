@@ -93,7 +93,7 @@ static uint32_t d_map[30][2] = {
 /*
  * parse_int - parses up to 4 bytes from the stream. MSB
  */
-static uint32_t parse_int(int n)
+static uint32_t parse_int(uint32_t n)
 {
     assert(n <= 4);
 
@@ -112,7 +112,7 @@ static void parse_chunk();
  * Since we are reading multiples of 8 bits but might not actually need them all, we need a place to store the 
  * remaining bits for the next parse (bit_buffer, bit_count)
  */
-static uint32_t parse_bits_lsb(int n)
+static uint32_t parse_bits_lsb(uint32_t n)
 {
     assert(n <= 24);
 
@@ -131,9 +131,9 @@ static uint32_t parse_bits_lsb(int n)
         }
     }
 
-    bit_buffer = result >> n;
-    bit_count = bits_read - n;
-    result &= (1L << n) - 1;
+    bit_buffer = (uint8_t)(result >> n);
+    bit_count = (uint8_t)(bits_read - n);
+    result &= (uint32_t)((1L << n) - 1);
 
     return result;
 }
@@ -157,7 +157,7 @@ static void decode_block()
 
         if (ll_symbol <= 255)                                                           /* the symbol is a literal */
         {
-            dst_buffer[dst_cursor] = ll_symbol;
+            dst_buffer[dst_cursor] = (unsigned char)ll_symbol;
             dst_cursor++;
         }
         else if (ll_symbol > 256)                                                       /* symbol is a length (followed by distance) */
@@ -180,24 +180,24 @@ static void generate_huffman_codes(node_t* alphabet, uint32_t* lengths, uint32_t
     uint32_t len_counts[15] = { 0 };
     uint32_t base_values[15] = { 0 };
 
-    for (int i = 0; i < size; i++)
+    for (uint32_t i = 0; i < size; i++)
     {
         len_counts[lengths[i]]++;
     }
 
     /* find base code for each length */
-    int code = 0;
+    uint32_t code = 0;
     len_counts[0] = 0;
-    for (int i = 1; i < 16; i++)
+    for (uint32_t i = 1; i < 16; i++)
     {
         code = (code + len_counts[i - 1]) << 1;
         base_values[i] = code;
     }
 
     /* give each code a value based on the base value */
-    for (int i = 0; i < size; i++)
+    for (uint32_t i = 0; i < size; i++)
     {
-        int code_len = lengths[i];
+        uint32_t code_len = lengths[i];
         if (code_len == 0)
         {
             continue;
@@ -205,7 +205,6 @@ static void generate_huffman_codes(node_t* alphabet, uint32_t* lengths, uint32_t
 
         node_t* current = alphabet;
         code = base_values[code_len];
-        int temp = code;
         base_values[code_len]++;
 
         while (code_len > 0)
@@ -245,7 +244,7 @@ static void parse_alphabet(node_t* alphabet, uint32_t* lengths, uint32_t size)
         {
             uint32_t count = parse_bits_lsb(2) + 3;
             
-            for (int i = index; i < (index + count); i++)
+            for (uint32_t i = index; i < (index + count); i++)
             {
                 lengths[i] = lengths[index - 1];
             }
@@ -265,28 +264,28 @@ static void parse_alphabet(node_t* alphabet, uint32_t* lengths, uint32_t size)
     generate_huffman_codes(alphabet, lengths, size);
 }
 
-static void parse_ll_alphabet(int ll_size)
+static void parse_ll_alphabet(uint32_t ll_size)
 {
     uint32_t lengths[286] = { 0 };
     ll_alphabet = &(node_pool[node_index]);
     node_index++;
-    parse_alphabet(ll_alphabet, &lengths, ll_size);
+    parse_alphabet(ll_alphabet, lengths, ll_size);
 }
 
-static void parse_d_alphabet(int d_size)
+static void parse_d_alphabet(uint32_t d_size)
 {
     uint32_t lengths[32] = { 0 };
     d_alphabet = &(node_pool[node_index]);
     node_index++;
-    parse_alphabet(d_alphabet, &lengths, d_size);
+    parse_alphabet(d_alphabet, lengths, d_size);
 }
 
-static void parse_cl_alphabet(int cl_size)
+static void parse_cl_alphabet(uint32_t cl_size)
 {
     const uint8_t order[] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
     uint32_t lengths[19] = { 0 };
 
-    for (int i = 0; i < cl_size; i++)
+    for (uint32_t i = 0; i < cl_size; i++)
     {
         lengths[order[i]] = parse_bits_lsb(3);
     }
@@ -294,7 +293,7 @@ static void parse_cl_alphabet(int cl_size)
     cl_alphabet = &(node_pool[node_index]);
     node_index++;
     
-    generate_huffman_codes(cl_alphabet, &lengths, 19);
+    generate_huffman_codes(cl_alphabet, lengths, 19);
 }
 
 static void parse_chunk()
@@ -333,8 +332,8 @@ static void parse_deflate_stream()
     
     src_cursor += 2;
 
-    int last = 0;
-    int type = 0;
+    uint32_t last = 0;
+    uint32_t type = 0;
     do
     {
         node_index = 0;
@@ -364,7 +363,7 @@ static void parse_deflate_stream()
     } while (!last);
 }
 
-texture_t* parse_png(const unsigned char* buf, size_t size)
+texture_t* parse_png(const unsigned char* buf, uint32_t size)
 {
     /* set up static vars */
     src_size = size;

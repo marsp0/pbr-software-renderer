@@ -7,7 +7,7 @@
 
 #include "../constants.h"
 
-display_t* display_new(int width, int height)
+display_t* display_new(uint32_t width, uint32_t height)
 {
 
     /*
@@ -42,16 +42,16 @@ display_t* display_new(int width, int height)
     /* configure the window */
     XSizeHints* config = XAllocSizeHints();
     config->flags = PMinSize | PMaxSize;
-    config->min_width = width;
-    config->max_width = width;
-    config->min_height = height;
-    config->max_height = height;
+    config->min_width = (int)width;
+    config->max_width = (int)width;
+    config->min_height = (int)height;
+    config->max_height = (int)height;
     XSetWMNormalHints(dsp->display, dsp->window, config);
     XFree(config);
 
     /* create image that will hold buffer info */
     dsp->ximage = XCreateImage(dsp->display, XDefaultVisual(dsp->display, dsp->screen), 
-                               XDefaultDepth(dsp->display, dsp->screen), ZPixmap, 0, 
+                               (uint32_t)XDefaultDepth(dsp->display, dsp->screen), ZPixmap, 0, 
                                (char*)dsp->buffer, width, height, 8 * RGB_CHANNELS, 0);
 
     /* event subscription */
@@ -69,6 +69,7 @@ display_t* display_new(int width, int height)
     return dsp;
 }
 
+#if 0
 void display_draw(display_t* dsp, const frame_buffer_t* frame_buffer)
 {
     /*  
@@ -97,6 +98,7 @@ void display_draw(display_t* dsp, const frame_buffer_t* frame_buffer)
               dsp->ximage, 0, 0, 0, 0, dsp->width, dsp->height);
     XFlush(dsp->display);
 }
+#endif
 
 void display_free(display_t* dsp)
 {

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 #include "../constants.h"
 
@@ -150,7 +151,7 @@ static void allocate_node_buffer(void)
 {
     cursor = 0;
 
-    int count = 1; /* always 1 node for the root */
+    uint32_t count = 1; /* always 1 node for the root */
 
     unsigned char c;
     unsigned char t;
@@ -208,7 +209,7 @@ static void parse_real(uint32_t index)
     }
 }
 
-static void parse_string(char** result, uint32_t* size)
+static void parse_string(char** value, uint32_t* size)
 {
     uint32_t start = 0;
     status_e status = BEFORE_KEY;
@@ -223,9 +224,9 @@ static void parse_string(char** result, uint32_t* size)
         else if (buffer[cursor] == '"' && status == IN_KEY)
         {
             *size = cursor - start;
-            *result = &(strings[string_index]);
+            *value = &(strings[string_index]);
 
-            memcpy(*result, &buffer[start], *size);
+            memcpy(*value, &buffer[start], *size);
             string_index += *size;
         }
         cursor++;
@@ -373,7 +374,7 @@ void json_free(json_t* json)
     free(json);
 }
 
-json_node_t* json_find_node(json_t* json, uint32_t count, ...)
+const json_node_t* json_find_node(const json_t* json, uint32_t count, ...)
 {
     va_list args;
     va_start(args, count);
@@ -398,7 +399,7 @@ json_node_t* json_find_node(json_t* json, uint32_t count, ...)
     return curr;
 }
 
-json_node_t* json_find_child(json_node_t* json, const char* key)
+const json_node_t* json_find_child(const json_node_t* json, const char* key)
 {
     if (!json)
         return NULL;
@@ -417,7 +418,7 @@ json_node_t* json_find_child(json_node_t* json, const char* key)
     return NULL;
 }
 
-json_node_t* json_find_array_element(json_node_t* json, uint32_t index)
+const json_node_t* json_find_array_element(const json_node_t* json, uint32_t index)
 {
     if (!json)
         return NULL;
