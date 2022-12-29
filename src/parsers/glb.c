@@ -9,6 +9,7 @@
 #include "../constants.h"
 #include "png.h"
 #include "json.h"
+#include "glb_validator.h"
 
 /*
  * GLTF 2 specification - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
@@ -100,6 +101,7 @@ mesh_t* parse_scene(const char* file_name)
     /*chunk_t binary_chunk = parse_chunk(buffer);*/
     json_t* json = json_new(json_chunk.data, json_chunk.size);
 
+    validate_glb(json);
 
     /*TODO: Validate json content
      * geom type - float + vec3
