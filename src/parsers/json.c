@@ -83,7 +83,7 @@ static void validate(void)
     int i = 0;
     unsigned char c;
     unsigned char t;
-    unsigned char stack[JSON_DEPTH] = { 0 };
+    unsigned char stack[MAX_JSON_DEPTH] = { 0 };
 
     while(cursor < buffer_size)
     {

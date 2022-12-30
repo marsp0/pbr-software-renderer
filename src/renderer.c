@@ -12,7 +12,7 @@ renderer_t* renderer_new(int width, int height, const char* file_name)
     renderer->height = height;
     printf("file name: %s\n", file_name);
 
-    /*renderer->meshes_size = parse_obj_scene(file_name, renderer->meshes, MESHES_CAPACITY);*/
+    /*renderer->meshes_size = parse_obj_scene(file_name, renderer->meshes, MAX_MESHES);*/
     /* 
      * TODO 
      * allocate framebuffer
