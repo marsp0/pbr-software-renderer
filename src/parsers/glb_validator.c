@@ -25,7 +25,7 @@ static void validate_scene(json_t* json)
 	/*scene exists*/
 	const json_node_t* scenes = json_find_node(json, 1, "scenes");
 	assert_container(scenes);
-	const json_node_t* scene = json_find_array_element(scenes, 0);
+	const json_node_t* scene = json_find_index(scenes, 0);
 
 	/*scene has at least 1 mesh*/
 	const json_node_t* scene_nodes = json_find_child(scene, "nodes");
@@ -37,7 +37,7 @@ static void validate_nodes(json_t* json)
 	const json_node_t* nodes = json_find_node(json, 1, "nodes");
 	assert_container(nodes);
 
-	const json_node_t* current = json_find_array_element(nodes, 0);
+	const json_node_t* current = json_find_index(nodes, 0);
 	while(current)
 	{
 		assert_container(current);
@@ -81,7 +81,7 @@ static void validate_meshes(json_t* json)
 	const json_node_t* meshes = json_find_node(json, 1, "meshes");
 	assert_container(meshes);
 
-	const json_node_t* mesh = json_find_array_element(meshes, 0);
+	const json_node_t* mesh = json_find_index(meshes, 0);
 	while(mesh)
 	{
 		assert_container(mesh);
@@ -89,7 +89,7 @@ static void validate_meshes(json_t* json)
 		const json_node_t* primitives = json_find_child(mesh, "primitives");
 		assert_container(primitives);
 
-		const json_node_t* primitive = json_find_array_element(primitives, 0);
+		const json_node_t* primitive = json_find_index(primitives, 0);
 		while(primitive)
 		{
 			assert_container(primitive);

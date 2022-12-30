@@ -602,10 +602,10 @@ void test_find_array_element(void)
     
     json_t* json = json_new(buff, 28);
 
-    const json_node_t* node = json_find_array_element(&json->nodes[1], 1);
+    const json_node_t* node = json_find_index(&json->nodes[1], 1);
     ASSERT_POINTER(&json->nodes[3], node);
 
-    node = json_find_array_element(&json->nodes[0], 14);
+    node = json_find_index(&json->nodes[0], 14);
     ASSERT_POINTER(NULL, node);
 
     json_free(json);

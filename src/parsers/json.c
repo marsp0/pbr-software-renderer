@@ -418,7 +418,7 @@ const json_node_t* json_find_child(const json_node_t* json, const char* key)
     return NULL;
 }
 
-const json_node_t* json_find_array_element(const json_node_t* json, uint32_t index)
+const json_node_t* json_find_index(const json_node_t* json, uint32_t index)
 {
     if (!json)
         return NULL;

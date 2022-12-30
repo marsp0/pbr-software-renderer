@@ -43,4 +43,4 @@ json_t*             json_new(const unsigned char* input, uint32_t input_size);
 void                json_free(json_t* json);
 const json_node_t*  json_find_node(const json_t* json, uint32_t arg_count, ...);
 const json_node_t*  json_find_child(const json_node_t* json, const char* key);
-const json_node_t*  json_find_array_element(const json_node_t* json, uint32_t index);
+const json_node_t*  json_find_index(const json_node_t* json, uint32_t index);
