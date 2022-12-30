@@ -389,7 +389,9 @@ const json_node_t* json_find_node(const json_t* json, uint32_t count, ...)
         while(curr)
         {
             if (key_len == curr->key_size && strncmp(key, curr->key, curr->key_size) == 0)
+            {
                 break;
+            }
 
             curr = curr->next;
         }
@@ -401,8 +403,10 @@ const json_node_t* json_find_node(const json_t* json, uint32_t count, ...)
 
 const json_node_t* json_find_child(const json_node_t* json, const char* key)
 {
-    if (!json)
+    if (!json || json->type != JSON_OBJECT)
+    {
         return NULL;
+    }
 
     json_node_t* curr = json->child;
     size_t key_len = strlen(key);
@@ -410,7 +414,9 @@ const json_node_t* json_find_child(const json_node_t* json, const char* key)
     while(curr)
     {
         if (key_len == curr->key_size && strncmp(key, curr->key, curr->key_size) == 0)
+        {
             return curr;
+        }
         
         curr = curr->next;
     }
@@ -420,8 +426,10 @@ const json_node_t* json_find_child(const json_node_t* json, const char* key)
 
 const json_node_t* json_find_index(const json_node_t* json, uint32_t index)
 {
-    if (!json)
+    if (!json || json->type != JSON_ARRAY)
+    {
         return NULL;
+    }
 
     json_node_t* curr = json->child;
 

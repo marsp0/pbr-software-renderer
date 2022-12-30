@@ -26,7 +26,7 @@ typedef struct json_node_t
         float    real;
         int32_t  integer;
         char*    string;
-        uint32_t size;      /*used for arrays and objects*/
+        uint32_t size;      /*used for arrays and object nodes*/
     };
 
 } json_node_t;
