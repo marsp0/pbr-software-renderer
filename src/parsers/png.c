@@ -141,16 +141,19 @@ static uint32_t parse_bits_lsb(uint32_t n)
 static uint32_t parse_symbol(node_t* alphabet)
 {
     node_t* current = alphabet;
+    
     while (current->right || current->left)
     {
         current = parse_bits_lsb(1) & 1 ? current->right : current->left;
     }
+    
     return current->symbol;
 }
 
 static void decode_block()
 {
     uint32_t ll_symbol = 0;
+    
     while (ll_symbol != 256)
     {
         ll_symbol = parse_symbol(ll_alphabet);
@@ -188,6 +191,7 @@ static void generate_huffman_codes(node_t* alphabet, uint32_t* lengths, uint32_t
     /* find base code for each length */
     uint32_t code = 0;
     len_counts[0] = 0;
+    
     for (uint32_t i = 1; i < 16; i++)
     {
         code = (code + len_counts[i - 1]) << 1;
