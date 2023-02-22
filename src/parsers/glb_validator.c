@@ -36,7 +36,7 @@ static void validate_scene(json_t* json)
 
 static void validate_nodes(json_t* json)
 {
-	const json_node_t* nodes = json_find_node(json, 1, JSON_NODE);
+	const json_node_t* nodes = json_find_node(json, 1, JSON_NODES);
 	assert_container(nodes);
 
 	const json_node_t* current = json_find_index(nodes, 0);

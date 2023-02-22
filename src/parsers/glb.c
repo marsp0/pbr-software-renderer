@@ -103,13 +103,6 @@ mesh_t* parse_scene(const char* file_name)
 
     validate_glb(json);
 
-    /*TODO: Validate json content
-     * geom type - float + vec3
-     * needs normal map
-     * needs rougthness map
-     * needs metallic map
-     */
-
     mesh_t* result = NULL;
 
     /* free the buffer */
