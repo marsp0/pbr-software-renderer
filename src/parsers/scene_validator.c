@@ -1,4 +1,4 @@
-#include "glb_validator.h"
+#include "scene_validator.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -302,7 +302,7 @@ static void validate_buffer_views(json_t* json)
 	assert_container(buffers, buffer_count + 1, JSON_BUFFERS);
 }
 
-void validate_glb(json_t* json)
+void validate_glb_scene(json_t* json)
 {
 	validate_asset(json);
 	validate_scene(json);
