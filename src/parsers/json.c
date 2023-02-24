@@ -224,7 +224,7 @@ static void parse_string(char** value, uint32_t* size)
         else if (buffer[cursor] == '"' && status == IN_KEY)
         {
             *size = cursor - start;
-            *value = &(strings[string_index]);
+            *value = &strings[string_index];
 
             memcpy(*value, &buffer[start], *size);
             string_index += *size;
@@ -235,13 +235,13 @@ static void parse_string(char** value, uint32_t* size)
 
 static void parse_string_key(uint32_t index)
 {
-    parse_string(&(nodes[index].key), &(nodes[index].key_size));
+    parse_string(&nodes[index].key, &nodes[index].key_size);
 }
 
 static void parse_string_value(uint32_t index)
 {
     nodes[index].type = JSON_STRING;
-    parse_string(&(nodes[index].string), &(nodes[index].string_size));
+    parse_string(&nodes[index].string, &nodes[index].string_size);
 }
 
 static void parse_object(uint32_t index);
