@@ -22,6 +22,17 @@ static void assert_container(const json_node_t* node, uint32_t size, const char*
 	}
 }
 
+static uint32_t assert_index(const json_node_t* node, uint32_t count, const char* name)
+{
+	if (!node)
+	{
+		printf("invalid index node: %s\n", name);
+		assert(false);
+	}
+
+	return (uint32_t)node->integer > count ? (uint32_t)node->integer : count;
+}
+
 static void validate_asset(json_t* json)
 {
 	const json_node_t* asset = json_find_node(json, 1, JSON_ASSET);
@@ -57,11 +68,7 @@ static void validate_nodes(json_t* json)
 		assert_container(current, 2, "nodes->node");
 
 		const json_node_t* mesh = json_find_child(current, JSON_MESH);
-		assert(mesh);
-		if ((uint32_t)mesh->integer > mesh_count)
-		{
-			mesh_count = (uint32_t)mesh->integer;
-		}
+		mesh_count = assert_index(mesh, mesh_count, JSON_MESH);
 
 		const json_node_t* name = json_find_child(current, JSON_NAME);
 		assert(name);
@@ -97,43 +104,23 @@ static void validate_meshes(json_t* json)
 			assert_container(primitive, 3, "primitive");
 
 			const json_node_t* indices = json_find_child(primitive, JSON_INDICES);
-			assert(indices);
-			if ((uint32_t)indices->integer > accessors_count)
-			{
-				accessors_count = (uint32_t)indices->integer;
-			}
+			accessors_count = assert_index(indices, accessors_count, JSON_INDICES);
 
 			const json_node_t* material = json_find_child(primitive, JSON_MATERIAL);
-			assert(material);
-			if ((uint32_t)material->integer > material_count)
-			{
-				material_count = (uint32_t)material->integer;
-			}
+			material_count = assert_index(material, material_count, JSON_MATERIAL);
 
 			/* validate attributes */
 			const json_node_t* attributes = json_find_child(primitive, JSON_ATTRIBUTES);
 			assert_container(attributes, 3, JSON_ATTRIBUTES);
 
 			const json_node_t* position = json_find_child(attributes, JSON_POSITION);
-			assert(position);
-			if ((uint32_t)position->integer > accessors_count)
-			{
-				accessors_count = (uint32_t)position->integer;
-			}
+			accessors_count = assert_index(position, accessors_count, JSON_POSITION);
 
 			const json_node_t* texture = json_find_child(attributes, JSON_TEXCOORD_0);
-			assert(texture);
-			if ((uint32_t)texture->integer > accessors_count)
-			{
-				accessors_count = (uint32_t)texture->integer;
-			}
+			accessors_count = assert_index(texture, accessors_count, JSON_TEXCOORD_0);
 
 			const json_node_t* normal = json_find_child(attributes, JSON_NORMAL);
-			assert(normal);
-			if ((uint32_t)normal->integer > accessors_count)
-			{
-				accessors_count = (uint32_t)normal->integer;
-			}
+			accessors_count = assert_index(normal, accessors_count, JSON_NORMAL);
 
 			primitive = primitive->next;
 		}
@@ -162,38 +149,22 @@ static void validate_materials(json_t* json)
 		const json_node_t* base = json_find_child(pbr_node, JSON_BASE_COL_TEX);
 		assert_container(base, 1, JSON_BASE_COL_TEX);
 		const json_node_t* index = json_find_child(base, JSON_INDEX);
-		assert(index);
-		if ((uint32_t)index->integer > texture_count)
-		{
-			texture_count = (uint32_t)index->integer;
-		}
+		texture_count = assert_index(index, texture_count, JSON_INDEX);
 		
 		const json_node_t* metallic = json_find_child(pbr_node, JSON_MET_ROUGH_TEX);
 		assert_container(metallic, 1, JSON_MET_ROUGH_TEX);
 		index = json_find_child(metallic, JSON_INDEX);
-		assert(index);
-		if ((uint32_t)index->integer > texture_count)
-		{
-			texture_count = (uint32_t)index->integer;
-		}
+		texture_count = assert_index(index, texture_count, JSON_INDEX);
 
 		const json_node_t* normal = json_find_child(current, JSON_NORMAL_TEX);
 		assert_container(normal, 1, JSON_NORMAL_TEX);
 		index = json_find_child(normal, JSON_INDEX);
-		assert(index);
-		if ((uint32_t)index->integer > texture_count)
-		{
-			texture_count = (uint32_t)index->integer;
-		}
+		texture_count = assert_index(index, texture_count, JSON_INDEX);
 
 		const json_node_t* occlusion = json_find_child(current, JSON_OCCLUSION_TEX);
 		assert_container(occlusion, 1, JSON_OCCLUSION_TEX);
 		index = json_find_child(occlusion, JSON_INDEX);
-		assert(index);
-		if ((uint32_t)index->integer > texture_count)
-		{
-			texture_count = (uint32_t)index->integer;
-		}
+		texture_count = assert_index(index, texture_count, JSON_INDEX);
 
 		current = current->next;
 	}
@@ -214,11 +185,7 @@ static void validate_accessors(json_t* json)
 	{
 		assert_container(accessor, 4, "accessor");
 		const json_node_t* buf_view = json_find_child(accessor, JSON_BUFFER_VIEW);
-		assert(buf_view);
-		if ((uint32_t)buf_view->integer > buf_view_count)
-		{
-			buf_view_count = (uint32_t)buf_view->integer;
-		}
+		buf_view_count = assert_index(buf_view, buf_view_count, JSON_BUFFER_VIEW);
 
 		accessor = accessor->next;
 	}
@@ -239,15 +206,10 @@ static void validate_textures(json_t* json)
 		assert_container(texture, 1, "texture");
 
 		const json_node_t* source = json_find_child(texture, JSON_SOURCE);
-		assert(source);
-		if ((uint32_t)source->integer > image_count)
-		{
-			image_count = (uint32_t)source->integer;
-		}
+		image_count = assert_index(source, image_count, JSON_SOURCE);
 
 		texture = texture->next;
 	}
-
 	const json_node_t* images = json_find_node(json, 1, JSON_IMAGES);
 	assert_container(images, image_count + 1, JSON_IMAGES);
 }
@@ -265,11 +227,7 @@ static void validate_images(json_t* json)
 		assert(strncmp(mime->string, "image/png", (uint64_t)mime->string_size) == 0);
 
 		const json_node_t* buffer_view = json_find_child(image, JSON_BUFFER_VIEW);
-		assert(buffer_view);
-		if ((uint32_t)buffer_view->integer > buf_view_count)
-		{
-			buf_view_count = (uint32_t)buffer_view->integer;
-		}
+		buf_view_count = assert_index(buffer_view, buf_view_count, JSON_BUFFER_VIEW);
 
 		image = image->next;
 	}
@@ -290,10 +248,7 @@ static void validate_buffer_views(json_t* json)
 		assert_container(buffer_view, 2, "bufferView");
 
 		const json_node_t* buf_index = json_find_child(buffer_view, JSON_BUFFER);
-		if ((uint32_t)buf_index->integer > buffer_count)
-		{
-			buffer_count = (uint32_t)buf_index->integer;
-		}
+		buffer_count = assert_index(buf_index, buffer_count, JSON_BUFFER);
 
 		buffer_view = buffer_view->next;
 	}
