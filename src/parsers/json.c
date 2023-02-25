@@ -10,6 +10,19 @@
 
 #include "../constants.h"
 
+/********************/
+/* static variables */
+/********************/
+
+typedef enum
+{
+    NONE,
+    BEFORE_KEY,
+    IN_KEY,
+    BEFORE_VAL,
+    IN_VAL,
+} status_e;
+
 static uint32_t cursor             = 0;
 static uint32_t buffer_size        = 0;
 static const unsigned char* buffer = NULL;
@@ -20,14 +33,9 @@ static uint32_t node_index         = 0;
 static char* strings               = NULL;
 static uint32_t string_index       = 0;
 
-typedef enum
-{
-    NONE,
-    BEFORE_KEY,
-    IN_KEY,
-    BEFORE_VAL,
-    IN_VAL,
-} status_e;
+/********************/
+/* static functions */
+/********************/
 
 static bool is_real(void)
 {
@@ -346,6 +354,10 @@ static void parse_object(uint32_t index)
 
     cursor++;
 }
+
+/********************/
+/* public functions */
+/********************/
 
 json_t* json_new(const unsigned char* input, uint32_t input_size)
 {
