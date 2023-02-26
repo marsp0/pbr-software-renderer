@@ -30,7 +30,7 @@ static uint32_t assert_index(const json_node_t* node, uint32_t count, const char
 		assert(false);
 	}
 
-	return (uint32_t)node->integer > count ? (uint32_t)node->integer : count;
+	return node->uinteger > count ? node->uinteger : count;
 }
 
 static void validate_asset(json_t* json)
@@ -143,16 +143,16 @@ static void validate_materials(json_t* json)
 	
 	while(current)
 	{
-		const json_node_t* pbr_node = json_find_child(current, JSON_MET_ROUGHNESS);
-		assert_container(pbr_node, 2, JSON_MET_ROUGHNESS);
+		const json_node_t* pbr_node = json_find_child(current, JSON_PBR);
+		assert_container(pbr_node, 2, JSON_PBR);
 		
-		const json_node_t* base = json_find_child(pbr_node, JSON_BASE_COL_TEX);
-		assert_container(base, 1, JSON_BASE_COL_TEX);
+		const json_node_t* base = json_find_child(pbr_node, JSON_ALBEDO_TEX);
+		assert_container(base, 1, JSON_ALBEDO_TEX);
 		const json_node_t* index = json_find_child(base, JSON_INDEX);
 		texture_count = assert_index(index, texture_count, JSON_INDEX);
 		
-		const json_node_t* metallic = json_find_child(pbr_node, JSON_MET_ROUGH_TEX);
-		assert_container(metallic, 1, JSON_MET_ROUGH_TEX);
+		const json_node_t* metallic = json_find_child(pbr_node, JSON_MR_TEX);
+		assert_container(metallic, 1, JSON_MR_TEX);
 		index = json_find_child(metallic, JSON_INDEX);
 		texture_count = assert_index(index, texture_count, JSON_INDEX);
 
@@ -268,4 +268,6 @@ void validate_glb_scene(json_t* json)
 	validate_textures(json);
 	validate_images(json);
 	validate_buffer_views(json);
+
+	// TODO: add type validation  (VEC/SCALAR etc) to accessor validation
 }
