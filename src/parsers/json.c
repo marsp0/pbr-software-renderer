@@ -389,7 +389,7 @@ const json_node_t* json_find_node(const json_t* json, uint32_t count, ...)
 {
     va_list args;
     va_start(args, count);
-    json_node_t* curr = count > 0 ? &json->nodes[0] : NULL;
+    const json_node_t* curr = count > 0 ? &json->nodes[0] : NULL;
 
     for (uint32_t i = 0; i < count; i++)
     {
@@ -419,7 +419,7 @@ const json_node_t* json_find_child(const json_node_t* json, const char* key)
         return NULL;
     }
 
-    json_node_t* curr = json->child;
+    const json_node_t* curr = json->child;
     size_t key_len = strlen(key);
 
     while(curr)
@@ -442,7 +442,7 @@ const json_node_t* json_find_index(const json_node_t* json, uint32_t index)
         return NULL;
     }
 
-    json_node_t* curr = json->child;
+    const json_node_t* curr = json->child;
 
     for (uint32_t i = 0; i < index; i++)
     {
