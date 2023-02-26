@@ -10,7 +10,7 @@ mesh_t* mesh_new(char* name, vec_t* vertices, vec_t* texcoords, vec_t* normals,
 {
     mesh_t* mesh = malloc(sizeof(mesh_t));
     
-    strncpy(mesh->name, name, MESH_NAME_SIZE);
+    strncpy(mesh->name, name, MESH_NAME_SIZE - 1);
     mesh->vertices = vertices;
     mesh->texcoords = texcoords;
     mesh->normals = normals;

@@ -180,8 +180,8 @@ static void decode_block()
 static void generate_huffman_codes(node_t* alphabet, uint32_t* lengths, uint32_t size)
 {
     /* count alphabet lens */
-    uint32_t len_counts[15] = { 0 };
-    uint32_t base_values[15] = { 0 };
+    uint32_t len_counts[16] = { 0 };
+    uint32_t base_values[16] = { 0 };
 
     for (uint32_t i = 0; i < size; i++)
     {
