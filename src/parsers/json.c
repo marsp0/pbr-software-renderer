@@ -261,6 +261,17 @@ static void parse_value(uint32_t index)
     {
         parse_array(index);
     }
+    else if (buffer[cursor] == 'f' || buffer[cursor] == 't')
+    {
+        nodes[index].type = JSON_BOOL;
+        nodes[index].boolean = strncmp(&buffer[cursor], "true", 4) == 0 ? true : false;
+        cursor += nodes[index].boolean ? 4 : 5;
+    }
+    else if (strncmp(&buffer[cursor], "null", 4) == 0)
+    {
+        nodes[index].type = JSON_NULL;
+        cursor += 4;
+    }
     skip_whitespace();
 }
 

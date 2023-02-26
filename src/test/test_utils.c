@@ -170,3 +170,15 @@ void assert_uint(uint32_t expected, uint32_t actual, const char* file_name, int3
         assert(false);
     }
 }
+
+void assert_bool(bool expected, bool actual, const char* file_name, int32_t line_number)
+{
+    if (expected != actual)
+    {
+        printf("File:\t\t %s\n", file_name);
+        printf("Line:\t\t %i\n", line_number);
+        printf("Actual:\t\t %d\n", actual);
+        printf("Expected:\t %d\n", expected);
+        assert(false);
+    }
+}

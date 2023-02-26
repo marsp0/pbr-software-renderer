@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum
 {
@@ -9,6 +10,8 @@ typedef enum
     JSON_STRING,
     JSON_OBJECT,
     JSON_ARRAY,
+    JSON_BOOL,
+    JSON_NULL,
 } json_type_e;
 
 typedef struct json_node_t
@@ -28,6 +31,7 @@ typedef struct json_node_t
         uint32_t uinteger;
         char*    string;
         uint32_t size;      /*used for arrays and object nodes*/
+        bool     boolean;
     };
 
 } json_node_t;
