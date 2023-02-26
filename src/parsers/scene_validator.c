@@ -179,19 +179,19 @@ static void validate_accessors(json_t* json)
 	
 	const json_node_t* accessor = json_find_index(accessors, 0);
 
-	uint32_t buf_view_count = 0;
+	uint32_t view_count = 0;
 
 	while (accessor)
 	{
 		assert_container(accessor, 4, "accessor");
-		const json_node_t* buf_view = json_find_child(accessor, JSON_BUFFER_VIEW);
-		buf_view_count = assert_index(buf_view, buf_view_count, JSON_BUFFER_VIEW);
+		const json_node_t* view = json_find_child(accessor, JSON_BUFFER_VIEW);
+		view_count = assert_index(view, view_count, JSON_BUFFER_VIEW);
 
 		accessor = accessor->next;
 	}
 
-	const json_node_t* buffer_views = json_find_node(json, 1, JSON_BUFFER_VIEWS);
-	assert_container(buffer_views, buf_view_count + 1, JSON_BUFFER_VIEWS);
+	const json_node_t* views = json_find_node(json, 1, JSON_BUFFER_VIEWS);
+	assert_container(views, view_count + 1, JSON_BUFFER_VIEWS);
 }
 
 static void validate_textures(json_t* json)
@@ -219,38 +219,38 @@ static void validate_images(json_t* json)
 	const json_node_t* images = json_find_node(json, 1, JSON_IMAGES);
 
 	const json_node_t* image = json_find_index(images, 0);
-	uint32_t buf_view_count = 0;
+	uint32_t view_count = 0;
 
 	while (image)
 	{
 		const json_node_t* mime = json_find_child(image, JSON_MIME_TYPE);
 		assert(strncmp(mime->string, "image/png", (uint64_t)mime->string_size) == 0);
 
-		const json_node_t* buffer_view = json_find_child(image, JSON_BUFFER_VIEW);
-		buf_view_count = assert_index(buffer_view, buf_view_count, JSON_BUFFER_VIEW);
+		const json_node_t* view = json_find_child(image, JSON_BUFFER_VIEW);
+		view_count = assert_index(view, view_count, JSON_BUFFER_VIEW);
 
 		image = image->next;
 	}
 
-	const json_node_t* buffer_views = json_find_node(json, 1, JSON_BUFFER_VIEWS);
-	assert_container(buffer_views, buf_view_count + 1, JSON_BUFFER_VIEWS);
+	const json_node_t* views = json_find_node(json, 1, JSON_BUFFER_VIEWS);
+	assert_container(views, view_count + 1, JSON_BUFFER_VIEWS);
 }
 
 static void validate_buffer_views(json_t* json)
 {
-	const json_node_t* buffer_views = json_find_node(json, 1, JSON_BUFFER_VIEWS);
-	const json_node_t* buffer_view = json_find_index(buffer_views, 0);
+	const json_node_t* views = json_find_node(json, 1, JSON_BUFFER_VIEWS);
+	const json_node_t* view = json_find_index(views, 0);
 
 	uint32_t buffer_count = 0;
 
-	while (buffer_view)
+	while (view)
 	{
-		assert_container(buffer_view, 2, "bufferView");
+		assert_container(view, 2, "bufferView");
 
-		const json_node_t* buf_index = json_find_child(buffer_view, JSON_BUFFER);
+		const json_node_t* buf_index = json_find_child(view, JSON_BUFFER);
 		buffer_count = assert_index(buf_index, buffer_count, JSON_BUFFER);
 
-		buffer_view = buffer_view->next;
+		view = view->next;
 	}
 
 	const json_node_t* buffers = json_find_node(json, 1, JSON_BUFFERS);

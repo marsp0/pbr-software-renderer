@@ -77,7 +77,7 @@ void test_multiple_strings(void)
     json_free(json);
 }
 
-void test_number(void)
+void test_integer(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 }";
     
@@ -99,6 +99,7 @@ void test_number(void)
     ASSERT_UINT(4, node.key_size);
     ASSERT_UINT(0, node.string_size);
     ASSERT_INT(123, node.integer);
+    ASSERT_UINT(123, node.uinteger);
     ASSERT_INT(0, node.type);
     ASSERT_STRING("key1", node.key, 4);
     ASSERT_POINTER(NULL, node.child);
@@ -108,7 +109,7 @@ void test_number(void)
     json_free(json);
 }
 
-void test_multiple_numbers(void)
+void test_multiple_integers(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 , \"key2\": -3432}";
     
@@ -615,8 +616,8 @@ void test_json(void)
 {
     test_string();
     test_multiple_strings();
-    test_number();
-    test_multiple_numbers();
+    test_integer();
+    test_multiple_integers();
     test_real();
     test_multiple_reals();
     test_nested_objects();
