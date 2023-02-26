@@ -131,6 +131,7 @@ void test_multiple_integers(void)
     ASSERT_UINT(4, node.key_size);
     ASSERT_UINT(0, node.string_size);
     ASSERT_INT(123, node.integer);
+    ASSERT_UINT(123, node.uinteger);
     ASSERT_INT(0, node.type);
     ASSERT_STRING("key1", node.key, 4);
     ASSERT_POINTER(NULL, node.child);
