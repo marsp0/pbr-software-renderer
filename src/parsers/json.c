@@ -58,6 +58,8 @@ static bool is_real(void)
 static bool skip_if_empty(unsigned char end)
 {
     uint32_t cur = cursor;
+    cur++;                  // move past opening bracket
+
     while(isspace(buffer[cur]))
     {
         cur++;
@@ -116,74 +118,60 @@ static void validate(void)
     cursor = 0;
 }
 
-static void allocate_string_buffer(void)
+static void allocate(void)
 {
-    /*
-     * TODO: currently repeating strings are stored as different strings. 
-     * Try to optimize and store repeating strings only once.
-     */
-    cursor = 0;
+    // TODO: store repeating strings once
 
-    uint32_t size = 0;
+    cursor = 0;
+    unsigned char c;
+    unsigned char t;
+
+    uint32_t ssize = 0;
+    uint32_t nsize = 1; // always 1 node for the root
     status_e status = BEFORE_KEY;
 
     while(cursor < buffer_size)
     {
+        c = buffer[cursor];
 
-        if (buffer[cursor] == '"' && status == BEFORE_KEY)
+        if (c == '"' && status == BEFORE_KEY)
         {
             status = IN_KEY;
         }
-        else if (buffer[cursor] == '"' && status == IN_KEY)
+        else if (c == '"' && status == IN_KEY)
         {
             status = BEFORE_KEY;
         }
         else if (status == IN_KEY)
         {
-            size++;
+            ssize++;
         }
 
-        cursor++;
-    }
-
-    printf("string size: %d\n", size);
-    result->strings = malloc(size + 1);
-    result->strings_size = size;
-    result->strings[size] = 0;
-    memset(result->strings, 0, size);
-
-    cursor = 0;
-}
-
-static void allocate_node_buffer(void)
-{
-    cursor = 0;
-
-    uint32_t count = 1; /* always 1 node for the root */
-
-    unsigned char c;
-    unsigned char t;
-    while(cursor < buffer_size)
-    {
-        c = buffer[cursor];
         if (c == ',' || c == ']' || c == '}')
         {
-            count += 1;
+            nsize += 1;
         }
         else if (c == '[' || c == '{')
         {
-            cursor++;
             t = c == '[' ? ']' : '}';
-            skip_if_empty(t);
+            
+            if (skip_if_empty(t))
+            {
+                continue;
+            }
         }
+
         cursor++;
     }
 
-    result->nodes = malloc(count * sizeof(json_node_t));
-    result->nodes_size = count;
-    memset(result->nodes, 0, count * sizeof(json_node_t));
+    result->strings = malloc(ssize + 1);
+    result->strings_size = ssize;
+    result->strings[ssize] = 0;
+    memset(result->strings, 0, ssize);
 
-    printf("node count: %d\n", count);
+    result->nodes = malloc(nsize * sizeof(json_node_t));
+    result->nodes_size = nsize;
+    memset(result->nodes, 0, nsize * sizeof(json_node_t));
 
     cursor = 0;
 }
@@ -284,12 +272,13 @@ static void parse_array(uint32_t index)
     parent->type = JSON_ARRAY;
     parent->size = 0;
 
-    cursor++;
 
     if (skip_if_empty(']'))
     {
         return;
     }
+
+    cursor++;
 
     while(buffer[cursor] != ']')
     {
@@ -366,8 +355,7 @@ json_t* json_new(const unsigned char* input, uint32_t input_size)
     result = malloc(sizeof(json_t));
     
     validate();
-    allocate_string_buffer();
-    allocate_node_buffer();
+    allocate();
 
     nodes = result->nodes;
     strings = result->strings;
