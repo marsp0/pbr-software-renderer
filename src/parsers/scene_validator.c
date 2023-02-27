@@ -43,7 +43,7 @@ static void validate_asset(json_t* json)
 	assert(strncmp(version->string, "2.0", (uint64_t)version->string_size) == 0);
 }
 
-static void validate_scene(json_t* json)
+static void validate_scene_node(json_t* json)
 {
 	/*scene exists*/
 	const json_node_t* scenes = json_find_node(json, 1, JSON_SCENES);
@@ -260,7 +260,7 @@ static void validate_buffer_views(json_t* json)
 void validate_scene(json_t* json)
 {
 	validate_asset(json);
-	validate_scene(json);
+	validate_scene_node(json);
 	validate_nodes(json);
 	validate_meshes(json);
 	validate_materials(json);

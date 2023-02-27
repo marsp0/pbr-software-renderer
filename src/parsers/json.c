@@ -16,7 +16,6 @@
 
 typedef enum
 {
-    NONE,
     BEFORE_KEY,
     IN_KEY,
     BEFORE_VAL,
