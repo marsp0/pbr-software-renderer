@@ -205,7 +205,7 @@ mesh_t* parse_scene(const char* file_name)
     // process json
     chunk_t json_chunk = parse_chunk(buffer);
     json_t* json = json_new(json_chunk.data, json_chunk.size);
-    validate_glb_scene(json);
+    validate_scene(json);
 
     parse_meshes(json);
 

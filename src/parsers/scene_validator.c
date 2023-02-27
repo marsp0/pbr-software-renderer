@@ -257,7 +257,7 @@ static void validate_buffer_views(json_t* json)
 	assert_container(buffers, buffer_count + 1, JSON_BUFFERS);
 }
 
-void validate_glb_scene(json_t* json)
+void validate_scene(json_t* json)
 {
 	validate_asset(json);
 	validate_scene(json);
