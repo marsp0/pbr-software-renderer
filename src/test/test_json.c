@@ -36,6 +36,80 @@ void test_string(void)
     json_free(json);
 }
 
+void test_empty_string(void)
+{
+    const unsigned char buff[] = "{ \"key1\":  \"\", \"\":2}";
+    
+    json_t* json = json_new(buff, 20);
+    ASSERT_UINT(3, json->nodes_size);
+    ASSERT_UINT(4, json->strings_size);
+    ASSERT_STRING("key1", json->strings, 4);
+
+    json_node_t node = json->nodes[0];
+    ASSERT_UINT(0, node.key_size);
+    ASSERT_UINT(0, node.string_size);
+    ASSERT_INT(JSON_OBJECT, node.type);
+    ASSERT_UINT(2, node.size);
+    ASSERT_POINTER(&json->nodes[1], node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(NULL, node.parent);
+
+    node = json->nodes[1];
+    ASSERT_UINT(4, node.key_size);
+    ASSERT_UINT(0, node.string_size);
+    ASSERT_INT(JSON_STRING, node.type);
+    ASSERT_STRING("key1", node.key, 4);
+    ASSERT_STRING("", node.string, 0);
+    ASSERT_POINTER(NULL, node.child);
+    ASSERT_POINTER(&json->nodes[2], node.next);
+    ASSERT_POINTER(&json->nodes[0], node.parent);
+
+    node = json->nodes[2];
+    ASSERT_UINT(0, node.key_size);
+    ASSERT_UINT(0, node.string_size);
+    ASSERT_INT(JSON_NUMBER, node.type);
+    ASSERT_STRING("", node.key, 0);
+    ASSERT_INT(2, node.integer);
+    ASSERT_UINT(2, node.uinteger);
+    ASSERT_POINTER(NULL, node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(&json->nodes[0], node.parent);
+
+    json_free(json);
+}
+
+void test_string_with_quote(void)
+{
+    // { "key\"1":  "\"va\"12\""}
+    const unsigned char buff[] = "{ \"key\\\"1\":  \"\\\"va\\\"12\\\"\"}";
+    
+    json_t* json = json_new(buff, 26);
+    ASSERT_UINT(2, json->nodes_size);
+    ASSERT_UINT(12, json->strings_size);
+    ASSERT_STRING("key\"1\"va\"12\"", json->strings, 12);
+
+    json_node_t node = json->nodes[0];
+    ASSERT_UINT(0, node.key_size);
+    ASSERT_UINT(0, node.string_size);
+    ASSERT_INT(JSON_OBJECT, node.type);
+    ASSERT_UINT(1, node.size);
+    ASSERT_POINTER(&json->nodes[1], node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(NULL, node.parent);
+
+    node = json->nodes[1];
+    ASSERT_UINT(5, node.key_size);
+    ASSERT_UINT(7, node.string_size);
+    ASSERT_INT(JSON_STRING, node.type);
+    ASSERT_STRING("key\"1", node.key, 5);
+    ASSERT_STRING("\"va\"12\"", node.string, 7);
+    ASSERT_POINTER(NULL, node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(&json->nodes[0], node.parent);
+
+    json_free(json);
+}
+
 void test_multiple_strings(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\", \"key2\": \"val2\"}";
@@ -697,6 +771,8 @@ void test_find_array_element(void)
 void test_json(void)
 {
     test_string();
+    test_empty_string();
+    test_string_with_quote();
     test_multiple_strings();
     test_integer();
     test_multiple_integers();

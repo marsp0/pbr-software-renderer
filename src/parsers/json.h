@@ -19,29 +19,30 @@ typedef struct json_node_t
     struct json_node_t* child;
     struct json_node_t* next;
     struct json_node_t* parent;
-    char*               key;
+    unsigned char*      key;
     uint32_t            key_size;
     uint32_t            string_size;
     json_type_e         type;
 
     union
     {
-        float    real;
-        int32_t  integer;
-        uint32_t uinteger;
-        char*    string;
-        uint32_t size;      /*used for arrays and object nodes*/
-        bool     boolean;
+        bool            boolean;
+        float           real;
+        int32_t         integer;
+        uint32_t        uinteger;
+        unsigned char*  string;
+        
+        uint32_t        size;      /*used for arrays and object nodes*/
     };
 
 } json_node_t;
 
 typedef struct
 {
-    char*        strings;
-    json_node_t* nodes;
-    uint32_t     strings_size;
-    uint32_t     nodes_size;
+    unsigned char*  strings;
+    json_node_t*    nodes;
+    uint32_t        strings_size;
+    uint32_t        nodes_size;
 } json_t;
 
 json_t*             json_new(const unsigned char* input, uint32_t input_size);

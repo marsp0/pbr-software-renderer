@@ -29,7 +29,7 @@ static const unsigned char* buffer = NULL;
 static json_t* result              = NULL;
 static json_node_t* nodes          = NULL;
 static uint32_t node_index         = 0;
-static char* strings               = NULL;
+static unsigned char* strings      = NULL;
 static uint32_t string_index       = 0;
 
 /********************/
@@ -39,8 +39,8 @@ static uint32_t string_index       = 0;
 static bool is_real(void)
 {
     uint32_t cur = cursor;
-
     unsigned char c = buffer[cur];
+
     while(isdigit(c) || c == '.' || c == '-')
     {
         if (c == '.')
@@ -137,9 +137,9 @@ static void allocate(void)
         {
             status = IN_KEY;
         }
-        else if (c == '"' && status == IN_KEY)
+        else if (c == '"' && status == IN_KEY) 
         {
-            status = BEFORE_KEY;
+            status = buffer[cursor - 1] != '\\' ? BEFORE_KEY : IN_KEY;
         }
         else if (status == IN_KEY)
         {
@@ -204,28 +204,74 @@ static void parse_real(uint32_t index)
     }
 }
 
-static void parse_string(char** value, uint32_t* size)
+static void parse_string(unsigned char** value, uint32_t* size)
 {
-    uint32_t start = 0;
+
+    unsigned char c;
+
+    bool run        = true;
+    bool memcopy    = true;
+    uint32_t start  = 0;
+    uint32_t end    = 0;
     status_e status = BEFORE_KEY;
 
-    while(*size == 0)
+    // find beginning and end of string
+    while (run)
     {
-        if (buffer[cursor] == '"' && status == BEFORE_KEY)
+        c = buffer[cursor];
+
+        if (c == '"' && status == BEFORE_KEY)
         {
             start = cursor + 1;
             status = IN_KEY;
         }
-        else if (buffer[cursor] == '"' && status == IN_KEY)
+        else if (c == '"' && status == IN_KEY)
         {
-            *size = cursor - start;
-            *value = &strings[string_index];
-
-            memcpy(*value, &buffer[start], *size);
-            string_index += *size;
+            if (buffer[cursor - 1] == '\\')
+            {
+                memcopy = false;
+            }
+            else
+            {
+                end = cursor;
+                run = false;
+            }
         }
+
         cursor++;
     }
+
+    // copy string into string buffer
+    if (memcopy)
+    {
+        *size = end - start;
+        *value = &strings[string_index];
+
+        memcpy(*value, &buffer[start], *size);
+        string_index += *size;
+
+        return;
+    }
+
+    // copy manually due to escaped quotes
+    uint32_t count = 0;
+    *value = &strings[string_index];
+
+    for (uint32_t i = start; i < end; i++)
+    {
+
+        if (buffer[i] == '"' && buffer[i - 1] == '\\')
+        {
+            string_index--;
+            count--;
+        }
+
+        strings[string_index] = buffer[i];
+        string_index++;
+        count++;
+    }
+
+    *size = count;
 }
 
 static void parse_string_key(uint32_t index)
