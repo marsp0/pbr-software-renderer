@@ -5,7 +5,7 @@
 
 #include "../parsers/json.h"
 
-void test_string(void)
+static void test_string(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\"}";
     
@@ -36,7 +36,7 @@ void test_string(void)
     json_free(json);
 }
 
-void test_empty_string(void)
+static void test_empty_string(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"\", \"\":2}";
     
@@ -78,7 +78,7 @@ void test_empty_string(void)
     json_free(json);
 }
 
-void test_string_with_quote(void)
+static void test_string_with_quote(void)
 {
     // { "key\"1":  "\"va\"12\""}
     const unsigned char buff[] = "{ \"key\\\"1\":  \"\\\"va\\\"12\\\"\"}";
@@ -110,7 +110,7 @@ void test_string_with_quote(void)
     json_free(json);
 }
 
-void test_multiple_strings(void)
+static void test_multiple_strings(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\", \"key2\": \"val2\"}";
 
@@ -151,7 +151,7 @@ void test_multiple_strings(void)
     json_free(json);
 }
 
-void test_integer(void)
+static void test_integer(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 }";
     
@@ -183,7 +183,7 @@ void test_integer(void)
     json_free(json);
 }
 
-void test_multiple_integers(void)
+static void test_multiple_integers(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 , \"key2\": -3432}";
     
@@ -225,7 +225,7 @@ void test_multiple_integers(void)
     json_free(json);
 }
 
-void test_real(void)
+static void test_real(void)
 {
     const unsigned char buff[] = "{ \"key1\":  0.321 }";
     
@@ -256,7 +256,7 @@ void test_real(void)
     json_free(json);
 }
 
-void test_multiple_reals(void)
+static void test_multiple_reals(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321 , \"key2\": -34.32}";
     
@@ -297,7 +297,7 @@ void test_multiple_reals(void)
     json_free(json);
 }
 
-void test_nested_objects(void)
+static void test_nested_objects(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
@@ -348,7 +348,7 @@ void test_nested_objects(void)
     json_free(json);
 }
 
-void test_empty_containers(void)
+static void test_empty_containers(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [  ]  , \"key2.2\"  : {} }";
     
@@ -389,7 +389,7 @@ void test_empty_containers(void)
     json_free(json);
 }
 
-void test_int_array(void)
+static void test_int_array(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ 1, 2, 3 , 3] }";
     
@@ -456,7 +456,7 @@ void test_int_array(void)
     json_free(json);
 }
 
-void test_string_array(void)
+static void test_string_array(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ \"one\", \"two\"] }";
     
@@ -505,7 +505,7 @@ void test_string_array(void)
     json_free(json);
 }
 
-void test_mixed_array(void)
+static void test_mixed_array(void)
 {
     const unsigned char buff[] = "{ \"key1\": [ \"one\", 2, { \"key3\" : [ 0.23, 3222.432 ]}] }";
     
@@ -591,7 +591,7 @@ void test_mixed_array(void)
     json_free(json);
 }
 
-void test_bool(void)
+static void test_bool(void)
 {
     const unsigned char buff[] = "{ \"key1\":  false, \"key2\":true}";
     
@@ -632,7 +632,7 @@ void test_bool(void)
     json_free(json);
 }
 
-void test_null(void)
+static void test_null(void)
 {
     const unsigned char buff[] = "{ \"key1\":  false, \"key2\":null}";
     
@@ -672,7 +672,7 @@ void test_null(void)
     json_free(json);
 }
 
-void test_find_node(void)
+static void test_find_node(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
@@ -691,7 +691,7 @@ void test_find_node(void)
     json_free(json);
 }
 
-void test_find_node_nested(void)
+static void test_find_node_nested(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
@@ -711,7 +711,7 @@ void test_find_node_nested(void)
     json_free(json);
 }
 
-void test_find_node_missing(void)
+static void test_find_node_missing(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
@@ -726,7 +726,7 @@ void test_find_node_missing(void)
     json_free(json);
 }
 
-void test_find_node_invalid(void)
+static void test_find_node_invalid(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
@@ -738,7 +738,7 @@ void test_find_node_invalid(void)
     json_free(json);
 }
 
-void test_find_child(void)
+static void test_find_child(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
@@ -753,7 +753,7 @@ void test_find_child(void)
     json_free(json);
 }
 
-void test_find_array_element(void)
+static void test_find_array_element(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ \"one\", \"two\"] }";
     
