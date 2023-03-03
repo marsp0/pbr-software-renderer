@@ -83,13 +83,14 @@ static void skip_whitespace(void)
     }
 }
 
-static void validate(void)
+static bool is_valid(void)
 {
     /* TODO: improve validation */
 
     cursor = 0;
     
     int i = 0;
+    bool is_valid = true;
     unsigned char c;
     unsigned char t;
     unsigned char stack[MAX_JSON_DEPTH] = { 0 };
@@ -106,15 +107,19 @@ static void validate(void)
         if (c == '}' || c == ']')
         {
             t = c == '}' ? '{' : '[';
-            assert(stack[--i] == t);
+            if (stack[--i] != t)
+            {
+                is_valid = false;
+                break;
+            }
         }
 
         cursor++;
     }
 
-    assert(i == 0);
-    
     cursor = 0;
+
+    return is_valid;
 }
 
 static void allocate(void)
@@ -133,6 +138,7 @@ static void allocate(void)
     {
         c = buffer[cursor];
 
+        // string allocation
         if (c == '"' && status == BEFORE_KEY)
         {
             status = IN_KEY;
@@ -146,6 +152,7 @@ static void allocate(void)
             ssize++;
         }
 
+        // node allocation
         if (c == ',' || c == ']' || c == '}')
         {
             nsize += 1;
@@ -406,18 +413,28 @@ static void parse_object(uint32_t index)
 
 json_t* json_new(const unsigned char* input, uint32_t input_size)
 {
+    // set static vars
     buffer = input;
     buffer_size = input_size;
     result = malloc(sizeof(json_t));
     
-    validate();
+    // validate input buffer
+    if (!is_valid())
+    {
+        return NULL;
+    }
+
+    // allocate memory
     allocate();
 
-    nodes = result->nodes;
-    strings = result->strings;
+    // set more static vars
+    cursor = 0;
     node_index = 0;
     string_index = 0;
+    nodes = result->nodes;
+    strings = result->strings;
 
+    // parse buffer
     parse_object(node_index++);
 
     return result;
