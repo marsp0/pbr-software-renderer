@@ -40,7 +40,7 @@ static void validate_asset(json_t* json)
 
 	const json_node_t* version = json_find_child(asset, JSON_VERSION);
 	assert(version);
-	assert(strncmp(version->string, "2.0", (uint64_t)version->string_size) == 0);
+	assert(strncmp(version->string, "2.0", (uint64_t)version->size) == 0);
 }
 
 static void validate_scene_node(json_t* json)
@@ -224,7 +224,7 @@ static void validate_images(json_t* json)
 	while (image)
 	{
 		const json_node_t* mime = json_find_child(image, JSON_MIME_TYPE);
-		assert(strncmp(mime->string, "image/png", (uint64_t)mime->string_size) == 0);
+		assert(strncmp(mime->string, "image/png", (uint64_t)mime->size) == 0);
 
 		const json_node_t* view = json_find_child(image, JSON_BUFFER_VIEW);
 		view_count = assert_index(view, view_count, JSON_BUFFER_VIEW);

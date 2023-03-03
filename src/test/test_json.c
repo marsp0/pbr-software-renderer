@@ -16,7 +16,6 @@ static void test_string(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -25,7 +24,7 @@ static void test_string(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(5, node.string_size);
+    ASSERT_UINT(5, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("key1", node.key, 4);
     ASSERT_STRING("val12", node.string, 5);
@@ -47,7 +46,6 @@ static void test_empty_string(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -56,7 +54,7 @@ static void test_empty_string(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("key1", node.key, 4);
     ASSERT_STRING("", node.string, 0);
@@ -66,7 +64,7 @@ static void test_empty_string(void)
 
     node = json->nodes[2];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_NUMBER, node.type);
     ASSERT_STRING("", node.key, 0);
     ASSERT_INT(2, node.integer);
@@ -90,7 +88,6 @@ static void test_string_with_quote(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -99,7 +96,7 @@ static void test_string_with_quote(void)
 
     node = json->nodes[1];
     ASSERT_UINT(5, node.key_size);
-    ASSERT_UINT(7, node.string_size);
+    ASSERT_UINT(7, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("key\"1", node.key, 5);
     ASSERT_STRING("\"va\"12\"", node.string, 7);
@@ -121,7 +118,6 @@ static void test_multiple_strings(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -130,7 +126,7 @@ static void test_multiple_strings(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(5, node.string_size);
+    ASSERT_UINT(5, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("key1", node.key, 4);
     ASSERT_STRING("val12", node.string, 5);
@@ -140,7 +136,7 @@ static void test_multiple_strings(void)
 
     node = json->nodes[2];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(4, node.string_size);
+    ASSERT_UINT(4, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("key2", node.key, 4);
     ASSERT_STRING("val2", node.string, 4);
@@ -162,7 +158,6 @@ static void test_integer(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -171,7 +166,7 @@ static void test_integer(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(123, node.integer);
     ASSERT_UINT(123, node.uinteger);
     ASSERT_INT(JSON_NUMBER, node.type);
@@ -194,7 +189,6 @@ static void test_multiple_integers(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -203,7 +197,7 @@ static void test_multiple_integers(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(123, node.integer);
     ASSERT_UINT(123, node.uinteger);
     ASSERT_INT(JSON_NUMBER, node.type);
@@ -214,7 +208,7 @@ static void test_multiple_integers(void)
 
     node = json->nodes[2];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(-3432, node.integer);
     ASSERT_INT(JSON_NUMBER, node.type);
     ASSERT_STRING("key2", node.key, 4);
@@ -236,7 +230,6 @@ static void test_real(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -245,7 +238,7 @@ static void test_real(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_FLOAT(0.321f, node.real);
     ASSERT_INT(JSON_REAL, node.type);
     ASSERT_STRING("key1", node.key, 4);
@@ -267,7 +260,6 @@ static void test_multiple_reals(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -276,7 +268,7 @@ static void test_multiple_reals(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_FLOAT(0.321f, node.real);
     ASSERT_INT(JSON_REAL, node.type);
     ASSERT_STRING("key1", node.key, 4);
@@ -286,7 +278,7 @@ static void test_multiple_reals(void)
 
     node = json->nodes[2];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_FLOAT(-34.32f, node.real);
     ASSERT_INT(JSON_REAL, node.type);
     ASSERT_STRING("key2", node.key, 4);
@@ -308,7 +300,6 @@ static void test_nested_objects(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -317,7 +308,7 @@ static void test_nested_objects(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_FLOAT(0.321f, node.real);
     ASSERT_INT(JSON_REAL, node.type);
     ASSERT_STRING("key1", node.key, 4);
@@ -327,7 +318,6 @@ static void test_nested_objects(void)
 
     node = json->nodes[2];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_STRING("key2", node.key, 4);
@@ -337,7 +327,7 @@ static void test_nested_objects(void)
 
     node = json->nodes[3];
     ASSERT_UINT(10, node.key_size);
-    ASSERT_UINT(11, node.string_size);
+    ASSERT_UINT(11, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("inner_key1", node.key, 10);
     ASSERT_STRING("some string", node.string, 11)
@@ -359,7 +349,6 @@ static void test_empty_containers(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -368,7 +357,7 @@ static void test_empty_containers(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_ARRAY, node.type);
     ASSERT_UINT(0, node.size);
     ASSERT_STRING("key1", node.key, 4);
@@ -378,7 +367,6 @@ static void test_empty_containers(void)
 
     node = json->nodes[2];
     ASSERT_UINT(6, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(0, node.size);
     ASSERT_STRING("key2.2", node.key, 6);
@@ -400,7 +388,6 @@ static void test_int_array(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -409,7 +396,6 @@ static void test_int_array(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_ARRAY, node.type);
     ASSERT_UINT(4, node.size);
     ASSERT_STRING("key1", node.key, 4);
@@ -419,7 +405,7 @@ static void test_int_array(void)
 
     node = json->nodes[2];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_NUMBER, node.type);
     ASSERT_INT(1, node.integer);
     ASSERT_POINTER(NULL, node.child);
@@ -428,7 +414,7 @@ static void test_int_array(void)
 
     node = json->nodes[3];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_NUMBER, node.type);
     ASSERT_INT(2, node.integer);
     ASSERT_POINTER(NULL, node.child);
@@ -437,7 +423,7 @@ static void test_int_array(void)
 
     node = json->nodes[4];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_NUMBER, node.type);
     ASSERT_INT(3, node.integer);
     ASSERT_POINTER(NULL, node.child);
@@ -446,7 +432,7 @@ static void test_int_array(void)
 
     node = json->nodes[5];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_NUMBER, node.type);
     ASSERT_INT(3, node.integer);
     ASSERT_POINTER(NULL, node.child);
@@ -467,7 +453,6 @@ static void test_string_array(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -476,7 +461,6 @@ static void test_string_array(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_ARRAY, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_STRING("key1", node.key, 4);
@@ -486,7 +470,7 @@ static void test_string_array(void)
 
     node = json->nodes[2];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(3, node.string_size);
+    ASSERT_UINT(3, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("one", node.string, 3);
     ASSERT_POINTER(NULL, node.child);
@@ -495,7 +479,7 @@ static void test_string_array(void)
 
     node = json->nodes[3];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(3, node.string_size);
+    ASSERT_UINT(3, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("two", node.string, 3);
     ASSERT_POINTER(NULL, node.child);
@@ -516,7 +500,6 @@ static void test_mixed_array(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -525,7 +508,6 @@ static void test_mixed_array(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_ARRAY, node.type);
     ASSERT_UINT(3, node.size);
     ASSERT_STRING("key1", node.key, 4);
@@ -535,7 +517,7 @@ static void test_mixed_array(void)
 
     node = json->nodes[2];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(3, node.string_size);
+    ASSERT_UINT(3, node.size);
     ASSERT_INT(JSON_STRING, node.type);
     ASSERT_STRING("one", node.string, 3);
     ASSERT_POINTER(NULL, node.child);
@@ -544,7 +526,7 @@ static void test_mixed_array(void)
 
     node = json->nodes[3];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_NUMBER, node.type);
     ASSERT_INT(2, node.integer);
     ASSERT_POINTER(NULL, node.child);
@@ -553,7 +535,6 @@ static void test_mixed_array(void)
 
     node = json->nodes[4];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(1, node.size);
     ASSERT_POINTER(&json->nodes[5], node.child);
@@ -562,7 +543,6 @@ static void test_mixed_array(void)
 
     node = json->nodes[5];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_ARRAY, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_STRING("key3", node.key, 4);
@@ -572,7 +552,7 @@ static void test_mixed_array(void)
 
     node = json->nodes[6];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_REAL, node.type);
     ASSERT_FLOAT(0.23f, node.real);
     ASSERT_POINTER(NULL, node.child);
@@ -581,7 +561,7 @@ static void test_mixed_array(void)
 
     node = json->nodes[7];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_REAL, node.type);
     ASSERT_FLOAT(3222.432f, node.real);
     ASSERT_POINTER(NULL, node.child);
@@ -602,7 +582,6 @@ static void test_bool(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -611,7 +590,7 @@ static void test_bool(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_BOOL, node.type);
     ASSERT_BOOL(false, node.boolean);
     ASSERT_STRING("key1", node.key, 4);
@@ -621,7 +600,7 @@ static void test_bool(void)
 
     node = json->nodes[2];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_BOOL, node.type);
     ASSERT_BOOL(true, node.boolean);
     ASSERT_STRING("key2", node.key, 4);
@@ -643,7 +622,6 @@ static void test_null(void)
 
     json_node_t node = json->nodes[0];
     ASSERT_UINT(0, node.key_size);
-    ASSERT_UINT(0, node.string_size);
     ASSERT_INT(JSON_OBJECT, node.type);
     ASSERT_UINT(2, node.size);
     ASSERT_POINTER(&json->nodes[1], node.child);
@@ -652,7 +630,7 @@ static void test_null(void)
 
     node = json->nodes[1];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_BOOL, node.type);
     ASSERT_BOOL(false, node.boolean);
     ASSERT_STRING("key1", node.key, 4);
@@ -662,7 +640,7 @@ static void test_null(void)
 
     node = json->nodes[2];
     ASSERT_UINT(4, node.key_size);
-    ASSERT_UINT(0, node.string_size);
+    ASSERT_UINT(0, node.size);
     ASSERT_INT(JSON_NULL, node.type);
     ASSERT_STRING("key2", node.key, 4);
     ASSERT_POINTER(NULL, node.child);
@@ -681,7 +659,7 @@ static void test_find_node(void)
 
     ASSERT_POINTER(&json->nodes[1], node);
     ASSERT_UINT(4, node->key_size);
-    ASSERT_UINT(0, node->string_size);
+    ASSERT_UINT(0, node->size);
     ASSERT_INT(JSON_REAL, node->type);
     ASSERT_FLOAT(0.321f, node->real);
     ASSERT_POINTER(NULL, node->child);
@@ -700,7 +678,7 @@ static void test_find_node_nested(void)
 
     ASSERT_POINTER(&json->nodes[3], node);
     ASSERT_UINT(10, node->key_size);
-    ASSERT_UINT(11, node->string_size);
+    ASSERT_UINT(11, node->size);
     ASSERT_INT(JSON_STRING, node->type);
     ASSERT_STRING("inner_key1", node->key, 10);
     ASSERT_STRING("some string", node->string, 11);

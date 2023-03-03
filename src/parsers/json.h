@@ -21,7 +21,7 @@ typedef struct json_node_t
     struct json_node_t* parent;
     unsigned char*      key;
     uint32_t            key_size;
-    uint32_t            string_size;
+    uint32_t            size;       /*used for arrays, object nodes and strings*/
     json_type_e         type;
 
     union
@@ -31,8 +31,6 @@ typedef struct json_node_t
         int32_t         integer;
         uint32_t        uinteger;
         unsigned char*  string;
-        
-        uint32_t        size;      /*used for arrays and object nodes*/
     };
 
 } json_node_t;

@@ -250,7 +250,7 @@ static void parse_string_key(uint32_t index)
 static void parse_string_value(uint32_t index)
 {
     nodes[index].type = JSON_STRING;
-    parse_string(&nodes[index].string, &nodes[index].string_size);
+    parse_string(&nodes[index].string, &nodes[index].size);
 }
 
 static void parse_object(uint32_t index);
