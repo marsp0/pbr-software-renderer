@@ -83,7 +83,7 @@ static void skip_whitespace(void)
     }
 }
 
-static bool is_valid(void)
+static bool validate(void)
 {
     /* TODO: improve validation */
 
@@ -419,7 +419,7 @@ json_t* json_new(const unsigned char* input, uint32_t input_size)
     result = malloc(sizeof(json_t));
     
     // validate input buffer
-    if (!is_valid())
+    if (!validate())
     {
         return NULL;
     }
