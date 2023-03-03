@@ -83,45 +83,6 @@ static void skip_whitespace(void)
     }
 }
 
-static bool validate(void)
-{
-    /* TODO: improve validation */
-
-    cursor = 0;
-    
-    int i = 0;
-    bool is_valid = true;
-    unsigned char c;
-    unsigned char t;
-    unsigned char stack[MAX_JSON_DEPTH] = { 0 };
-
-    while(cursor < buffer_size)
-    {
-        c = buffer[cursor];
-        
-        if (c == '{' || c == '[')
-        {
-            stack[i++] = c;
-        }
-
-        if (c == '}' || c == ']')
-        {
-            t = c == '}' ? '{' : '[';
-            if (stack[--i] != t)
-            {
-                is_valid = false;
-                break;
-            }
-        }
-
-        cursor++;
-    }
-
-    cursor = 0;
-
-    return is_valid;
-}
-
 static void allocate(void)
 {
     // TODO: store repeating strings once
@@ -418,12 +379,6 @@ json_t* json_new(const unsigned char* input, uint32_t input_size)
     buffer_size = input_size;
     result = malloc(sizeof(json_t));
     
-    // validate input buffer
-    if (!validate())
-    {
-        return NULL;
-    }
-
     // allocate memory
     allocate();
 
