@@ -114,11 +114,11 @@ static void allocate(void)
         }
 
         // node allocation
-        if (c == ',' || c == ']' || c == '}')
+        if (status != IN_KEY && (c == ',' || c == ']' || c == '}'))
         {
             nsize += 1;
         }
-        else if (c == '[' || c == '{')
+        else if (status != IN_KEY && (c == '[' || c == '{'))
         {
             t = c == '[' ? ']' : '}';
             

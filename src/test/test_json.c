@@ -650,6 +650,36 @@ static void test_null(void)
     json_free(json);
 }
 
+static void test_brackets_inside_string(void)
+{
+    const unsigned char buff[] = "{ \"key1\":  \"{}l[]\"}";
+    
+    json_t* json = json_new(buff, 19);
+    ASSERT_UINT(2, json->nodes_size);
+    ASSERT_UINT(9, json->strings_size);
+    ASSERT_STRING("key1{}l[]", json->strings, 8);
+
+    json_node_t node = json->nodes[0];
+    ASSERT_UINT(0, node.key_size);
+    ASSERT_INT(JSON_OBJECT, node.type);
+    ASSERT_UINT(1, node.size);
+    ASSERT_POINTER(&json->nodes[1], node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(NULL, node.parent);
+
+    node = json->nodes[1];
+    ASSERT_UINT(4, node.key_size);
+    ASSERT_UINT(5, node.size);
+    ASSERT_INT(JSON_STRING, node.type);
+    ASSERT_STRING("key1", node.key, 4);
+    ASSERT_STRING("{}l[]", node.string, 5);
+    ASSERT_POINTER(NULL, node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(&json->nodes[0], node.parent);
+
+    json_free(json);
+}
+
 static void test_find_node(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
@@ -763,6 +793,7 @@ void test_json(void)
     test_mixed_array();
     test_bool();
     test_null();
+    test_brackets_inside_string();
     test_find_node();
     test_find_node_nested();
     test_find_node_missing();
