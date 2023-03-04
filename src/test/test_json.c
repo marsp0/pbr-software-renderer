@@ -107,6 +107,38 @@ static void test_string_with_quote(void)
     json_free(json);
 }
 
+static void test_string_with_escape_sequences(void)
+{
+    // { "key\"1":  "\"va\"12\""}
+    const unsigned char buff[] = "{ \"key1\": \"\\\\a\\\"b/c\\bd\\fe\\nf\\rg\\t\"}";
+
+    json_t* json = json_new(buff, 44);
+    
+    ASSERT_UINT(2, json->nodes_size);
+    ASSERT_UINT(19, json->strings_size);
+    ASSERT_STRING("key1\\a\"b/c\bd\fe\nf\rg\t", json->strings, 19);
+
+    json_node_t node = json->nodes[0];
+    ASSERT_UINT(0, node.key_size);
+    ASSERT_INT(JSON_OBJECT, node.type);
+    ASSERT_UINT(1, node.size);
+    ASSERT_POINTER(&json->nodes[1], node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(NULL, node.parent);
+
+    node = json->nodes[1];
+    ASSERT_UINT(4, node.key_size);
+    ASSERT_UINT(15, node.size);
+    ASSERT_INT(JSON_STRING, node.type);
+    ASSERT_STRING("key1", node.key, 4);
+    ASSERT_STRING("\\a\"b/c\bd\fe\nf\rg\t", node.string, 7);
+    ASSERT_POINTER(NULL, node.child);
+    ASSERT_POINTER(NULL, node.next);
+    ASSERT_POINTER(&json->nodes[0], node.parent);
+
+    json_free(json);
+}
+
 static void test_multiple_strings(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\", \"key2\": \"val2\"}";
@@ -781,6 +813,7 @@ void test_json(void)
     test_string();
     test_empty_string();
     test_string_with_quote();
+    test_string_with_escape_sequences();
     test_multiple_strings();
     test_integer();
     test_multiple_integers();

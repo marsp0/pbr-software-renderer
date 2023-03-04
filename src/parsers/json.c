@@ -106,11 +106,22 @@ static void allocate(void)
         }
         else if (c == '"' && status == IN_KEY) 
         {
-            status = buffer[cursor - 1] != '\\' ? BEFORE_KEY : IN_KEY;
+            status = BEFORE_KEY;
         }
         else if (status == IN_KEY)
         {
             ssize++;
+
+            // handle escape sequences
+            t = buffer[cursor + 1];
+
+            if (c == '\\' && (t == '"' || t == '\\'|| 
+                              t == 't' || t == 'b' || 
+                              t == 'f' || t == 'n' || 
+                              t == 'r'))
+            {
+                cursor++;
+            }
         }
 
         // node allocation
@@ -176,70 +187,72 @@ static void parse_string(unsigned char** value, uint32_t* size)
 {
 
     unsigned char c;
+    unsigned char n;
+    unsigned char t;
+    uint32_t start = string_index;
+    uint32_t count = 0;
 
-    bool run        = true;
-    bool memcopy    = true;
-    uint32_t start  = 0;
-    uint32_t end    = 0;
-    status_e status = BEFORE_KEY;
+    cursor++;
 
-    // find beginning and end of string
-    while (run)
+    while (cursor < buffer_size)
     {
         c = buffer[cursor];
+        t = c;
 
-        if (c == '"' && status == BEFORE_KEY)
+        if (c == '"')
         {
-            start = cursor + 1;
-            status = IN_KEY;
+            break;
         }
-        else if (c == '"' && status == IN_KEY)
+        
+        if (c == '\\')
         {
-            if (buffer[cursor - 1] == '\\')
+            n = buffer[cursor + 1];
+            if (n == '"')
             {
-                memcopy = false;
+                t = '"';
             }
-            else
+            else if (n == '\\')
             {
-                end = cursor;
-                run = false;
+                t = '\\';
             }
-        }
+            else if (n == 'b')
+            {
+                t = '\b';
+            }
+            else if (n == 'f')
+            {
+                t = '\f';
+            }
+            else if (n == 'n')
+            {
+                t = '\n';
+            }
+            else if (n == 'r')
+            {
+                t = '\r';
+            }
+            else if (n == 't')
+            {
+                t = '\t';
+            }
 
+            cursor++;
+        }
+        
+        strings[string_index] = t;
+        
+        string_index++;
+        count++;
         cursor++;
     }
 
-    // copy string into string buffer
-    if (memcopy)
+    cursor++;
+
+    if (count)
     {
-        *size = end - start;
-        *value = &strings[string_index];
-
-        memcpy(*value, &buffer[start], *size);
-        string_index += *size;
-
-        return;
+        *size = count;
+        *value = &strings[start];
     }
-
-    // copy manually due to escaped quotes
-    uint32_t count = 0;
-    *value = &strings[string_index];
-
-    for (uint32_t i = start; i < end; i++)
-    {
-
-        if (buffer[i] == '"' && buffer[i - 1] == '\\')
-        {
-            string_index--;
-            count--;
-        }
-
-        strings[string_index] = buffer[i];
-        string_index++;
-        count++;
-    }
-
-    *size = count;
 }
 
 static void parse_string_key(uint32_t index)
