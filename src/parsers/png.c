@@ -91,15 +91,17 @@ static uint32_t d_map[30][2] = {
 };
 
 /*
- * parse_int - parses up to 4 bytes from the stream. MSB
+ * parse_bytes_msb - parses up to 4 bytes from the stream. MSB
  */
-static uint32_t parse_int(uint32_t n)
+static uint32_t parse_bytes_msb(uint32_t n)
 {
     assert(n <= 4);
 
     uint32_t result = 0;
     for (uint32_t i = src_cursor; i < src_cursor + n; i++)
+    {
         result += src_buffer[i] << ((n - (i - src_cursor) - 1) * 8);
+    }
 
     src_cursor += n;
     return result;
@@ -123,7 +125,7 @@ static uint32_t parse_bits_lsb(uint32_t n)
     {
         result += src_buffer[src_cursor] << bits_read;
         bits_read += 8;
-        src_cursor += 1;
+        src_cursor++;
 
         if (src_cursor == chunk.end)
         {
@@ -165,6 +167,7 @@ static void decode_block()
         }
         else if (ll_symbol > 256)                                                       /* symbol is a length (followed by distance) */
         {
+            // BUG: both calls to parse_bits_lsb should be replaced with parse_bits_msb
             uint32_t ll_index = ll_symbol - 257;                                        /* in ll_map 0 maps to 257, 1 maps to 258 etc. */
             uint32_t len = ll_map[ll_index][1] + parse_bits_lsb(ll_map[ll_index][0]);
 
@@ -303,26 +306,26 @@ static void parse_cl_alphabet(uint32_t cl_size)
 static void parse_chunk()
 {
     src_cursor += 4; /* crc bytes from previous chunk */
-    chunk.size = parse_int(4);
-    chunk.type = parse_int(4);
+    chunk.size = parse_bytes_msb(4);
+    chunk.type = parse_bytes_msb(4);
     chunk.end = src_cursor + chunk.size;
 }
 
 static void parse_header()
 {
-    uint32_t size = parse_int(4);
-    uint32_t type = parse_int(4);
+    uint32_t size = parse_bytes_msb(4);
+    uint32_t type = parse_bytes_msb(4);
 
     assert(size == 13);
     assert(type == PNG_HEADER_CHUNK);
 
-    header.width = parse_int(4);
-    header.height = parse_int(4);
-    header.bits_per_pixel = (uint8_t)parse_int(1);
-    header.color_type = (uint8_t)parse_int(1);
-    header.compression = (uint8_t)parse_int(1);
-    header.filter = (uint8_t)parse_int(1);
-    header.interlace = (uint8_t)parse_int(1);
+    header.width            = parse_bytes_msb(4);
+    header.height           = parse_bytes_msb(4);
+    header.bits_per_pixel   = (uint8_t)parse_bytes_msb(1);
+    header.color_type       = (uint8_t)parse_bytes_msb(1);
+    header.compression      = (uint8_t)parse_bytes_msb(1);
+    header.filter           = (uint8_t)parse_bytes_msb(1);
+    header.interlace        = (uint8_t)parse_bytes_msb(1);
 
     assert(header.bits_per_pixel == 8);
     assert(header.color_type == 2 || header.color_type == 6);

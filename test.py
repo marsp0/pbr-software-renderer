@@ -538,14 +538,19 @@ def read_member(stream, member_number):
         # propagate, since it is a real error in that case)
         return False 
     print("-- gzip member %d --"%member_number)
+    
     compression_method = stream.read_byte()
     header_print("Compression Method: %d (%s)"%(compression_method, compression_methods[compression_method]))
+    
     flags = stream.read_byte()
     header_print("Flags: 0x%02x"%(flags))
+    
     mtime = stream.read_uint32_little_endian()
     header_print("Modification time: 0x%08x (%s)"%(mtime, datetime.datetime.fromtimestamp(mtime).ctime()))
+    
     exflags = stream.read_byte()
     header_print("Extra flags: 0x%02x"%(exflags))
+    
     ostype = stream.read_byte()
     header_print("OS Type: %d"%ostype)
 
