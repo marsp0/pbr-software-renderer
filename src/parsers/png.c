@@ -173,8 +173,16 @@ static void decode_block()
 
             uint32_t d_symbol = parse_symbol(d_alphabet);
             uint32_t distance = d_map[d_symbol][1] + parse_bits_lsb(d_map[d_symbol][0]);
-            memcpy(&(dst_buffer[dst_cursor]), &(dst_buffer[dst_cursor - distance]), len);
-            dst_cursor += len;
+
+            uint32_t start = dst_cursor - distance;
+            uint32_t end = dst_cursor - distance + len;
+            while (start < end)
+            {
+                dst_buffer[dst_cursor] = dst_buffer[start];
+
+                start++;
+                dst_cursor++;
+            }
         }
         assert(dst_cursor <= dst_size);
     }
@@ -329,6 +337,8 @@ static void parse_header()
 
     assert(header.bits_per_pixel == 8);
     assert(header.color_type == 2 || header.color_type == 6);
+    assert(header.interlace == 0);
+    assert(header.filter == 0);
 }
 
 static void parse_deflate_stream()
