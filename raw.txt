@@ -1,1 +1,53 @@
 abaabbbabaababbaababaaaabaaabbbbbaa
+
+sub filter
+
+a baa b   b   b 
+	  196 195 195
+a baa b   a   b 
+	  196 194 195
+b aab a   b   a 
+	  194 195 195
+a aab a   a   a
+	  194 194 195
+b bbb b   a   a
+	  196 195 195
+
+
+up filter
+a b   a   a   b   b   b 
+  98  97  97  98  98  98
+a b   a   a   b   a   b 
+  196 194 194 196 195 196
+b a   a   b   a   b   a 
+  37  35  36  37  37  37
+a a   a   b   a   a   a
+  134 132 134 134 134 134
+b b   b   b   b   a   a
+  232 230 232 232 231 231
+
+
+average filter
+a b   a   a   b   b   b 
+  98  97  97  147 146 146  
+a b   a   a   b   a   b 
+  147 145 145 245 242 243
+b a   a   b   a   b   a 
+  170 169 170 48  47  47
+a a   a   b   a   a   a
+  182 181 183 212 211 212
+b b   b   b   b   a   a
+  189 188 189 42  40  41
+
+
+paeth filter
+a b   a   a   b   b   b 
+  98  97  97  196 195 195
+a b   a   a   b   a   b 
+  196 194 194 38  36  37
+b a   a   b   a   b   a 
+  37  35  36  134 133 133
+a a   a   b   a   a   a
+  134 132 134 231 230 231
+b b   b   b   b   a   a
+  232 230 232 74  71  73
