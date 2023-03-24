@@ -29,6 +29,10 @@
  *      https://stackoverflow.com/questions/27713498/examples-of-deflate-compression
  */
 
+/********************/
+/* static variables */
+/********************/
+
 typedef struct
 {
     uint32_t width;
@@ -96,6 +100,10 @@ static uint32_t d_map[30][2] = {
     {9, 1025},  {9, 1537},  {10, 2049}, {10, 3073}, {11, 4097},
     {11, 6145}, {12, 8193}, {12, 12289},{13, 16385},{13, 24577},
 };
+
+/********************/
+/* static functions */
+/********************/
 
 /*
  * parse_bytes_msb - parses up to 4 bytes from the stream. MSB
@@ -507,6 +515,10 @@ static void parse_deflate_stream()
 
     } while (!last);
 }
+
+/********************/
+/* public variables */
+/********************/
 
 texture_t* parse_png(const unsigned char* buf, uint32_t size)
 {
