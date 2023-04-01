@@ -19,29 +19,25 @@
 /* static functions */
 /********************/
 
-uint32_t crc_bitwise(const unsigned char* buffer, 
-                     const uint32_t size, 
-                     const uint32_t poly, 
-                     const uint32_t init,
-                     const uint32_t config)
+uint32_t crc_bitwise(const crc_input_t input)
 {
-    printf("%d\n", config);
+    printf("%d\n", input.config);
     bool xor        = false;
-    uint32_t crc    = init;
+    uint32_t crc    = input.init;
 
-    for (uint32_t i = 0; i < size; i++)
+    for (uint32_t i = 0; i < input.size; i++)
     {
-        crc ^= buffer[i] << 24;
+        crc ^= input.buffer[i] << 24;
 
         for (uint32_t j = 0; j < 8; j++)
         {
             xor = crc & CRC_32_MSB_ON;
             crc = crc << 1;
-            crc = xor ? crc ^ poly : crc;
+            crc = xor ? crc ^ input.poly : crc;
         }
     }
 
-    return crc;
+    return crc ^ input.final;
 }
 
 
@@ -49,15 +45,11 @@ uint32_t crc_bitwise(const unsigned char* buffer,
 /* public functions */
 /********************/
 
-uint32_t crc(const unsigned char* buffer, 
-             const uint32_t size, 
-             const uint32_t poly, 
-             const uint32_t init,
-             const uint32_t config)
+uint32_t crc(const crc_input_t input)
 {
-    if (config & CRC_BITWISE)
+    if (input.config & CRC_BITWISE)
     {
-        return crc_bitwise(buffer, size, poly, init, config);
+        return crc_bitwise(input);
     }
     return 0;
 }

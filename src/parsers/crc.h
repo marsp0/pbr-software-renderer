@@ -8,8 +8,14 @@
 #define CRC_REFLECT_INPUT 		1U << 1
 #define CRC_REFLECT_OUTPUT 		1U << 2
 
-uint32_t crc(const unsigned char* buffer, 
-			 const uint32_t size, 
-			 const uint32_t poly, 
-			 const uint32_t init,
-			 const uint32_t config);
+typedef struct
+{
+	const unsigned char* 	buffer;
+	uint32_t	 			size;
+	uint32_t 				poly;
+	uint32_t 				init;
+	uint32_t				final;
+	uint32_t 				config;
+} crc_input_t;
+
+uint32_t crc(const crc_input_t input);
