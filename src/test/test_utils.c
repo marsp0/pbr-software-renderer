@@ -165,8 +165,8 @@ void assert_uint(uint32_t expected, uint32_t actual, const char* file_name, int3
     {
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
-        printf("Actual:\t\t %d\n", actual);
-        printf("Expected:\t %d\n", expected);
+        printf("Actual:\t\t %u\n", actual);
+        printf("Expected:\t %u\n", expected);
         assert(false);
     }
 }

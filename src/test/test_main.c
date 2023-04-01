@@ -3,6 +3,7 @@
 #include "test_color.h"
 #include "test_json.h"
 #include "test_png.h"
+#include "test_crc.h"
 
 int main()
 {
@@ -11,4 +12,5 @@ int main()
     test_color();
     test_json();
     test_png();
+    test_crc();
 }
