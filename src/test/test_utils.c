@@ -159,14 +159,23 @@ void assert_pointer(const void* expected,const void* actual, const char* file_na
     }
 }
 
-void assert_uint(uint32_t expected, uint32_t actual, const char* file_name, int32_t line_number)
+void assert_uint(uint32_t expected, uint32_t actual, bool is_hex, const char* file_name, int32_t line_number)
 {
     if (expected != actual)
     {
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
-        printf("Actual:\t\t %u\n", actual);
-        printf("Expected:\t %u\n", expected);
+        if (is_hex)
+        {
+            printf("Actual:\t\t %x\n", actual);
+            printf("Expected:\t %x\n", expected);
+        }
+        else
+        {
+            printf("Actual:\t\t %u\n", actual);
+            printf("Expected:\t %u\n", expected);
+        }
+
         assert(false);
     }
 }

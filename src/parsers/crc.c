@@ -7,7 +7,7 @@
 /*      defines     */
 /********************/
 
-#define CRC_32_MSB_ON       0x80000000
+#define CRC_32_MSB_ON   0x80000000
 
 /********************/
 /* static variables */
@@ -19,15 +19,33 @@
 /* static functions */
 /********************/
 
+uint32_t reflect(uint32_t input, uint32_t size)
+{
+    uint32_t output = 0;
+    uint32_t last = size - 1;
+
+    for (uint32_t i = 0; i < size; i++)
+    {
+        output |= (input & (1U << i)) ? 1U << (last - i) : 0;
+    }
+
+    return output;
+}
+
 uint32_t crc_bitwise(const crc_input_t input)
 {
-    printf("%d\n", input.config);
     bool xor        = false;
     uint32_t crc    = input.init;
 
     for (uint32_t i = 0; i < input.size; i++)
     {
-        crc ^= input.buffer[i] << 24;
+        unsigned char b = input.buffer[i];
+        if (input.config & CRC_REFLECT_INPUT)
+        {
+            b = (unsigned char)reflect(input.buffer[i], 8);
+        }
+        
+        crc ^= b << 24;
 
         for (uint32_t j = 0; j < 8; j++)
         {
@@ -36,6 +54,8 @@ uint32_t crc_bitwise(const crc_input_t input)
             crc = xor ? crc ^ input.poly : crc;
         }
     }
+
+    crc = input.config & CRC_REFLECT_OUTPUT ? reflect(crc, 32) : crc;
 
     return crc ^ input.final;
 }
