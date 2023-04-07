@@ -209,7 +209,9 @@ mesh_t* parse_scene(const char* file_name)
 
     parse_meshes(json);
 
-    // chunk_t binary_chunk = parse_chunk(buffer);
+    chunk_t binary_chunk = parse_chunk(buffer);
+
+    parse_png(binary_chunk.data, 2165850);
 
     mesh_t* result = NULL;
 

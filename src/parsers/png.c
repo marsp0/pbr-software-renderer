@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "../constants.h"
+#include "crc.h"
 
 /*
  * List of resources that helped with the parsing of png
@@ -28,6 +29,18 @@
  *      https://stackoverflow.com/questions/72144290/puff-c-how-does-the-huffman-decoding-work
  *      https://stackoverflow.com/questions/27713498/examples-of-deflate-compression
  */
+
+/********************/
+/*      defines     */
+/********************/
+
+#define PNG_NODE_POOL_SIZE      2 * (286 + 32 + 19)     /* LL_SIZE + D_SIZE + CL_SIZE */
+#define PNG_HEADER_CHUNK        1229472850
+#define PNG_DATA_CHUNK          1229209940
+#define PNG_END_CHUNK           1229278788
+#define ZLIB_CTRL_VAL           31
+#define ZLIB_COMPRESSION        8
+#define DEFLATE_WINDOW_SIZE     32768
 
 /********************/
 /* static variables */
@@ -445,11 +458,41 @@ static void parse_cl_alphabet(uint32_t cl_size)
     generate_huffman_codes(cl_alphabet, lengths, 19);
 }
 
+static void validate_chunk(uint32_t size)
+{
+    uint32_t old_cursor = src_cursor;
+
+    crc_input_t params = {
+        .buffer = &src_buffer[src_cursor],
+        .size = size,
+        .poly = CRC_32_POLY,
+        .init = CRC_32_INIT,
+        .final = CRC_32_INIT,
+        .config = CRC_REFLECT_INPUT | CRC_REFLECT_OUTPUT
+    };
+
+    uint32_t actual_crc = crc(params);
+
+    src_cursor += size; // size + type
+    uint32_t expected_crc = parse_bytes_msb(4);
+
+    assert(actual_crc == expected_crc);
+
+    src_cursor = old_cursor;
+}
+
 static void parse_chunk()
 {
-    // TODO: verify crc instead of just skipping it
-    src_cursor += 4;  // crc bytes from previous chunk
+    // move past crc bytes of prev chunk.
+    // this cannot be moved from here 
+    // because of the way we stitch chunks together
+    // in parse_bits_lsb
+    src_cursor += 4; 
+
     chunk.size = parse_bytes_msb(4);
+
+    validate_chunk(chunk.size + 4);
+
     chunk.type = parse_bytes_msb(4);
     chunk.end = src_cursor + chunk.size;
 }
@@ -457,9 +500,11 @@ static void parse_chunk()
 static void parse_header()
 {
     uint32_t size = parse_bytes_msb(4);
-    uint32_t type = parse_bytes_msb(4);
-
     assert(size == 13);
+
+    validate_chunk(size + 4);
+
+    uint32_t type = parse_bytes_msb(4);
     assert(type == PNG_HEADER_CHUNK);
 
     header.width            = parse_bytes_msb(4);

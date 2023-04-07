@@ -3,6 +3,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/********************
+ *  Notes
+ *
+ *  1. Sunshine tutorial - sunshine2k.de/articles/coding/crc/understanding_crc.html
+ *  2. Sunshine calculator - sunshine2k.de/coding/javascript/crc/crc_js.html
+ *  3. CRC tutorial with info on Normal vs Reversed polynomials - github.com/michaelangel007/crc32
+ *
+ ********************/
+
 /********************/
 /*      defines     */
 /********************/
