@@ -22,7 +22,8 @@
 /* static variables */
 /********************/
 
-static uint32_t table[256] = { 0 };
+static uint32_t poly_table[256] = { 0 };
+static uint32_t reflect_table[256] = { 0 };
 
 /********************/
 /* static functions */
@@ -69,8 +70,9 @@ static uint32_t crc_bitwise(const crc_input_t input)
     return crc ^ input.final;
 }
 
-static void init_table(uint32_t poly)
+static void init_tables(crc_input_t input)
 {
+    // populate poly table
     bool xor = false;
 
     for (uint32_t i = 0; i < 256; i++)
@@ -81,16 +83,25 @@ static void init_table(uint32_t poly)
         {
             xor = crc & CRC_32_MSB_ON;
             crc = crc << 1;
-            crc = xor ? crc ^ poly : crc;
+            crc = xor ? crc ^ input.poly : crc;
         }
 
-        table[i] = crc;
+        poly_table[i] = crc;
+    }
+
+    // populate byte reflection table
+    if (input.config & CRC_REFLECT_INPUT)
+    {
+        for (uint32_t i = 0; i < 256; i++)
+        {
+            reflect_table[i] = reflect(i, 8);
+        }
     }
 }
 
 static uint32_t crc_table(const crc_input_t input)
 {
-    init_table(input.poly);
+    init_tables(input);
 
     uint32_t crc = input.init;
 
@@ -99,12 +110,12 @@ static uint32_t crc_table(const crc_input_t input)
         unsigned char b = input.buffer[i];
         if (input.config & CRC_REFLECT_INPUT)
         {
-            b = (unsigned char)reflect(input.buffer[i], 8);
+            b = (unsigned char)reflect_table[input.buffer[i]];
         }
 
         unsigned char index = (unsigned char)((crc ^ (b << 24)) >> 24);
 
-        crc = (crc << 8) ^ table[index];
+        crc = (crc << 8) ^ poly_table[index];
     }
 
     crc = input.config & CRC_REFLECT_OUTPUT ? reflect(crc, 32) : crc;
