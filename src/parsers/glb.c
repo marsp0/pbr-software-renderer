@@ -6,10 +6,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../constants.h"
 #include "png.h"
 #include "json.h"
 #include "scene_validator.h"
+#include "json_scene_constants.h"
 
 // GLTF 2 specification - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
 
@@ -205,7 +205,7 @@ mesh_t* parse_scene(const char* file_name)
     // process json
     chunk_t json_chunk = parse_chunk(buffer);
     json_t* json = json_new(json_chunk.data, json_chunk.size);
-    validate_scene(json);
+    validate_glb_scene(json);
 
     parse_meshes(json);
 

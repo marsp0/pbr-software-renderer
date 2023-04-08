@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "../constants.h"
+#include "json_scene_constants.h"
 
 static void assert_container(const json_node_t* node, uint32_t size, const char* name)
 {
@@ -43,7 +43,7 @@ static void validate_asset(json_t* json)
 	assert(strncmp(version->string, "2.0", (uint64_t)version->size) == 0);
 }
 
-static void validate_scene_node(json_t* json)
+static void validate_scene(json_t* json)
 {
 	/*scene exists*/
 	const json_node_t* scenes = json_find_node(json, 1, JSON_SCENES);
@@ -257,10 +257,10 @@ static void validate_buffer_views(json_t* json)
 	assert_container(buffers, buffer_count + 1, JSON_BUFFERS);
 }
 
-void validate_scene(json_t* json)
+void validate_glb_scene(json_t* json)
 {
 	validate_asset(json);
-	validate_scene_node(json);
+	validate_scene(json);
 	validate_nodes(json);
 	validate_meshes(json);
 	validate_materials(json);
