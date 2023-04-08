@@ -4,6 +4,3 @@
 
 #define MESH_NAME_SIZE 256
 #define MAX_MESHES 20 /* max number of meshes to render */
-
-/* file parsing */
-#define MAX_JSON_DEPTH          512

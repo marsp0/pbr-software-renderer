@@ -14,6 +14,10 @@
 // GLTF 2 specification - https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
 
 /********************/
+/*      defines     */
+/********************/
+
+/********************/
 /* static variables */
 /********************/
 
