@@ -56,6 +56,8 @@ typedef struct
     uint8_t  filter;
     uint8_t  interlace;
     uint8_t  stride;
+    uint32_t row_width;
+    uint32_t scanline_width;
 } header_t;
 
 typedef struct
@@ -89,7 +91,6 @@ static unsigned char* dst_buffer                        = NULL;
 static uint32_t filter                                  = 0;
 static uint32_t g_cursor                                = 0;
 static uint32_t bb_cursor                               = 0;
-static uint32_t scanline_width                          = 0;
 static unsigned char back_buffer[DEFLATE_WINDOW_SIZE]   = { 0 };
 
 static uint32_t node_index                              = 0;
@@ -180,62 +181,75 @@ static uint32_t parse_symbol(node_t* alphabet)
     return current->symbol;
 }
 
-static unsigned char sub_filter(unsigned char symbol)
+static unsigned char sub_filter(const unsigned char symbol)
 {
-    uint32_t row_index = (g_cursor % scanline_width) - 1;
-    unsigned char left = row_index >= header.stride ? dst_buffer[dst_cursor - header.stride] : 0;
+    unsigned char left = 0;
+    if (dst_cursor % header.row_width >= header.stride)
+    {
+        left = dst_buffer[dst_cursor - header.stride];
+    }
 
     return symbol + left;
 }
 
-static unsigned char up_filter(unsigned char symbol)
+static unsigned char up_filter(const unsigned char symbol)
 {
-    uint32_t row_width = scanline_width - 1;
-    unsigned char up = dst_cursor >= row_width ? dst_buffer[dst_cursor - row_width] : 0;
+    unsigned char up = 0;
+
+    if (dst_cursor >= header.row_width)
+    {
+        up = dst_buffer[dst_cursor - header.row_width];
+    }
 
     return symbol + up;
 }
 
-static unsigned char average_filter(unsigned char symbol)
+static unsigned char average_filter(const uint32_t symbol)
 {
-    uint32_t row_index = (g_cursor % scanline_width) - 1;
-    uint32_t left = row_index >= header.stride ? dst_buffer[dst_cursor - header.stride] : 0;
-    
-    uint32_t row_width = scanline_width - 1;
-    uint32_t up = dst_cursor >= row_width ? dst_buffer[dst_cursor - row_width] : 0;
-    
-    uint32_t result = (uint32_t)symbol + (left + up) / 2;
-    return (unsigned char)result;
+    uint32_t left = 0;
+    uint32_t up = 0;
+
+    if (dst_cursor % header.row_width >= header.stride)
+    {
+        left = dst_buffer[dst_cursor - header.stride];
+    }
+
+    if (dst_cursor > header.row_width)
+    {
+        up = dst_buffer[dst_cursor - header.row_width];
+    }
+
+    return (unsigned char)(symbol + (left + up) / 2);
 }
 
-static unsigned char paeth_filter(unsigned char symbol)
+static unsigned char paeth_filter(const unsigned char symbol)
 {
     int32_t a = 0;
     int32_t b = 0;
     int32_t c = 0;
-    uint32_t width = header.stride * header.width;
-    uint32_t stride = header.stride;
+    const uint32_t row_width = header.row_width;
+    const uint32_t stride = header.stride;
 
-    if (dst_cursor % width >= stride)
+    if (dst_cursor % row_width >= stride)
     {
         // pixel to the left
         a = dst_buffer[dst_cursor - stride];
     }
-    if (dst_cursor >= width)
+    if (dst_cursor >= row_width)
     {
         // pixel above
-        b = dst_buffer[dst_cursor - width];
+        b = dst_buffer[dst_cursor - row_width];
     }
-    if (dst_cursor > (width + stride) && (dst_cursor % width) >= stride)
+    if (dst_cursor > (row_width + stride) && (dst_cursor % row_width) >= stride)
     {
         // pixel to the left and above
-        c = dst_buffer[dst_cursor - width - header.stride];
+        c = dst_buffer[dst_cursor - row_width - stride];
     }
 
-    int32_t p = a + b - c;
-    int32_t pa = abs(p - a);
-    int32_t pb = abs(p - b);
-    int32_t pc = abs(p - c);
+    const int32_t p = a + b - c;
+    const int32_t pa = abs(p - a);
+    const int32_t pb = abs(p - b);
+    const int32_t pc = abs(p - c);
 
     uint32_t t;
 
@@ -258,7 +272,7 @@ static unsigned char paeth_filter(unsigned char symbol)
 static void process_symbol(unsigned char symbol)
 {
     
-    if (g_cursor % scanline_width == 0)
+    if (g_cursor % header.scanline_width == 0)
     {
         filter = symbol;
     }
@@ -515,6 +529,8 @@ static void parse_header()
     header.filter           = (uint8_t)parse_bytes_msb(1);
     header.interlace        = (uint8_t)parse_bytes_msb(1);
     header.stride           = header.color_type == 2 ? 3 : 4;
+    header.row_width        = header.width * header.stride;
+    header.scanline_width   = header.width * header.stride + 1;
 
     assert(header.bit_depth == 8);
     assert(header.color_type == 2 || header.color_type == 6);
@@ -587,10 +603,9 @@ texture_t* parse_png(const unsigned char* buf, uint32_t size)
 
     texture_t* texture = texture_new(header.width, header.height, header.stride);
     
-    dst_cursor = 0;
-    dst_size = header.width * header.height * header.stride;
-    dst_buffer = texture->data;
-    scanline_width = header.width * header.stride + 1;
+    dst_cursor      = 0;
+    dst_size        = header.width * header.height * header.stride;
+    dst_buffer      = texture->data;
 
     while (chunk.type != PNG_END_CHUNK)
     {
