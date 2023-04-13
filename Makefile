@@ -15,7 +15,7 @@ TEST_OBJ_FILES  := $(TEST_SRC_NAMES:%.c=$(OBJ_DIR)/%.o)
 LDFLAGS         := -lX11 -lm
 space           :=
 VPATH           := $(subst $(space),:,$(shell find . -type d))
-GCCFLAGS        := -std=c17 -Wall -Wextra -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -Werror -g3 -pg
+GCCFLAGS        := -std=c17 -Wall -Wextra -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -g3 -pg
 
 .PHONY: all
 all: out/$(EXE) out/$(TEST_EXE)
