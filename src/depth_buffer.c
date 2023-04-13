@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-depth_buffer_t* depth_buffer_new(int width, int height)
+depth_buffer_t* depth_buffer_new(uint32_t width, uint32_t height)
 {
     assert(width > 0 && height > 0);
 
@@ -14,7 +14,7 @@ depth_buffer_t* depth_buffer_new(int width, int height)
 
     return buffer;
 }
-
+#if 0
 void depth_buffer_set(depth_buffer_t* buffer, int x, int y, float val)
 {
 
@@ -24,7 +24,7 @@ float depth_buffer_get(depth_buffer_t* buffer, int x, int y)
 {
     return 0.f;
 }
-
+#endif
 void depth_buffer_free(depth_buffer_t* buffer)
 {
     free(buffer->data);

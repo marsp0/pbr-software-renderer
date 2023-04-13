@@ -1,33 +1,32 @@
 # https://en.wikipedia.org/wiki/Makefile
 
-SRCDIR 			:= ./src
-OBJDIR			:= ./out
+SRC_DIR         := ./src
+OBJ_DIR         := ./out
 
-EXECUTABLE    	:= renderer
-SRCFILES	 	:= $(shell find $(SRCDIR) -name "*.c")
-SRCNAMES 		:= $(filter-out test%.c, $(notdir $(SRCFILES)))
-OBJFILES 	    := $(SRCNAMES:%.c=$(OBJDIR)/%.o)
+EXE             := renderer
+SRC_FILES       := $(shell find $(SRC_DIR) -name "*.c")
+SRC_NAMES       := $(filter-out test%.c, $(notdir $(SRC_FILES)))
+OBJ_FILES       := $(SRC_NAMES:%.c=$(OBJ_DIR)/%.o)
 
-TSTEXECUTABLE 	:= test_renderer
-TSTSRCNAMES 	:= $(filter-out main.c, $(notdir $(SRCFILES)))
-TSTOBJFILES 	:= $(TSTSRCNAMES:%.c=$(OBJDIR)/%.o)
+TEST_EXE        := test_renderer
+TEST_SRC_NAMES  := $(filter-out main.c, $(notdir $(SRC_FILES)))
+TEST_OBJ_FILES  := $(TEST_SRC_NAMES:%.c=$(OBJ_DIR)/%.o)
 
-# LDFLAGS       	:= -lX11 -lXi -lSDL2 -lm
-LDFLAGS       	:= -lX11 -lXi -lm -lX11
-space 			:=
-VPATH 			:= $(subst $(space),:,$(shell find . -type d))
-GCCFLAGS      	:= -std=c17 -Wall -Wno-pointer-sign -Wextra -Wshadow
+LDFLAGS         := -lX11 -lm
+space           :=
+VPATH           := $(subst $(space),:,$(shell find . -type d))
+GCCFLAGS        := -std=c17 -Wall -Wextra -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -Werror -g3 -pg
 
 .PHONY: all
-all: out/$(EXECUTABLE) out/$(TSTEXECUTABLE)
+all: out/$(EXE) out/$(TEST_EXE)
 
-out/$(EXECUTABLE): $(OBJFILES)
-	gcc $(GCCFLAGS) $(OBJFILES) -o $@ $(LDFLAGS)
+out/$(EXE): $(OBJ_FILES)
+	gcc $(GCCFLAGS) $(OBJ_FILES) -o $@ $(LDFLAGS)
 
-out/$(TSTEXECUTABLE): $(TSTOBJFILES)
-	gcc $(GCCFLAGS) $(TSTOBJFILES) -o $@ $(LDFLAGS)
+out/$(TEST_EXE): $(TEST_OBJ_FILES)
+	gcc $(GCCFLAGS) $(TEST_OBJ_FILES) -o $@ $(LDFLAGS)
 
-$(OBJDIR)/%.o: %.c
+$(OBJ_DIR)/%.o: %.c
 	gcc $(GCCFLAGS) -c $< -o $@
 
 

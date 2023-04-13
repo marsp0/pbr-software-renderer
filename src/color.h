@@ -1,6 +1,6 @@
 #pragma once
 
-static const float ONE_OVER_255 = 0.0039215;
+static const float ONE_OVER_255 = 0.0039215f;
 
 typedef struct
 {

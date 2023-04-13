@@ -2,15 +2,19 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "file_parser.h"
+#include "parsers/glb.h"
 #include "linux/display.h"
+#include "renderer.h"
 
 int main()
 {
-    /*const char* file_name = "/home/martin/Documents/Projects/pbr-software-renderer/assets/test.obj";
-    parse_obj_scene(file_name);*/
+    const char* file_name = "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb";
+    renderer_t* renderer = renderer_new(800, 600, file_name);
+    renderer->mesh = parse_scene(file_name);
 
-    display_t* dsp = display_new(800, 600);
+    renderer_free(renderer);
+
+    /*display_t* dsp = display_new(800, 600);
     frame_buffer_t* buf = frame_buffer_new(800, 600);
 
     XEvent e;
@@ -25,5 +29,5 @@ int main()
     }
 
     
-    display_free(dsp);
+    display_free(dsp);*/
 }
