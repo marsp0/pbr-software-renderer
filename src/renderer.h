@@ -3,9 +3,6 @@
 #include "frame_buffer.h"
 #include "depth_buffer.h"
 #include "mesh.h"
-#include "constants.h"
-
-/*TODO: header files should not include other header files*/
 
 typedef struct
 {

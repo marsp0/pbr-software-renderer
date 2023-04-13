@@ -3,8 +3,10 @@
 #include <stdint.h>
 
 #include "math.h"
-#include "constants.h"
 #include "texture.h"
+
+#define MESH_NAME_SIZE 256
+#define MAX_MESHES 20
 
 typedef struct
 {

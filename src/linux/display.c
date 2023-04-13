@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "../constants.h"
-
 display_t* display_new(uint32_t width, uint32_t height)
 {
 

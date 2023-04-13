@@ -7,7 +7,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../constants.h"
 #include "crc.h"
 
 /*

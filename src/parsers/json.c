@@ -8,8 +8,6 @@
 #include <stdarg.h>
 #include <ctype.h>
 
-#include "../constants.h"
-
 /********************/
 /* static variables */
 /********************/

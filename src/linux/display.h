@@ -5,6 +5,8 @@
 
 #include "../frame_buffer.h"
 
+#define RGB_CHANNELS 4 /* XCreateImage fails if this is different than 1, 2 or 4 */
+
 typedef struct
 {
 
