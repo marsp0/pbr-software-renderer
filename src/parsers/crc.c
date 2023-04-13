@@ -49,10 +49,10 @@ static uint32_t crc_bitwise(const crc_input_t input)
 
     for (uint32_t i = 0; i < input.size; i++)
     {
-        unsigned char b = input.buffer[i];
+        uint32_t b = input.buffer[i];
         if (input.config & CRC_REFLECT_INPUT)
         {
-            b = (unsigned char)reflect(input.buffer[i], 8);
+            b = reflect(input.buffer[i], 8);
         }
         
         crc ^= b << 24;
@@ -107,13 +107,13 @@ static uint32_t crc_table(const crc_input_t input)
 
     for (uint32_t i = 0; i < input.size; i++)
     {
-        unsigned char b = input.buffer[i];
+        uint32_t b = input.buffer[i];
         if (input.config & CRC_REFLECT_INPUT)
         {
-            b = (unsigned char)reflect_table[input.buffer[i]];
+            b = reflect_table[input.buffer[i]];
         }
 
-        unsigned char index = (unsigned char)((crc ^ (b << 24)) >> 24);
+        uint32_t index = (crc ^ (b << 24)) >> 24;
 
         crc = (crc << 8) ^ poly_table[index];
     }
