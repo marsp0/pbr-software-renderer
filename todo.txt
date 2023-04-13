@@ -8,3 +8,4 @@
 	- start using gcov to check code coverage and also detect dead/unused code.
 - 13.04.2023
 	- allow for multiple meshes to be rendered
+	- parse multiple textures in parallel
