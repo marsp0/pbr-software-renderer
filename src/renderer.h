@@ -11,9 +11,9 @@ typedef struct
 {
     int32_t         width;
     int32_t         height;
-    mesh_t*         mesh;
     frame_buffer_t* frame_buffer;
     depth_buffer_t* depth_buffer;
+    mesh_t*         mesh;
 } renderer_t;
 
 renderer_t* renderer_new(int width, int height, const char* file_name);

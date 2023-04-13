@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 renderer_t* renderer_new(int width, int height, const char* file_name)
 {
@@ -10,6 +11,7 @@ renderer_t* renderer_new(int width, int height, const char* file_name)
     renderer_t* renderer = malloc(sizeof(renderer_t));
     renderer->width = width;
     renderer->height = height;
+
     printf("file name: %s\n", file_name);
 
     /*renderer->meshes_size = parse_obj_scene(file_name, renderer->meshes, MAX_MESHES);*/
