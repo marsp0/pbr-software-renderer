@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
+    
     - name: Install dependencies
       shell: bash
       run: |
@@ -22,13 +23,37 @@ jobs:
           --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-10 \
           --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-10 \
           --slave /usr/bin/gcov gcov /usr/bin/gcov-10
-    - name: Compile
+    
+    - name: Compile Renderer
       shell: bash
       run: |
         if [ ! -d "./out" ]; then
           mkdir out
         fi
-        make
+        make renderer
+    
+    - name: Compile Tests
+      shell: bash
+      run: make clean && make test
+    
     - name: Run Tests
       shell: bash
-      run: ./out/test_renderer
+      run: ./out/test_renderer && ls -lah && ls -lah ./out
+      
+    - name: Run gcov
+      shell: bash
+      run: |
+        for filename in `find ./src -not \( -path ./src/test -prune \) -name "*.c"`; 
+        do 
+          echo $filename
+          gcov -pb -r -o ./out $filename
+        done
+        ls -la
+    
+    - name: Codecov
+      uses: codecov/codecov-action@v3.1.2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ./
+        fail_ci_if_error: true
+        verbose: true

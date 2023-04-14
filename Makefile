@@ -17,8 +17,12 @@ space           :=
 VPATH           := $(subst $(space),:,$(shell find . -type d))
 GCCFLAGS        := -std=c17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -g3 -pg
 
-.PHONY: all
+
+.PHONY: all renderer test
 all: out/$(EXE) out/$(TEST_EXE)
+renderer: out/$(EXE)
+test: out/$(TEST_EXE)
+test: GCCFLAGS += --coverage
 
 out/$(EXE): $(OBJ_FILES)
 	gcc $(GCCFLAGS) $(OBJ_FILES) -o $@ $(LDFLAGS)

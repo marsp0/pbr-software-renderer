@@ -1,3 +1,5 @@
+[![Build](https://github.com/marsp0/pbr-software-renderer/actions/workflows/pipeline.yml/badge.svg)](https://github.com/marsp0/pbr-software-renderer/actions/workflows/pipeline.yml)
+
 # PBR Software Renderer
 
 TODO: nice description
