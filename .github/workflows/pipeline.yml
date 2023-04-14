@@ -24,11 +24,7 @@ jobs:
           --slave /usr/bin/gcov gcov /usr/bin/gcov-10
     - name: Compile
       shell: bash
-      env:
-        CC:   gcc-10
       run: |
-        gcc --version
-        gcc-10 --version
         if [ ! -d "./out" ]; then
           mkdir out
         fi
