@@ -12,15 +12,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
-    - name: Codecov
-      uses: codecov/codecov-action@v3.1.2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./coverage1.xml,./coverage2.xml # optional
-        flags: unittests # optional
-        name: codecov-umbrella # optional
-        fail_ci_if_error: true # optional (default = false)
-        verbose: true # optional (default = false)
     - name: Install dependencies
       shell: bash
       run: |
@@ -41,3 +32,13 @@ jobs:
     - name: Run Tests
       shell: bash
       run: ./out/test_renderer
+    - name: Codecov
+      uses: codecov/codecov-action@v3.1.2
+      with:
+        gcov: true
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage1.xml,./coverage2.xml # optional
+        flags: unittests # optional
+        name: codecov-umbrella # optional
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)
