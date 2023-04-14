@@ -38,7 +38,7 @@ jobs:
     
     - name: Run Tests
       shell: bash
-      run: ./out/test_renderer
+      run: ./out/test_renderer && ls -lah && ls -lah ./out
       
     - name: Run gcov
       shell: bash
