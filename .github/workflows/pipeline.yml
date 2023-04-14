@@ -38,10 +38,7 @@ jobs:
     
     - name: Run Tests
       shell: bash
-      run: |
-        cd out
-        ./test_renderer
-        cd ../
+      run: ./out/test_renderer
       
     - name: Run gcov
       shell: bash
