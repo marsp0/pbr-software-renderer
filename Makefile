@@ -32,4 +32,4 @@ $(OBJ_DIR)/%.o: %.c
 
 .PHONY: clean
 clean:
-	@rm -f out/* && echo "[CL]  out/"
+	@rm -f out/* && echo "[CL]  out/"   
