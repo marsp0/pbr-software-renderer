@@ -38,14 +38,26 @@ jobs:
     
     - name: Run Tests
       shell: bash
-      run: ./out/test_renderer
+      run: |
+        cd out
+        ./test_renderer
+        cd ../
+      
+    - name: Run gcov
+      shell: bash
+      run: |
+        cd out
+        for filename in `find ../src -not \( -path ../src/test -prune \) -name "*.c"`; 
+        do 
+          gcov -pb -o . $filename
+        done
+        cd ../
     
     - name: Codecov
       uses: codecov/codecov-action@v3.1.2
       with:
-        gcov: true
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./coverage1.xml,./coverage2.xml # optional
+        directory: ./out
         flags: unittests # optional
         name: codecov-umbrella # optional
         fail_ci_if_error: true # optional (default = false)
