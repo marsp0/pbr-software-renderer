@@ -46,7 +46,7 @@ jobs:
         for filename in `find ./src -not \( -path ./src/test -prune \) -name "*.c"`; 
         do 
           echo $filename
-          gcov -pb -r -o . $filename
+          gcov -pb -r -o ./out $filename
         done
         ls -la
     
