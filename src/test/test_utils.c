@@ -8,7 +8,7 @@
 
 static float epsilon = 0.0005f;
 
-void assert_vec(vec_t expected, vec_t actual, const char* message, const char* file_name, int32_t line_number)
+void assert_vec(vec_t expected, vec_t actual, const char* file_name, int32_t line_number)
 {
     bool result = true;
     float x_diff = (float)fabs(expected.x - actual.x);
@@ -19,10 +19,6 @@ void assert_vec(vec_t expected, vec_t actual, const char* message, const char* f
     
     if (!result)
     {
-        if (strcmp(message, "") != 0)
-        {
-            printf(message);
-        }
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
         printf("Actual:\t\t %f, %f, %f\n", actual.x, actual.y, actual.z);
@@ -32,17 +28,13 @@ void assert_vec(vec_t expected, vec_t actual, const char* message, const char* f
     assert(result);
 }
 
-void assert_float(float expected, float actual, const char* message, const char* file_name, int32_t line_number)
+void assert_float(float expected, float actual, const char* file_name, int32_t line_number)
 {
     float diff = (float)fabs(expected - actual);
     float result = true;
     if (diff > epsilon)
     {
         result = false;
-        if (strcmp(message, "") != 0)
-        {
-            printf(message);
-        }
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
         printf("Actual:\t\t %f\n", actual);
@@ -51,14 +43,10 @@ void assert_float(float expected, float actual, const char* message, const char*
     assert(result);
 }
 
-void assert_int(int32_t expected, int32_t actual, const char* message, const char* file_name, int32_t line_number)
+void assert_int(int32_t expected, int32_t actual, const char* file_name, int32_t line_number)
 {
     if (expected != actual)
     {
-        if (strcmp(message, "") != 0)
-        {
-            printf(message);
-        }
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
         printf("Actual:\t\t %d\n", actual);
@@ -67,7 +55,7 @@ void assert_int(int32_t expected, int32_t actual, const char* message, const cha
     }
 }
 
-void assert_mat(mat_t expected, mat_t actual, const char* message, const char* file_name, int32_t line_number)
+void assert_mat(mat_t expected, mat_t actual, const char* file_name, int32_t line_number)
 {
     bool result = true;
     for (int32_t i = 0; i < 4; i++)
@@ -81,10 +69,6 @@ void assert_mat(mat_t expected, mat_t actual, const char* message, const char* f
     
     if (!result)
     {
-        if (strcmp(message, "") != 0)
-        {
-            printf(message);
-        }
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
         printf("Actual/Expected:\n");
@@ -101,7 +85,7 @@ void assert_mat(mat_t expected, mat_t actual, const char* message, const char* f
     assert(result);
 }
 
-void assert_col(color expected, color actual, const char* message, const char* file_name, int32_t line_number)
+void assert_col(color expected, color actual, const char* file_name, int32_t line_number)
 {
     bool result = true;
     float r_diff = (float)fabs(expected.r - actual.r);
@@ -112,10 +96,6 @@ void assert_col(color expected, color actual, const char* message, const char* f
     
     if (!result)
     {
-        if (strcmp(message, "") != 0)
-        {
-            printf(message);
-        }
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
         printf("Actual:\t\t %f, %f, %f\n", actual.r, actual.g, actual.b);
