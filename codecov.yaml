@@ -1,4 +1,1 @@
-ignore:
-  - "src/test"
-fixes:
-  - "::src/"
+
