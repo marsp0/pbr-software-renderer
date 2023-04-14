@@ -1,4 +1,4 @@
-[![Build](https://github.com/marsp0/pbr-software-renderer/actions/workflows/pipeline.yml/badge.svg)](https://github.com/marsp0/pbr-software-renderer/actions/workflows/pipeline.yml) [![codecov](https://codecov.io/github/marsp0/pbr-software-renderer/branch/master/graph/badge.svg?token=7GF3KIIJDR)](https://codecov.io/github/marsp0/pbr-software-renderer)
+[![Build](https://github.com/marsp0/pbr-software-renderer/actions/workflows/pipeline.yml/badge.svg)](https://github.com/marsp0/pbr-software-renderer/actions/workflows/pipeline.yml) [![codecov](https://codecov.io/github/marsp0/pbr-software-renderer/branch/master/graph/badge.svg?token=7GF3KIIJDR)](https://app.codecov.io/github/marsp0/pbr-software-renderer)
 
 # PBR Software Renderer
 
