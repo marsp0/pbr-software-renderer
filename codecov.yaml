@@ -1,4 +1,4 @@
 ignore:
   - "src/test"
 fixes:
-  - "::src/
+  - "::src/"
