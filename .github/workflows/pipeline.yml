@@ -46,14 +46,12 @@ jobs:
     - name: Run gcov
       shell: bash
       run: |
-        cd out
-        for filename in `find ../src -not \( -path ../src/test -prune \) -name "*.c"`; 
+        for filename in `find ./src -not \( -path ./src/test -prune \) -name "*.c"`; 
         do 
           echo $filename
-          gcov -pb -r -s src/* -o . $filename
+          gcov -pb -r -o . $filename
         done
         ls -la
-        cd ../
     
     - name: Codecov
       uses: codecov/codecov-action@v3.1.2
