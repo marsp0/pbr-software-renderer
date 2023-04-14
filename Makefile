@@ -17,14 +17,18 @@ space           :=
 VPATH           := $(subst $(space),:,$(shell find . -type d))
 GCCFLAGS        := -std=c17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -g3 -pg -fprofile-arcs -ftest-coverage -O0
 
+# compile all
 .PHONY: all
 all: out/$(EXE) out/$(TEST_EXE)
 
-out/$(EXE): $(OBJ_FILES)
-	gcc $(GCCFLAGS) $(OBJ_FILES) -o $@ $(LDFLAGS)
+# compile just renderer
+.PHONY: renderer
+renderer: out/$(EXE)
 
-out/$(TEST_EXE): $(TEST_OBJ_FILES)
-	gcc $(GCCFLAGS) $(TEST_OBJ_FILES) -o $@ $(LDFLAGS)
+# compile test with gcov
+.PHONY: test
+gcov: out/$(TEST_EXE)
+gcov: GCCFLAGS += --coverage
 
 $(OBJ_DIR)/%.o: %.c
 	gcc $(GCCFLAGS) -c $< -o $@
