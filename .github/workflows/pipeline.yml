@@ -16,6 +16,7 @@ jobs:
       shell: bash
       run: |
          sudo apt update
+         sudo apt remove gcc
          sudo apt install gcc-10
     - name: Compile
       shell: bash
