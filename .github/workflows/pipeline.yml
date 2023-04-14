@@ -49,7 +49,7 @@ jobs:
         cd out
         for filename in `find ../src -not \( -path ../src/test -prune \) -name "*.c"`; 
         do 
-          gcov -pb -o . $filename
+          gcov -pb $filename
         done
         cd ../
     
