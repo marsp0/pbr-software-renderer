@@ -10,7 +10,6 @@
 // abaabbbabaababbaababaaaabaaabbbbbaa
 
 // sub filter
-
 // a baa b   b   b 
 // 	  196 195 195
 // a baa b   a   b 
@@ -58,8 +57,7 @@
 // b b   b   b   b   a   a
 //   232 230 232 74  71  73
 
-
-void test_png(void)
+static void test_simple_png(void)
 {
     unsigned char buffer[] = {
         0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,     // png magic number
@@ -91,4 +89,11 @@ void test_png(void)
     // aab aaa 
     // bbb baa
     ASSERT_STRING("baabbbbaababaababaaabaaabbbbaa", tex->data, 30);
+
+    texture_free(tex);
+}
+
+void test_png(void)
+{
+    test_simple_png();
 }
