@@ -1,8 +1,8 @@
 #include "test_json.h"
 
 #include <stddef.h>
-#include "test_utils.h"
 
+#include "test_utils.h"
 #include "../parsers/json.h"
 
 static void test_string(void)
@@ -38,7 +38,7 @@ static void test_string(void)
 static void test_empty_string(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"\", \"\":2}";
-    
+
     json_t* json = json_new(buff, 20);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(4, json->strings_size);
@@ -109,10 +109,9 @@ static void test_string_with_quote(void)
 
 static void test_string_with_escape_sequences(void)
 {
-    // { "key\"1":  "\"va\"12\""}
     const unsigned char buff[] = "{ \"key1\": \"\\\\a\\\"b/c\\bd\\fe\\nf\\rg\\t\"}";
 
-    json_t* json = json_new(buff, 44);
+    json_t* json = json_new(buff, 35);
     
     ASSERT_UINT(2, json->nodes_size);
     ASSERT_UINT(19, json->strings_size);
