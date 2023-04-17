@@ -1,5 +1,8 @@
 ## TODO
 
+- [ ] 17.04.2023
+	- [ ] add support for camera in gltf.
+	- [ ] add support for light settings in gltf. This might require extension
 - [ ] 13.04.2023
 	- [ ] allow for multiple meshes to be rendered
 	- [ ] parse multiple textures in parallel

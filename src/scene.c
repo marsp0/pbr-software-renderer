@@ -42,5 +42,6 @@ void scene_reset(scene_t* scene)
 void scene_free(scene_t* scene)
 {
 	mesh_free(scene->mesh);
+	camera_free(scene->camera);
 	free(scene);
 }

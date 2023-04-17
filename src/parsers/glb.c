@@ -268,10 +268,11 @@ scene_t* parse_scene(const char* file_path)
     json_t* json = json_new(json_chunk.data, json_chunk.size);
     validate_glb_scene(json);
 
-    // scene->camera
     // scene->dir_light
     // scene->point_light
     scene->mesh = parse_meshes(json, binary);
+    vec_t cam_pos = { .x = 0.f, .y = 0.f, .z = 0.f };
+    scene->camera = camera_new(cam_pos);
 
     // free buffers
     json_free(json);

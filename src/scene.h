@@ -1,11 +1,12 @@
 #pragma once
 
 #include "mesh.h"
+#include "camera.h"
 
 typedef struct
 {
-	mesh_t* mesh;
-	// vec_t 	camera;
+	mesh_t* 	mesh;
+	camera_t* 	camera;
 	// vec_t 	dir_light;
 	// vec_t 	point_light;
 } scene_t;
