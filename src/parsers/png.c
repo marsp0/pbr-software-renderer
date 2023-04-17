@@ -66,11 +66,11 @@ typedef struct
     uint32_t end;
 } chunk_t;
 
-typedef struct node_t
+typedef struct node
 {
     uint32_t symbol;
-    struct node_t* left;
-    struct node_t* right;
+    struct node* left;
+    struct node* right;
 } node_t;
 
 static header_t header                                  = { 0 };
@@ -553,7 +553,7 @@ static void parse_deflate_stream()
         cl_alphabet = NULL;
         ll_alphabet = NULL;
         d_alphabet = NULL;
-        memset(&node_pool, 0, sizeof(node_pool));
+        memset(&node_pool, 0, PNG_NODE_POOL_SIZE * sizeof(node_t));
 
         last = parse_bits_lsb(1);
         type = parse_bits_lsb(2);
@@ -574,6 +574,36 @@ static void parse_deflate_stream()
         decode_block();
 
     } while (!last);
+}
+
+static void reset_static_data()
+{
+    memset(&header, 0, sizeof(header_t));
+    memset(&chunk, 0, sizeof(chunk_t));
+
+    bit_buffer  = 0;
+    bit_count   = 0;
+
+    src_cursor  = 0;
+    src_size    = 0;
+    src_buffer  = NULL;
+
+    dst_cursor  = 0;
+    dst_size    = 0;
+    dst_buffer  = NULL;
+
+    filter      = 0;
+    g_cursor    = 0;
+    bb_cursor   = 0;
+    memset(back_buffer, 0, DEFLATE_WINDOW_SIZE);
+
+    node_index  = 0;
+    cl_alphabet = NULL;
+    ll_alphabet = NULL;
+    d_alphabet  = NULL;
+
+    memset(node_pool, 0, PNG_NODE_POOL_SIZE * sizeof(node_t));
+
 }
 
 /********************/
@@ -617,6 +647,8 @@ texture_t* parse_png(const unsigned char* buf, uint32_t size)
 
         src_cursor = chunk.end;
     }
+
+    reset_static_data();
 
     return texture;
 }
