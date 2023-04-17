@@ -32,22 +32,12 @@ void renderer_run(renderer_t* renderer)
     {
         // handle input
 
-        // update
+        // update    	
 
         // draw
         exit(1);
     }
 }
-
-// void renderer_render_mesh(renderer_t* renderer)
-// {
-
-// }
-
-// void renderer_clear(renderer_t* renderer)
-// {
-
-// }
 
 void renderer_free(renderer_t* renderer)
 {
