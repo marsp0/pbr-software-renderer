@@ -33,6 +33,8 @@ static void test_water_bottle()
 	ASSERT_UINT(scene->mesh->occlusion->width, 2048);
 	ASSERT_UINT(scene->mesh->occlusion->height, 2048);
 	ASSERT_UINT(scene->mesh->occlusion->stride, 3);
+
+	scene_free(scene);
 }
 
 void test_scene()
