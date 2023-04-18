@@ -1,5 +1,5 @@
 #pragma once
 
-#include "../mesh.h"
+#include "../scene.h"
 
-mesh_t* parse_scene(const char* file_name);
+scene_t* parse_scene(const char* file_path);

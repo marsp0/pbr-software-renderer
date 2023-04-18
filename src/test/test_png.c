@@ -80,9 +80,7 @@ static void test_simple_png(void)
         0xae, 0x42, 0x60, 0x82                              // end chunk crc
     };
 
-    uint32_t buffer_size = 86;
-
-    texture_t* tex = parse_png(buffer, buffer_size);
+    texture_t* tex = parse_png(buffer, sizeof(buffer - 1));
     // baa bbb 
     // baa bab 
     // aab aba 

@@ -8,9 +8,10 @@
 
 int main()
 {
-    const char* file_name = "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb";
-    renderer_t* renderer = renderer_new(800, 600, file_name);
-    renderer->mesh = parse_scene(file_name);
+    const char* file_path = "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb";
+    renderer_t* renderer = renderer_new(800, 600, file_path);
+
+    // renderer_run(renderer);
 
     renderer_free(renderer);
 

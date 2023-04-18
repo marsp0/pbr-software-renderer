@@ -127,7 +127,18 @@ void assert_string(const char* expected, const char* actual, uint32_t size, cons
     assert(result);
 }
 
-void assert_pointer(const void* expected,const void* actual, const char* file_name, int32_t line_number)
+void assert_pointer_exists(const void* pointer, const char* file_name, int32_t line_number)
+{
+    if (!pointer)
+    {
+        printf("File:\t\t %s\n", file_name);
+        printf("Line:\t\t %i\n", line_number);
+        printf("Pointer is NULL\n");
+        assert(false);
+    }
+}
+
+void assert_pointer(const void* expected, const void* actual, const char* file_name, int32_t line_number)
 {
     if (expected != actual)
     {

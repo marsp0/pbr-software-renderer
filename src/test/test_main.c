@@ -4,6 +4,7 @@
 #include "test_json.h"
 #include "test_png.h"
 #include "test_crc.h"
+#include "test_scene.h"
 
 int main()
 {
@@ -13,4 +14,5 @@ int main()
     test_json();
     test_png();
     test_crc();
+    test_scene();
 }

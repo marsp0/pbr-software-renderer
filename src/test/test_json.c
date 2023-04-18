@@ -1,15 +1,15 @@
 #include "test_json.h"
 
 #include <stddef.h>
-#include "test_utils.h"
 
+#include "test_utils.h"
 #include "../parsers/json.h"
 
 static void test_string(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\"}";
     
-    json_t* json = json_new(buff, 19);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(2, json->nodes_size);
     ASSERT_UINT(9, json->strings_size);
     ASSERT_STRING("key1val12", json->strings, 8);
@@ -38,8 +38,8 @@ static void test_string(void)
 static void test_empty_string(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"\", \"\":2}";
-    
-    json_t* json = json_new(buff, 20);
+
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(4, json->strings_size);
     ASSERT_STRING("key1", json->strings, 4);
@@ -81,7 +81,7 @@ static void test_string_with_quote(void)
     // { "key\"1":  "\"va\"12\""}
     const unsigned char buff[] = "{ \"key\\\"1\":  \"\\\"va\\\"12\\\"\"}";
     
-    json_t* json = json_new(buff, 26);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(2, json->nodes_size);
     ASSERT_UINT(12, json->strings_size);
     ASSERT_STRING("key\"1\"va\"12\"", json->strings, 12);
@@ -109,10 +109,9 @@ static void test_string_with_quote(void)
 
 static void test_string_with_escape_sequences(void)
 {
-    // { "key\"1":  "\"va\"12\""}
     const unsigned char buff[] = "{ \"key1\": \"\\\\a\\\"b/c\\bd\\fe\\nf\\rg\\t\"}";
 
-    json_t* json = json_new(buff, 44);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     
     ASSERT_UINT(2, json->nodes_size);
     ASSERT_UINT(19, json->strings_size);
@@ -143,7 +142,7 @@ static void test_multiple_strings(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"val12\", \"key2\": \"val2\"}";
 
-    json_t* json = json_new(buff, 35);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(17, json->strings_size);
     ASSERT_STRING("key1val12key2val2", json->strings, 8);
@@ -183,7 +182,7 @@ static void test_integer(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 }";
     
-    json_t* json = json_new(buff, 16);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(2, json->nodes_size);
     ASSERT_UINT(4, json->strings_size);
     ASSERT_STRING("key1", json->strings, 4);
@@ -214,7 +213,7 @@ static void test_multiple_integers(void)
 {
     const unsigned char buff[] = "{ \"key1\":  123 , \"key2\": -3432}";
     
-    json_t* json = json_new(buff, 31);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(8, json->strings_size);
     ASSERT_STRING("key1key2", json->strings, 8);
@@ -255,7 +254,7 @@ static void test_real(void)
 {
     const unsigned char buff[] = "{ \"key1\":  0.321 }";
     
-    json_t* json = json_new(buff, 18);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(2, json->nodes_size);
     ASSERT_UINT(4, json->strings_size);
     ASSERT_STRING("key1", json->strings, 4);
@@ -285,7 +284,7 @@ static void test_multiple_reals(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321 , \"key2\": -34.32}";
     
-    json_t* json = json_new(buff, 33);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(8, json->strings_size);
     ASSERT_STRING("key1key2", json->strings, 8);
@@ -325,7 +324,7 @@ static void test_nested_objects(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
-    json_t* json = json_new(buff, 56);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(4, json->nodes_size);
     ASSERT_UINT(29, json->strings_size);
     ASSERT_STRING("key1key2inner_key1some string", json->strings, 29);
@@ -374,7 +373,7 @@ static void test_empty_containers(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [  ]  , \"key2.2\"  : {} }";
     
-    json_t* json = json_new(buff, 36);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(10, json->strings_size);
     ASSERT_STRING("key1key2.2", json->strings, 10);
@@ -413,7 +412,7 @@ static void test_int_array(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ 1, 2, 3 , 3] }";
     
-    json_t* json = json_new(buff, 27);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(6, json->nodes_size);
     ASSERT_UINT(4, json->strings_size);
     ASSERT_STRING("key1", json->strings, 4);
@@ -478,7 +477,7 @@ static void test_string_array(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ \"one\", \"two\"] }";
     
-    json_t* json = json_new(buff, 28);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(4, json->nodes_size);
     ASSERT_UINT(10, json->strings_size);
     ASSERT_STRING("key1onetwo", json->strings, 10);
@@ -525,7 +524,7 @@ static void test_mixed_array(void)
 {
     const unsigned char buff[] = "{ \"key1\": [ \"one\", 2, { \"key3\" : [ 0.23, 3222.432 ]}] }";
     
-    json_t* json = json_new(buff, 55);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(8, json->nodes_size);
     ASSERT_UINT(11, json->strings_size);
     ASSERT_STRING("key1onekey3", json->strings, 11);
@@ -607,7 +606,7 @@ static void test_bool(void)
 {
     const unsigned char buff[] = "{ \"key1\":  false, \"key2\":true}";
     
-    json_t* json = json_new(buff, 30);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(8, json->strings_size);
     ASSERT_STRING("key1key2", json->strings, 4);
@@ -647,7 +646,7 @@ static void test_null(void)
 {
     const unsigned char buff[] = "{ \"key1\":  false, \"key2\":null}";
     
-    json_t* json = json_new(buff, 30);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(3, json->nodes_size);
     ASSERT_UINT(8, json->strings_size);
     ASSERT_STRING("key1key2", json->strings, 4);
@@ -686,7 +685,7 @@ static void test_brackets_inside_string(void)
 {
     const unsigned char buff[] = "{ \"key1\":  \"{}l[]\"}";
     
-    json_t* json = json_new(buff, 19);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     ASSERT_UINT(2, json->nodes_size);
     ASSERT_UINT(9, json->strings_size);
     ASSERT_STRING("key1{}l[]", json->strings, 8);
@@ -716,7 +715,7 @@ static void test_find_node(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
-    json_t* json = json_new(buff, 56);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     const json_node_t* node = json_find_node(json, 1, "key1");
 
     ASSERT_POINTER(&json->nodes[1], node);
@@ -735,7 +734,7 @@ static void test_find_node_nested(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
-    json_t* json = json_new(buff, 56);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
     const json_node_t* node = json_find_node(json, 2, "key2", "inner_key1");
 
     ASSERT_POINTER(&json->nodes[3], node);
@@ -755,7 +754,7 @@ static void test_find_node_missing(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
-    json_t* json = json_new(buff, 56);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
 
     const json_node_t* node = json_find_node(json, 2, "doesnt_exist", "inner_key1");
     ASSERT_POINTER(NULL, node);
@@ -770,7 +769,7 @@ static void test_find_node_invalid(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
-    json_t* json = json_new(buff, 56);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
 
     const json_node_t* node = json_find_node(json, 0, "doesnt_exist", "inner_key1");
     ASSERT_POINTER(NULL, node);
@@ -782,7 +781,7 @@ static void test_find_child(void)
 {
     const unsigned char buff[] = "{ \"key1\": 0.321, \"key2\": { \"inner_key1\": \"some string\"}}";
 
-    json_t* json = json_new(buff, 56);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
 
     const json_node_t* node = json_find_child(&json->nodes[0], "key2");
     ASSERT_POINTER(&json->nodes[2], node);
@@ -797,7 +796,7 @@ static void test_find_array_element(void)
 {
     const unsigned char buff[] = "{ \"key1\":  [ \"one\", \"two\"] }";
     
-    json_t* json = json_new(buff, 28);
+    json_t* json = json_new(buff, sizeof(buff) - 1);
 
     const json_node_t* node = json_find_index(&json->nodes[1], 1);
     ASSERT_POINTER(&json->nodes[3], node);

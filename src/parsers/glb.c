@@ -8,6 +8,7 @@
 
 #include "png.h"
 #include "json.h"
+#include "../file.h"
 #include "scene_validator.h"
 #include "json_scene_constants.h"
 
@@ -35,33 +36,33 @@ typedef struct
     uint32_t count;
 } view_t;
 
-static uint32_t cursor = 0;
-
 /********************/
 /* static functions */
 /********************/
 
-static uint32_t parse_bytes_lsb(const unsigned char* buffer, const uint32_t n)
+static uint32_t parse_bytes_lsb(file_t* file, const uint32_t n)
 {
     assert(n <= 4);
 
     uint32_t result = 0;
-    for (uint32_t i = cursor; i < cursor + n; i++)
+
+    for (uint32_t i = file->cursor; i < file->cursor + n; i++)
     {
-        result += buffer[i] << ((i - cursor) * 8);
+        result += file->data[i] << ((i - file->cursor) * 8);
     }
-    cursor += n;
+
+    file->cursor += n;
     return result;
 }
 
-static chunk_t parse_chunk(const unsigned char* buffer)
+static chunk_t parse_chunk(file_t* file)
 {
     chunk_t chunk;
-    chunk.size = parse_bytes_lsb(buffer, 4);
-    chunk.type = parse_bytes_lsb(buffer, 4);
-    chunk.data = &buffer[cursor];
+    chunk.size = parse_bytes_lsb(file, 4);
+    chunk.type = parse_bytes_lsb(file, 4);
+    chunk.data = &file->data[file->cursor];
 
-    cursor += chunk.size;
+    file->cursor += chunk.size;
 
     // assert that chunk is either bin or json
     assert(chunk.type == 0x4E4F534A || chunk.type == 0x004E4942);
@@ -69,11 +70,11 @@ static chunk_t parse_chunk(const unsigned char* buffer)
     return chunk;
 }
 
-static void parse_header(const unsigned char* buffer)
+static void parse_header(file_t* file)
 {
-    uint32_t magic = parse_bytes_lsb(buffer, 4);
-    uint32_t version = parse_bytes_lsb(buffer, 4);
-    cursor += 4;
+    uint32_t magic = parse_bytes_lsb(file, 4);
+    uint32_t version = parse_bytes_lsb(file, 4);
+    file->cursor += 4;
 
     assert(magic == 0x46546C67);
     assert(version == 2);
@@ -252,44 +253,30 @@ static mesh_t* parse_meshes(const json_t* json, const chunk_t binary)
 /* public functions */
 /********************/
 
-mesh_t* parse_scene(const char* file_name)
+scene_t* parse_scene(const char* file_path)
 {
+    file_t* file = file_new(file_path);
+    scene_t* scene = malloc(sizeof(scene_t));
 
-    // open file
-    FILE* file = fopen(file_name, "r");
-    assert(file != NULL);
-
-    // get file size
-    fseek(file, 0, SEEK_END);
-    uint32_t file_size = (uint32_t)ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    // copy file contents into buffer
-    unsigned char* buffer = malloc(file_size);
-    fread(buffer, sizeof(unsigned char), file_size, file);
-
-    // close file as its no longer needed
-    fclose(file);
-
-    printf("Allocating %.02fMB for %s\n", file_size / 1024.0 / 1024.0, file_name);
-
-    cursor = 0;
-
-    parse_header(buffer);
+    parse_header(file);
 
     // parse json and binary chunks
-    const chunk_t json_chunk = parse_chunk(buffer);
-    const chunk_t binary = parse_chunk(buffer);
+    const chunk_t json_chunk = parse_chunk(file);
+    const chunk_t binary = parse_chunk(file);
 
     // parse json tree
     json_t* json = json_new(json_chunk.data, json_chunk.size);
     validate_glb_scene(json);
 
-    mesh_t* mesh = parse_meshes(json, binary);
+    // scene->dir_light
+    // scene->point_light
+    scene->mesh = parse_meshes(json, binary);
+    vec_t cam_pos = { .x = 0.f, .y = 0.f, .z = 0.f };
+    scene->camera = camera_new(cam_pos);
 
     // free buffers
     json_free(json);
-    free(buffer);
+    file_free(file);
 
-    return mesh;
+    return scene;
 }
