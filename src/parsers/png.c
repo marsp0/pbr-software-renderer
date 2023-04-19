@@ -97,7 +97,7 @@ static node_t* cl_alphabet                              = NULL;
 static node_t* ll_alphabet                              = NULL;
 static node_t* d_alphabet                               = NULL;
 static node_t node_pool[PNG_NODE_POOL_SIZE]             = { 0 };
-static uint32_t ll_map[29][2]   = {
+static const uint32_t ll_map[29][2]   = {
     {0, 3},    {0, 4},    {0, 5},    {0, 6},    {0, 7}, 
     {0, 8},    {0, 9},    {0, 10},   {1, 11},   {1, 13},
     {1, 15},   {1, 17},   {2, 19},   {2, 23},   {2, 27},
@@ -105,7 +105,7 @@ static uint32_t ll_map[29][2]   = {
     {4, 67},   {4, 83},   {4, 99},   {4, 115},  {5, 131},
     {5, 163},  {5, 195},  {5, 227},  {0, 258}
 };
-static uint32_t d_map[30][2] = {
+static const uint32_t d_map[30][2] = {
     {0, 1},     {0, 2},     {0, 3},     {0, 4},     {1, 5},
     {1, 7},     {2, 9},     {2, 13},    {3, 17},    {3, 25},
     {4, 33},    {4, 49},    {5, 65},    {5, 97},    {6, 129},

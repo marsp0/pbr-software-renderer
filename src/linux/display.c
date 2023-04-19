@@ -1,9 +1,10 @@
 #include "display.h"
 
 #include <assert.h>
-#include <X11/Xutil.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <X11/Xutil.h>
 
 display_t* display_new(uint32_t width, uint32_t height)
 {
@@ -33,8 +34,14 @@ display_t* display_new(uint32_t width, uint32_t height)
      * The XCreateSimpleWindow function creates an unmapped InputOutput subwindow for a specified parent window, 
      * returns the window ID of the created window
      */
-    dsp->window = XCreateSimpleWindow(dsp->display, XRootWindow(dsp->display, dsp->screen), 
-                                      0, 0, width, height, 0, XWhitePixel(dsp->display, dsp->screen), 
+    dsp->window = XCreateSimpleWindow(dsp->display,
+                                      XRootWindow(dsp->display, dsp->screen),
+                                      0,
+                                      0,
+                                      width,
+                                      height,
+                                      0,
+                                      XWhitePixel(dsp->display, dsp->screen),
                                       XBlackPixel(dsp->display, dsp->screen));
 
     /* configure the window */
@@ -48,12 +55,19 @@ display_t* display_new(uint32_t width, uint32_t height)
     XFree(config);
 
     /* create image that will hold buffer info */
-    dsp->ximage = XCreateImage(dsp->display, XDefaultVisual(dsp->display, dsp->screen), 
-                               (uint32_t)XDefaultDepth(dsp->display, dsp->screen), ZPixmap, 0, 
-                               (char*)dsp->buffer, width, height, 8 * RGB_CHANNELS, 0);
+    dsp->ximage = XCreateImage(dsp->display,
+                               XDefaultVisual(dsp->display, dsp->screen),
+                               (uint32_t)XDefaultDepth(dsp->display, dsp->screen),
+                               ZPixmap,
+                               0,
+                               (char*)dsp->buffer,
+                               width,
+                               height,
+                               8 * RGB_CHANNELS,
+                               0);
 
     /* event subscription */
-    long key_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask;
+    long key_mask = ExposureMask | KeyReleaseMask | ButtonReleaseMask;
     XSelectInput(dsp->display, dsp->window, key_mask);
 
     /*
@@ -67,43 +81,59 @@ display_t* display_new(uint32_t width, uint32_t height)
     return dsp;
 }
 
-#if 0
 void display_draw(display_t* dsp, const frame_buffer_t* frame_buffer)
 {
+    printf("%p\n", (void*)frame_buffer);
     /*  
      * Copy contents from framebuffer to ximage
      * framebuffer - RGBA
      * display buffer - BGRA (alpha is not used)
     */
-    for (int i = 0; i < dsp->width * RGB_CHANNELS; i += RGB_CHANNELS)
+    for (uint32_t i = 0; i < dsp->width * RGB_CHANNELS; i += RGB_CHANNELS)
     {
-        for (int j = 0; j < dsp->height; j++)
+        for (uint32_t j = 0; j < dsp->height; j++)
         {
             dsp->buffer[i + j * dsp->width * RGB_CHANNELS + 0] = 255;
         }
     }
 
-    for (int i = 0; i < 20 * RGB_CHANNELS; i += RGB_CHANNELS)
+    for (uint32_t i = 0; i < 20 * RGB_CHANNELS; i += RGB_CHANNELS)
     {
-        for (int j = 0; j < 20; j++)
+        for (uint32_t j = 0; j < 20; j++)
         {
             dsp->buffer[i + j * dsp->width * RGB_CHANNELS + 2] = 255;
         }
     }
 
     /* show image on display */
-    XPutImage(dsp->display, dsp->window, XDefaultGC(dsp->display, dsp->screen), 
-              dsp->ximage, 0, 0, 0, 0, dsp->width, dsp->height);
+    XPutImage(dsp->display,
+              dsp->window,
+              XDefaultGC(dsp->display, dsp->screen),
+              dsp->ximage,
+              0,
+              0,
+              0,
+              0,
+              dsp->width,
+              dsp->height);
+
     XFlush(dsp->display);
 }
-#endif
+
+void display_clear(display_t* dsp)
+{
+    XClearArea(dsp->display, dsp->window, 0, 0, 1, 1, true);
+    XFlush(dsp->display);
+}
 
 void display_free(display_t* dsp)
 {
     XUnmapWindow(dsp->display, dsp->window);
+
     dsp->ximage->data = NULL;
     XDestroyImage(dsp->ximage);
     XCloseDisplay(dsp->display);
+
     free(dsp->buffer);
     free(dsp);
 }

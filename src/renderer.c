@@ -6,42 +6,49 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "linux/input.h"
+
 renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 {
 
     renderer_t* renderer = malloc(sizeof(renderer_t));
-    renderer->width = width;
-    renderer->height = height;
-    renderer->scene = scene_new(file_path);
 
-    /* 
-     * TODO 
-     * allocate framebuffer
-     * allocate depthbuffer
-     */
+    renderer->scene         = scene_new(file_path);
+    renderer->display       = display_new(width, height);
+    renderer->frame_buffer  = frame_buffer_new(width, height);
+    renderer->depth_buffer  = depth_buffer_new(width, height);
+    renderer->width         = width;
+    renderer->height        = height;
+
     return renderer;
 }
 
 void renderer_run(renderer_t* renderer)
 {
-    bool shutdown = false;
+    input_t input = 0;
 
     printf("%p\n", (void*)renderer);
 
-    while (!shutdown)
+    while (!(input & QUIT))
     {
-        // handle input
+        printf("new frame\n");
 
-        // update    	
+        // process input
+        handle_input(renderer->display, &input);
 
-        // draw
-        exit(1);
+        // update
+
+        // render
+        display_draw(renderer->display, renderer->frame_buffer);
+        display_clear(renderer->display);
     }
 }
 
 void renderer_free(renderer_t* renderer)
 {
-    /*free framebuffer*/
-    /*free deothbuffer*/
+    scene_free(renderer->scene);
+    display_free(renderer->display);
+    frame_buffer_free(renderer->frame_buffer);
+    depth_buffer_free(renderer->depth_buffer);
     free(renderer);
 }
