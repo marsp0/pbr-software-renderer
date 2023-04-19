@@ -27,8 +27,6 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 void renderer_run(renderer_t* renderer)
 {
     input_t input       = 0;
-    // timepoint_t before  = {0, 0};
-    // timepoint_t after   = {0, 0};
 
     printf("%p\n", (void*)renderer);
 

@@ -3,11 +3,13 @@
 #include <stdlib.h>
 
 #include "renderer.h"
+#include "time_utils.h"
 
 int main()
 {
-    const char* file_path = "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb";
-    renderer_t* renderer = renderer_new(800, 600, file_path);
+    time_init();
+
+    renderer_t* renderer = renderer_new(800, 600, "./assets/WaterBottle.glb");
 
     renderer_run(renderer);
 

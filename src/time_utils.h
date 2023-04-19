@@ -1,8 +1,13 @@
 #pragma once
 
 #include <time.h>
+#include <stdint.h>
 
-typedef struct timespec timepoint_t; // 16 bytes
+#define SECOND      1000000000
+#define MILLISECOND 1000000
+#define MICROSECOND 1000
 
-timepoint_t time_now();
-timepoint_t time_diff(const timepoint_t before, const timepoint_t after);
+typedef int64_t timestamp_t;
+
+void        time_init();
+timestamp_t time_now();
