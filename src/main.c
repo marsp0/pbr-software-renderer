@@ -2,8 +2,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "parsers/glb.h"
-#include "linux/display.h"
 #include "renderer.h"
 
 int main()

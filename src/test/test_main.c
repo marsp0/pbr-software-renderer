@@ -5,6 +5,7 @@
 #include "test_png.h"
 #include "test_crc.h"
 #include "test_scene.h"
+#include "test_time.h"
 
 int main()
 {
@@ -15,4 +16,5 @@ int main()
     test_png();
     test_crc();
     test_scene();
+    test_time();
 }

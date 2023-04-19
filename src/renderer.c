@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include "linux/input.h"
+#include "time_utils.h"
 
 renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 {
@@ -25,7 +26,9 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 
 void renderer_run(renderer_t* renderer)
 {
-    input_t input = 0;
+    input_t input       = 0;
+    // timepoint_t before  = {0, 0};
+    // timepoint_t after   = {0, 0};
 
     printf("%p\n", (void*)renderer);
 
@@ -39,6 +42,7 @@ void renderer_run(renderer_t* renderer)
         // update
 
         // render
+        // display_draw_mesh(renderer, renderer->mesh);
         display_draw(renderer->display, renderer->frame_buffer);
         display_clear(renderer->display);
     }
