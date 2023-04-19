@@ -26,13 +26,15 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 
 void renderer_run(renderer_t* renderer)
 {
-    input_t input       = 0;
-
-    printf("%p\n", (void*)renderer);
+    input_t input = 0;
+    timestamp_t start;
+    timestamp_t end;
+    timestamp_t diff;
+    timestamp_t frame_time = 16 * MILLISECOND;
 
     while (!(input & QUIT))
     {
-        printf("new frame\n");
+        start = time_now();
 
         // process input
         handle_input(renderer->display, &input);
@@ -43,6 +45,15 @@ void renderer_run(renderer_t* renderer)
         // display_draw_mesh(renderer, renderer->mesh);
         display_draw(renderer->display, renderer->frame_buffer);
         display_clear(renderer->display);
+
+        // maintain 60fps
+        end = time_now();
+        diff = end - start;
+
+        if (frame_time > diff)
+        {
+            nanosleep((const struct timespec[]){{ 0, frame_time - diff }}, NULL);
+        }
     }
 }
 
