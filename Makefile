@@ -15,7 +15,7 @@ TEST_OBJ_FILES  := $(TEST_SRC_NAMES:%.c=$(OBJ_DIR)/%.o)
 LDFLAGS         := -lX11 -lm
 space           :=
 VPATH           := $(subst $(space),:,$(shell find . -type d))
-GCCFLAGS        := -std=c17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -g3 -pg
+GCCFLAGS        := -std=gnu17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -g3 -pg
 
 
 .PHONY: all renderer test

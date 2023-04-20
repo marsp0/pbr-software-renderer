@@ -8,7 +8,10 @@
 
 static float epsilon = 0.0005f;
 
-void assert_vec(vec_t expected, vec_t actual, const char* file_name, int32_t line_number)
+void assert_vec(vec_t expected,
+                vec_t actual,
+                const char* file_name,
+                int32_t line_number)
 {
     bool result = true;
     float x_diff = (float)fabs(expected.x - actual.x);
@@ -28,7 +31,10 @@ void assert_vec(vec_t expected, vec_t actual, const char* file_name, int32_t lin
     assert(result);
 }
 
-void assert_float(float expected, float actual, const char* file_name, int32_t line_number)
+void assert_float(float expected,
+                  float actual,
+                  const char* file_name,
+                  int32_t line_number)
 {
     float diff = (float)fabs(expected - actual);
     float result = true;
@@ -43,19 +49,34 @@ void assert_float(float expected, float actual, const char* file_name, int32_t l
     assert(result);
 }
 
-void assert_int(int32_t expected, int32_t actual, const char* file_name, int32_t line_number)
+void assert_int(int64_t expected,
+                int64_t actual,
+                int64_t delta,
+                const char* file_name,
+                int32_t line_number)
 {
-    if (expected != actual)
+    int64_t diff = expected > actual
+                 ? expected - actual
+                 : actual - expected;
+
+    if (diff > delta)
     {
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
-        printf("Actual:\t\t %d\n", actual);
-        printf("Expected:\t %d\n", expected);
+        printf("Actual:\t\t %ld\n", actual);
+        printf("Expected:\t %ld\n", expected);
+        if (delta > 0)
+        {
+            printf("Delta:\t\t %ld\n", delta);
+        }
         assert(false);
     }
 }
 
-void assert_mat(mat_t expected, mat_t actual, const char* file_name, int32_t line_number)
+void assert_mat(mat_t expected,
+                mat_t actual,
+                const char* file_name,
+                int32_t line_number)
 {
     bool result = true;
     for (int32_t i = 0; i < 4; i++)
@@ -85,7 +106,10 @@ void assert_mat(mat_t expected, mat_t actual, const char* file_name, int32_t lin
     assert(result);
 }
 
-void assert_col(color expected, color actual, const char* file_name, int32_t line_number)
+void assert_col(color expected,
+                color actual,
+                const char* file_name,
+                int32_t line_number)
 {
     bool result = true;
     float r_diff = (float)fabs(expected.r - actual.r);
@@ -105,7 +129,11 @@ void assert_col(color expected, color actual, const char* file_name, int32_t lin
     assert(result);
 }
 
-void assert_string(const char* expected, const char* actual, uint32_t size, const char* file_name, int32_t line_number)
+void assert_string(const char* expected,
+                   const char* actual,
+                   uint32_t size,
+                   const char* file_name,
+                   int32_t line_number)
 {
     bool result = true;
     for (uint32_t i = 0; i < size; i++)
@@ -127,7 +155,9 @@ void assert_string(const char* expected, const char* actual, uint32_t size, cons
     assert(result);
 }
 
-void assert_pointer_exists(const void* pointer, const char* file_name, int32_t line_number)
+void assert_pointer_exists(const void* pointer,
+                           const char* file_name,
+                           int32_t line_number)
 {
     if (!pointer)
     {
@@ -138,7 +168,10 @@ void assert_pointer_exists(const void* pointer, const char* file_name, int32_t l
     }
 }
 
-void assert_pointer(const void* expected, const void* actual, const char* file_name, int32_t line_number)
+void assert_pointer(const void* expected,
+                    const void* actual,
+                    const char* file_name,
+                    int32_t line_number)
 {
     if (expected != actual)
     {
@@ -150,9 +183,17 @@ void assert_pointer(const void* expected, const void* actual, const char* file_n
     }
 }
 
-void assert_uint(uint32_t expected, uint32_t actual, bool is_hex, const char* file_name, int32_t line_number)
+void assert_uint(uint32_t expected,
+                 uint32_t actual,
+                 bool is_hex,
+                 uint32_t delta,
+                 const char* file_name,
+                 int32_t line_number)
 {
-    if (expected != actual)
+    uint32_t diff = expected > actual
+                  ? expected - actual
+                  : actual - expected;
+    if (diff > delta)
     {
         printf("File:\t\t %s\n", file_name);
         printf("Line:\t\t %i\n", line_number);
@@ -166,12 +207,19 @@ void assert_uint(uint32_t expected, uint32_t actual, bool is_hex, const char* fi
             printf("Actual:\t\t %u\n", actual);
             printf("Expected:\t %u\n", expected);
         }
+        if (delta > 0)
+        {
+            printf("Delta:\t\t %u\n", delta);
+        }
 
         assert(false);
     }
 }
 
-void assert_bool(bool expected, bool actual, const char* file_name, int32_t line_number)
+void assert_bool(bool expected,
+                 bool actual,
+                 const char* file_name,
+                 int32_t line_number)
 {
     if (expected != actual)
     {

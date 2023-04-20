@@ -1,13 +1,19 @@
 #pragma once
 
+#include "scene.h"
 #include "frame_buffer.h"
 #include "depth_buffer.h"
-#include "scene.h"
+#include "linux/display.h"
 
 typedef struct
 {
     scene_t*        scene;
-    frame_buffer_t* frame_buffer;
+    display_t*      display;
+
+    frame_buffer_t* current;
+    frame_buffer_t* front;
+    frame_buffer_t* back;
+
     depth_buffer_t* depth_buffer;
     uint32_t        width;
     uint32_t        height;

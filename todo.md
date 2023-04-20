@@ -1,5 +1,13 @@
 ## TODO
 
+- [ ] 20.04.2023
+	- [ ] both the frame buffer and the display have their own CHANNELS constants. Unify those,
+		  and look at the memcpy note in display.c
+- [ ] 19.04.2023
+	- [ ] see if it makes sense to unify display and input into "platform"
+	- [ ] handle "hold down" keys (for movement etc.)
+	- [ ] remove color type
+	- [ ] remove nanosleep from main loop and use the time to run updates. while (curr time < frame_time) -> run update; else -> render
 - [ ] 17.04.2023
 	- [ ] add support for camera in gltf.
 	- [ ] add support for light settings in gltf. This might require extension
