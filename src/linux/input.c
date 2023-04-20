@@ -1,7 +1,6 @@
 #include "input.h"
 
 #include <X11/Xlib.h>
-#include <stdio.h>
 
 /********************
  *  Notes
@@ -43,6 +42,4 @@ void handle_input(display_t* dsp, input_t* input)
 
 	// pop Expose event
 	XNextEvent(dsp->display, &event);
-
-	printf("finished processing input\n");
 }

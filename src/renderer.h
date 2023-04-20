@@ -9,7 +9,11 @@ typedef struct
 {
     scene_t*        scene;
     display_t*      display;
-    frame_buffer_t* frame_buffer;
+
+    frame_buffer_t* current;
+    frame_buffer_t* front;
+    frame_buffer_t* back;
+
     depth_buffer_t* depth_buffer;
     uint32_t        width;
     uint32_t        height;

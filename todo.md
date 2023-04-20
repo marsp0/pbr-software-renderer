@@ -1,5 +1,8 @@
 ## TODO
 
+- [ ] 20.04.2023
+	- [ ] both the frame buffer and the display have their own CHANNELS constants. Unify those,
+		  and look at the memcpy not in display.c
 - [ ] 19.04.2023
 	- [ ] see if it makes sense to unify display and input into "platform"
 	- [ ] handle "hold down" keys (for movement etc.)

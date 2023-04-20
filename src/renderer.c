@@ -16,8 +16,13 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 
     renderer->scene         = scene_new(file_path);
     renderer->display       = display_new(width, height);
-    renderer->frame_buffer  = frame_buffer_new(width, height);
+
+    renderer->front         = frame_buffer_new(width, height);
+    renderer->back          = frame_buffer_new(width, height);
+    renderer->current       = renderer->front;
+
     renderer->depth_buffer  = depth_buffer_new(width, height);
+
     renderer->width         = width;
     renderer->height        = height;
 
@@ -43,8 +48,11 @@ void renderer_run(renderer_t* renderer)
 
         // render
         // display_draw_mesh(renderer, renderer->mesh);
-        display_draw(renderer->display, renderer->frame_buffer);
+        display_draw(renderer->display, renderer->current);
         display_clear(renderer->display);
+        renderer->current = renderer->current == renderer->front
+                          ? renderer->back
+                          : renderer->front;
 
         // maintain 60fps
         end = time_now();
@@ -61,7 +69,8 @@ void renderer_free(renderer_t* renderer)
 {
     scene_free(renderer->scene);
     display_free(renderer->display);
-    frame_buffer_free(renderer->frame_buffer);
+    frame_buffer_free(renderer->front);
+    frame_buffer_free(renderer->back);
     depth_buffer_free(renderer->depth_buffer);
     free(renderer);
 }
