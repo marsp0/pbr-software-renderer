@@ -1,5 +1,7 @@
 ## TODO
 
+- [ ] 21.04.2023
+	- [ ] investigate why XPutImage takes 1ms to complete. See if possible to imrove.
 - [ ] 20.04.2023
 	- [ ] both the frame buffer and the display have their own CHANNELS constants. Unify those,
 		  and look at the memcpy note in display.c
