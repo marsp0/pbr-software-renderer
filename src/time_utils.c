@@ -1,6 +1,7 @@
 #include "time_utils.h"
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /********************
  *  Notes
@@ -15,7 +16,8 @@
 /* static variables */
 /********************/
 
-static timestamp_t offset = 0;
+static timestamp_t offset 	= 0;
+static bool initialized 	= false;
 
 /********************/
 /* static functions */
@@ -27,10 +29,15 @@ static timestamp_t offset = 0;
 
 void time_init()
 {
+	if (initialized)
+	{
+		return;
+	}
+
 	struct timespec time;
 	clock_gettime(CLOCK_REALTIME, &time);
-
 	offset = time.tv_sec;
+	initialized = true;
 }
 
 timestamp_t time_now()

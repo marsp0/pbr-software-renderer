@@ -1,5 +1,11 @@
 ## TODO
 
+- [ ] 13.06.2023
+	- [ ] investigate if view transform should be changed to match convention of yaw being yaw - 90
+- [ ] 22.04.2023
+	- [ ] add quaternions to math.h
+- [ ] 21.04.2023
+	- [ ] investigate why XPutImage takes 1ms to complete. See if possible to imrove.
 - [ ] 20.04.2023
 	- [ ] both the frame buffer and the display have their own CHANNELS constants. Unify those,
 		  and look at the memcpy note in display.c
@@ -20,6 +26,6 @@
 	- [ ] Machinary blog explained how they do not permit including headers in headers (except for stdint). See if possible to do the same
 	- [ ] if multiple nodes share a mesh then it will be duplicated. Should meshes share geometry info like textures? If we dont allow mesh edit then perhaps they should share.
 	- [ ] Should static variables be grouped ? buffers + cursor + size etc.
-	- [ ] start using gcov to check code coverage and also detect dead/unused code.
+	- [x] start using gcov to check code coverage and also detect dead/unused code.
 - [x] 10.04.2023
 	- [x] there is a test in test_json.c that fails ocasionally. (15.04.2023)

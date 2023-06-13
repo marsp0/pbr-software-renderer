@@ -45,6 +45,7 @@ void renderer_run(renderer_t* renderer)
         handle_input(renderer->display, &input);
 
         // update
+        // camera_update(renderer->scene->camera);
 
         // render
         // display_draw_mesh(renderer, renderer->mesh);

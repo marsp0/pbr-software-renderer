@@ -233,3 +233,12 @@ mat_t mat_transpose(mat_t m)
     }
     return mat;
 }
+
+void mat_print(mat_t m)
+{
+    printf("mat\n");
+    printf("|%f, %f, %f, %f|\n", m.data[0][0], m.data[0][1], m.data[0][2], m.data[0][3]);
+    printf("|%f, %f, %f, %f|\n", m.data[1][0], m.data[1][1], m.data[1][2], m.data[1][3]);
+    printf("|%f, %f, %f, %f|\n", m.data[2][0], m.data[2][1], m.data[2][2], m.data[2][3]);
+    printf("|%f, %f, %f, %f|\n", m.data[3][0], m.data[3][1], m.data[3][2], m.data[3][3]);
+}
