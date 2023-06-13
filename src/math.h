@@ -1,8 +1,8 @@
 #pragma once
 
-/*
- * Vector
- */
+/********************/
+/*      Vector      */
+/********************/
 
 typedef struct
 {
@@ -21,11 +21,11 @@ vec_t vec_negate(vec_t v);
 vec_t vec_normalize(vec_t v);
 float vec_dot(vec_t v1, vec_t v2);
 float vec_magnitude(vec_t v);
-void vec_print(vec_t v);
+void  vec_print(vec_t v);
 
-/*
- * Matrix
- */
+/********************/
+/*       Matrix     */
+/********************/
 
 typedef struct
 {
@@ -43,3 +43,4 @@ mat_t mat_mul_mat(mat_t m1, mat_t m2);
 vec_t mat_mul_vec(mat_t m, vec_t v);
 mat_t mat_inverse(mat_t m);
 mat_t mat_transpose(mat_t m);
+void  mat_print(mat_t m);
