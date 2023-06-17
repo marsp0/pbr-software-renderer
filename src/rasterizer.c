@@ -27,7 +27,7 @@
 void rasterize_line(vec_t p1, 
                     vec_t p2, 
                     uint32_t color, 
-                    frame_buffer_t* frame_buffer)
+                    framebuffer_t* framebuffer)
 {
     int32_t x0 = (int32_t)p1.x;
     int32_t y0 = (int32_t)p1.y;
@@ -71,11 +71,11 @@ void rasterize_line(vec_t p1,
     {
         if (steep)
         {
-            frame_buffer_set(frame_buffer, (uint32_t)y, (uint32_t)x, color);
+            framebuffer_set(framebuffer, (uint32_t)y, (uint32_t)x, color);
         }
         else
         {
-            frame_buffer_set(frame_buffer, (uint32_t)x, (uint32_t)y, color);
+            framebuffer_set(framebuffer, (uint32_t)x, (uint32_t)y, color);
         }
 
         error += de;

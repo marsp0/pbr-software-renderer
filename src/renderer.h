@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scene.h"
-#include "frame_buffer.h"
+#include "framebuffer.h"
 #include "depth_buffer.h"
 #include "linux/display.h"
 
@@ -10,9 +10,9 @@ typedef struct
     scene_t*        scene;
     display_t*      display;
 
-    frame_buffer_t* current;
-    frame_buffer_t* front;
-    frame_buffer_t* back;
+    framebuffer_t* current;
+    framebuffer_t* front;
+    framebuffer_t* back;
 
     depth_buffer_t* depth_buffer;
     uint32_t        width;

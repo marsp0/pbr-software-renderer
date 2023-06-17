@@ -17,8 +17,8 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
     renderer->scene         = scene_new(file_path);
     renderer->display       = display_new(width, height);
 
-    renderer->front         = frame_buffer_new(width, height);
-    renderer->back          = frame_buffer_new(width, height);
+    renderer->front         = framebuffer_new(width, height);
+    renderer->back          = framebuffer_new(width, height);
     renderer->current       = renderer->front;
 
     renderer->depth_buffer  = depth_buffer_new(width, height);
@@ -75,8 +75,8 @@ void renderer_free(renderer_t* renderer)
 {
     scene_free(renderer->scene);
     display_free(renderer->display);
-    frame_buffer_free(renderer->front);
-    frame_buffer_free(renderer->back);
+    framebuffer_free(renderer->front);
+    framebuffer_free(renderer->back);
     depth_buffer_free(renderer->depth_buffer);
     free(renderer);
 }

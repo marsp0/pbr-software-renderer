@@ -21,7 +21,7 @@ static void test_draw_line_horizontal()
 
     uint32_t width = 10;
     uint32_t height = 10;
-    frame_buffer_t* buffer = frame_buffer_new(width, height);
+    framebuffer_t* buffer = framebuffer_new(width, height);
     vec_t p1        = vec_new(1.f, 1.f, 0.f);
     vec_t p2        = vec_new(6.f, 1.f, 0.f);
     uint32_t color  = 0xAABBCCFF;
@@ -89,7 +89,7 @@ static void test_draw_line_vertical()
 
     uint32_t width = 10;
     uint32_t height = 10;
-    frame_buffer_t* buffer = frame_buffer_new(width, height);
+    framebuffer_t* buffer = framebuffer_new(width, height);
     vec_t p1        = vec_new(1.f, 1.f, 0.f);
     vec_t p2        = vec_new(1.f, 6.f, 0.f);
     uint32_t color  = 0xAABBCCFF;
@@ -157,7 +157,7 @@ static void test_draw_line_steep_pos_slope()
 
     uint32_t width = 10;
     uint32_t height = 10;
-    frame_buffer_t* buffer = frame_buffer_new(width, height);
+    framebuffer_t* buffer = framebuffer_new(width, height);
     vec_t p1        = vec_new(1.f, 1.f, 0.f);
     vec_t p2        = vec_new(3.f, 5.f, 0.f);
     uint32_t color  = 0xAABBCCFF;
@@ -253,7 +253,7 @@ static void test_draw_line_steep_neg_slope()
 
     uint32_t width = 10;
     uint32_t height = 10;
-    frame_buffer_t* buffer = frame_buffer_new(width, height);
+    framebuffer_t* buffer = framebuffer_new(width, height);
     vec_t p1        = vec_new(1.f, 5.f, 0.f);
     vec_t p2        = vec_new(3.f, 1.f, 0.f);
     uint32_t color  = 0xAABBCCFF;
@@ -349,7 +349,7 @@ static void test_draw_line_pos_slope()
 
     uint32_t width = 10;
     uint32_t height = 10;
-    frame_buffer_t* buffer = frame_buffer_new(width, height);
+    framebuffer_t* buffer = framebuffer_new(width, height);
     vec_t p1        = vec_new(1.f, 1.f, 0.f);
     vec_t p2        = vec_new(5.f, 4.f, 0.f);
     uint32_t color  = 0xAABBCCFF;
@@ -445,7 +445,7 @@ static void test_draw_line_neg_slope()
 
     uint32_t width = 10;
     uint32_t height = 10;
-    frame_buffer_t* buffer = frame_buffer_new(width, height);
+    framebuffer_t* buffer = framebuffer_new(width, height);
     vec_t p1        = vec_new(1.f, 3.f, 0.f);
     vec_t p2        = vec_new(6.f, 1.f, 0.f);
     uint32_t color  = 0xAABBCCFF;

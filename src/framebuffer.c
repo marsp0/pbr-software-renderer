@@ -1,4 +1,4 @@
-#include "frame_buffer.h"
+#include "framebuffer.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -28,21 +28,21 @@
 /* public functions */
 /********************/
 
-frame_buffer_t* frame_buffer_new(uint32_t width, uint32_t height)
+framebuffer_t* framebuffer_new(uint32_t width, uint32_t height)
 {
     assert(width > 0 && height > 0);
-    
-    frame_buffer_t* buffer = malloc(sizeof(frame_buffer_t));
+
+    framebuffer_t* buffer = malloc(sizeof(framebuffer_t));
     buffer->width = width;
     buffer->height = height;
     buffer->data = malloc(width * height * sizeof(unsigned char) * CHANNELS);
-    
-    frame_buffer_clear(buffer);
-    
+
+    framebuffer_clear(buffer);
+
     return buffer;
 }
 
-void frame_buffer_set(frame_buffer_t* buffer, uint32_t x, uint32_t y, uint32_t val)
+void framebuffer_set(framebuffer_t* buffer, uint32_t x, uint32_t y, uint32_t val)
 {
     uint32_t width = buffer->width * CHANNELS;
     uint32_t height = buffer->height;
@@ -54,12 +54,12 @@ void frame_buffer_set(frame_buffer_t* buffer, uint32_t x, uint32_t y, uint32_t v
     buffer->data[index + 3] = (unsigned char)(val);
 }
 
-void frame_buffer_clear(frame_buffer_t* buffer)
+void framebuffer_clear(framebuffer_t* buffer)
 {
     memset(buffer->data, 0, buffer->width * buffer->height * sizeof(unsigned char) * CHANNELS);
 }
 
-void frame_buffer_free(frame_buffer_t* buffer)
+void framebuffer_free(framebuffer_t* buffer)
 {
     free(buffer->data);
     free(buffer);
