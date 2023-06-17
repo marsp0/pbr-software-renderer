@@ -27,8 +27,8 @@ sequenceDiagram
     renderer ->>+ framebuffer: framebuffer_new
     framebuffer -->>- renderer: return
 
-    renderer ->>+ depth_buffer: depth_buffer_new
-    depth_buffer -->>- renderer: return
+    renderer ->>+ depthbuffer: depthbuffer_new
+    depthbuffer -->>- renderer: return
 
     renderer ->>+ file_parser: parse_scene 
     file_parser -->>- renderer: return
