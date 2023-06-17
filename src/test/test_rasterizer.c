@@ -3,6 +3,7 @@
 #include "test_utils.h"
 
 #include "../rasterizer.h"
+#include "../rasterizer_constants.h"
 
 static void test_draw_line_horizontal()
 {
@@ -30,14 +31,7 @@ static void test_draw_line_horizontal()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            uint32_t index = (j * width + i) * 4;
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
+            uint32_t index = (j * width + i) * RGB_CHANNELS;
             ASSERT_UINT(buffer->data[index + 0], 0);
             ASSERT_UINT(buffer->data[index + 1], 0);
             ASSERT_UINT(buffer->data[index + 2], 0);
@@ -52,7 +46,7 @@ static void test_draw_line_horizontal()
     uint32_t actual_count = 0;
     uint32_t expected_count = 24; // 6 pixels * 4 channels
 
-    for (uint32_t i = 0; i < width * height * 4; i++)
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
     {
         if (buffer->data[i] != 0)
         {
@@ -63,7 +57,7 @@ static void test_draw_line_horizontal()
     ASSERT_UINT(expected_count, actual_count);
 
     // assert individual pixels
-    for (uint32_t i = 324; i < 348; i += 4)
+    for (uint32_t i = 324; i < 348; i += RGB_CHANNELS)
     {
         ASSERT_UINT(0xAA, buffer->data[i + 0]);
         ASSERT_UINT(0xBB, buffer->data[i + 1]);
@@ -98,14 +92,7 @@ static void test_draw_line_vertical()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            uint32_t index = (j * width + i) * 4;
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
+            uint32_t index = (j * width + i) * RGB_CHANNELS;
             ASSERT_UINT(buffer->data[index + 0], 0);
             ASSERT_UINT(buffer->data[index + 1], 0);
             ASSERT_UINT(buffer->data[index + 2], 0);
@@ -120,7 +107,7 @@ static void test_draw_line_vertical()
     uint32_t actual_count = 0;
     uint32_t expected_count = 24; // 6 pixels * 4 channels
 
-    for (uint32_t i = 0; i < width * height * 4; i++)
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
     {
         if (buffer->data[i] != 0)
         {
@@ -166,14 +153,7 @@ static void test_draw_line_steep_pos_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            uint32_t index = (j * width + i) * 4;
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
+            uint32_t index = (j * width + i) * RGB_CHANNELS;
             ASSERT_UINT(buffer->data[index + 0], 0);
             ASSERT_UINT(buffer->data[index + 1], 0);
             ASSERT_UINT(buffer->data[index + 2], 0);
@@ -188,7 +168,7 @@ static void test_draw_line_steep_pos_slope()
     uint32_t actual_count = 0;
     uint32_t expected_count = 20; // 5 pixels * 4 channels
 
-    for (uint32_t i = 0; i < width * height * 4; i++)
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
     {
         if (buffer->data[i] != 0)
         {
@@ -262,14 +242,7 @@ static void test_draw_line_steep_neg_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            uint32_t index = (j * width + i) * 4;
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
+            uint32_t index = (j * width + i) * RGB_CHANNELS;
             ASSERT_UINT(buffer->data[index + 0], 0);
             ASSERT_UINT(buffer->data[index + 1], 0);
             ASSERT_UINT(buffer->data[index + 2], 0);
@@ -284,7 +257,7 @@ static void test_draw_line_steep_neg_slope()
     uint32_t actual_count = 0;
     uint32_t expected_count = 20; // 5 pixels * 4 channels
 
-    for (uint32_t i = 0; i < width * height * 4; i++)
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
     {
         if (buffer->data[i] != 0)
         {
@@ -358,14 +331,7 @@ static void test_draw_line_pos_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            uint32_t index = (j * width + i) * 4;
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
+            uint32_t index = (j * width + i) * RGB_CHANNELS;
             ASSERT_UINT(buffer->data[index + 0], 0);
             ASSERT_UINT(buffer->data[index + 1], 0);
             ASSERT_UINT(buffer->data[index + 2], 0);
@@ -380,7 +346,7 @@ static void test_draw_line_pos_slope()
     uint32_t actual_count = 0;
     uint32_t expected_count = 20; // 5 pixels * 4 channels
 
-    for (uint32_t i = 0; i < width * height * 4; i++)
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
     {
         if (buffer->data[i] != 0)
         {
@@ -454,14 +420,7 @@ static void test_draw_line_neg_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            uint32_t index = (j * width + i) * 4;
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
-            // MOVE CHANNELS CONSTANT SO ALL CAN USE SAME CONSTANT
+            uint32_t index = (j * width + i) * RGB_CHANNELS;
             ASSERT_UINT(buffer->data[index + 0], 0);
             ASSERT_UINT(buffer->data[index + 1], 0);
             ASSERT_UINT(buffer->data[index + 2], 0);
@@ -476,7 +435,7 @@ static void test_draw_line_neg_slope()
     uint32_t actual_count = 0;
     uint32_t expected_count = 24; // 6 pixels * 4 channels
 
-    for (uint32_t i = 0; i < width * height * 4; i++)
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
     {
         if (buffer->data[i] != 0)
         {

@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <X11/Xutil.h>
 
+#include "../rasterizer_constants.h"
+
 /********************
  *  Notes
  *
