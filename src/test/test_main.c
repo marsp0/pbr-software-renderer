@@ -5,6 +5,7 @@
 #include "test_crc.h"
 #include "test_scene.h"
 #include "test_camera.h"
+#include "test_rasterizer.h"
 
 int main()
 {
@@ -15,4 +16,5 @@ int main()
     test_crc();
     test_scene();
     test_camera();
+    test_rasterizer();
 }

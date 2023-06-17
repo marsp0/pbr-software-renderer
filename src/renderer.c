@@ -29,6 +29,11 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
     return renderer;
 }
 
+// void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh)
+// {
+
+// }
+
 void renderer_run(renderer_t* renderer)
 {
     input_t input = 0;
