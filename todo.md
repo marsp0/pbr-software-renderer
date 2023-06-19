@@ -1,7 +1,15 @@
 ## TODO
 
+- [ ] 18.06.2023
+	- [ ] typedef float[4][4] mat_t and remove the mat_t struct [math]
+	- [ ] optimize clear operations on buffers, they are slow (close to 5ms);
+- [ ] 17.06.2023
+	- [ ] improve the edge detection in the rasterizer [rasterizer]
+- [ ] 16.06.2023
+	- [ ] investigate if scene should be separate from renderer. The renderer just takes a scene as input and renders it [scene][renderer]
+	- [ ] convert assert_* functions in test_utils to _ Generic function [test]
 - [ ] 13.06.2023
-	- [ ] investigate if view transform should be changed to match convention of yaw being yaw - 90
+	- [ ] investigate if view transform should be changed to match convention of yaw being yaw - 90 [camera][view]
 - [ ] 22.04.2023
 	- [ ] add quaternions to math.h
 - [ ] 21.04.2023

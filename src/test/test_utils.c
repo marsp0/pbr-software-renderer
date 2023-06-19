@@ -106,29 +106,6 @@ void assert_mat(mat_t expected,
     assert(result);
 }
 
-void assert_col(color expected,
-                color actual,
-                const char* file_name,
-                int32_t line_number)
-{
-    bool result = true;
-    float r_diff = (float)fabs(expected.r - actual.r);
-    float g_diff = (float)fabs(expected.g - actual.g);
-    float b_diff = (float)fabs(expected.b - actual.b);
-    if (r_diff > epsilon || g_diff > epsilon || b_diff > epsilon)
-        result = false;
-    
-    if (!result)
-    {
-        printf("File:\t\t %s\n", file_name);
-        printf("Line:\t\t %i\n", line_number);
-        printf("Actual:\t\t %f, %f, %f\n", actual.r, actual.g, actual.b);
-        printf("Expected:\t %f, %f, %f\n", expected.r, expected.g, expected.b);
-    }
-
-    assert(result);
-}
-
 void assert_string(const char* expected,
                    const char* actual,
                    uint32_t size,

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "scene.h"
-#include "frame_buffer.h"
-#include "depth_buffer.h"
+#include "framebuffer.h"
+#include "depthbuffer.h"
 #include "linux/display.h"
 
 typedef struct
@@ -10,11 +10,11 @@ typedef struct
     scene_t*        scene;
     display_t*      display;
 
-    frame_buffer_t* current;
-    frame_buffer_t* front;
-    frame_buffer_t* back;
+    framebuffer_t*  current;
+    framebuffer_t*  front;
+    framebuffer_t*  back;
 
-    depth_buffer_t* depth_buffer;
+    depthbuffer_t*  depthbuffer;
     uint32_t        width;
     uint32_t        height;
 } renderer_t;
@@ -22,5 +22,5 @@ typedef struct
 renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path);
 void        renderer_run(renderer_t* renderer);
 void        renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh);
-void        renderer_load_scene(renderer_t* renderer, const char* file_path);
+void        renderer_clear(renderer_t* renderer);
 void        renderer_free(renderer_t* renderer);

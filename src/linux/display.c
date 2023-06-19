@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <X11/Xutil.h>
 
+#include "../rasterizer_constants.h"
+
 /********************
  *  Notes
  *
@@ -103,14 +105,14 @@ display_t* display_new(uint32_t width, uint32_t height)
     return dsp;
 }
 
-void display_draw(display_t* dsp, const frame_buffer_t* frame_buffer)
+void display_draw(display_t* dsp, const framebuffer_t* framebuffer)
 {   
     // NOTE: not sure if directly memcpy-ing here is the best thing to do
     //       What if the framebuffer changes the way it stores the color data?
-    //       Perhaps a method in frame_buffer.c would be better.
-    //       Something like void frame_buffer_copy(dst, scheme) ?
-    memcpy(dsp->buffer, 
-           frame_buffer->data, 
+    //       Perhaps a method in framebuffer.c would be better.
+    //       Something like void framebuffer_copy(dst, scheme) ?
+    memcpy(dsp->buffer,
+           framebuffer->data,
            dsp->width * dsp->height * sizeof(unsigned char) * RGB_CHANNELS);
 
     /* show image on display */
