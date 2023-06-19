@@ -8,6 +8,7 @@
 
 #include "linux/input.h"
 #include "time_utils.h"
+#include "rasterizer.h"
 
 renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 {
@@ -34,6 +35,13 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 
 // }
 
+void renderer_clear(renderer_t* renderer)
+{
+    framebuffer_clear(renderer->current);
+    depthbuffer_clear(renderer->depthbuffer);
+    display_clear(renderer->display);
+}
+
 void renderer_run(renderer_t* renderer)
 {
     input_t input = 0;
@@ -41,6 +49,8 @@ void renderer_run(renderer_t* renderer)
     timestamp_t end;
     timestamp_t diff;
     timestamp_t frame_time = 16 * MILLISECOND;
+    int counter = 0;
+    int multiplier = 1;
 
     while (!(input & QUIT))
     {
@@ -53,9 +63,17 @@ void renderer_run(renderer_t* renderer)
         // camera_update(renderer->scene->camera);
 
         // render
+        rasterize_triangle(vec_new((float)multiplier * 50 + 100.f, 100.f, 50.f),
+                           vec_new((float)multiplier * 50 + 100.f, 200.f, 50.f),
+                           vec_new((float)multiplier * 50 + 100.f, 300.f, 50.f),
+                           0xffffffff,
+                           renderer->current,
+                           renderer->depthbuffer);
         // display_draw_mesh(renderer, renderer->mesh);
         display_draw(renderer->display, renderer->current);
-        display_clear(renderer->display);
+        renderer_clear(renderer);
+
+        // swap buffers
         renderer->current = renderer->current == renderer->front
                           ? renderer->back
                           : renderer->front;
@@ -64,9 +82,24 @@ void renderer_run(renderer_t* renderer)
         end = time_now();
         diff = end - start;
 
+        printf("%luus(%lu - %lu)\n", diff / 1000, frame_time, diff);
+
         if (frame_time > diff)
         {
             nanosleep((const struct timespec[]){{ 0, frame_time - diff }}, NULL);
+        }
+
+        counter++;
+        if (counter == 60)
+        {
+            multiplier += 1;
+
+            if (multiplier == 8)
+            {
+                multiplier = 0;
+            }
+
+            counter = 0;
         }
     }
 }

@@ -1,11 +1,13 @@
 #include "test_rasterizer.h"
 
+#include <stdio.h>
+
 #include "test_utils.h"
 
 #include "../rasterizer.h"
 #include "../rasterizer_constants.h"
 
-static void test_draw_line_horizontal()
+static void test_rasterize_line_horizontal()
 {
     // +--------------------+
     // |                    |
@@ -64,9 +66,11 @@ static void test_draw_line_horizontal()
         ASSERT_UINT(0xCC, buffer->data[i + 2]);
         ASSERT_UINT(0xFF, buffer->data[i + 3]);
     }
+
+    framebuffer_free(buffer);
 }
 
-static void test_draw_line_vertical()
+static void test_rasterize_line_vertical()
 {
     // +--------------------+
     // |                    |
@@ -125,9 +129,11 @@ static void test_draw_line_vertical()
         ASSERT_UINT(0xCC, buffer->data[i + 2]);
         ASSERT_UINT(0xFF, buffer->data[i + 3]);
     }
+
+    framebuffer_free(buffer);
 }
 
-static void test_draw_line_steep_pos_slope()
+static void test_rasterize_line_steep_pos_slope()
 {
     // +--------------------+
     // |                    |
@@ -214,9 +220,11 @@ static void test_draw_line_steep_pos_slope()
     ASSERT_UINT(0xBB, buffer->data[index + 1]);
     ASSERT_UINT(0xCC, buffer->data[index + 2]);
     ASSERT_UINT(0xFF, buffer->data[index + 3]);
+
+    framebuffer_free(buffer);
 }
 
-static void test_draw_line_steep_neg_slope()
+static void test_rasterize_line_steep_neg_slope()
 {
     // +--------------------+
     // |                    |
@@ -303,9 +311,11 @@ static void test_draw_line_steep_neg_slope()
     ASSERT_UINT(0xBB, buffer->data[index + 1]);
     ASSERT_UINT(0xCC, buffer->data[index + 2]);
     ASSERT_UINT(0xFF, buffer->data[index + 3]);
+
+    framebuffer_free(buffer);
 }
 
-static void test_draw_line_pos_slope()
+static void test_rasterize_line_pos_slope()
 {
     // +--------------------+
     // |                    |
@@ -392,9 +402,11 @@ static void test_draw_line_pos_slope()
     ASSERT_UINT(0xBB, buffer->data[index + 1]);
     ASSERT_UINT(0xCC, buffer->data[index + 2]);
     ASSERT_UINT(0xFF, buffer->data[index + 3]);
+
+    framebuffer_free(buffer);
 }
 
-static void test_draw_line_neg_slope()
+static void test_rasterize_line_neg_slope()
 {
     // +--------------------+
     // |                    |
@@ -488,14 +500,408 @@ static void test_draw_line_neg_slope()
     ASSERT_UINT(0xBB, buffer->data[index + 1]);
     ASSERT_UINT(0xCC, buffer->data[index + 2]);
     ASSERT_UINT(0xFF, buffer->data[index + 3]);
+
+    framebuffer_free(buffer);
+}
+
+static void test_rasterize_triangle_colinear_horizontal()
+{
+    // +--------------------+
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |  xxxxxxxxxxxx      |
+    // |                    |
+    // +--------------------+
+
+    uint32_t width = 10;
+    uint32_t height = 10;
+    framebuffer_t* framebuffer = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
+    vec_t p1        = vec_new(1.f, 1.f, 0.f);
+    vec_t p2        = vec_new(3.f, 1.f, 0.f);
+    vec_t p3        = vec_new(6.f, 1.f, 0.f);
+    uint32_t color  = 0xAABBCCFF;
+
+    // assert initial values
+    for (uint32_t i = 0; i < width; i++)
+    {
+        for (uint32_t j = 0; j < height; j++)
+        {
+            uint32_t frame_index = (j * width + i) * RGB_CHANNELS;
+            uint32_t depth_index = (j * width + i);
+
+            ASSERT_UINT(framebuffer->data[frame_index + 0], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 1], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 2], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 3], 0);
+
+            ASSERT_FLOAT(depthbuffer->data[depth_index], MAX_DEPTH);
+        }
+    }
+
+    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
+
+    // assert pixel count that has changed
+    uint32_t actual_count = 0;
+    uint32_t expected_count = 24; // 6 pixels * 4 channels
+
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
+    {
+        if (framebuffer->data[i] != 0)
+        {
+            actual_count++;
+        }
+    }
+
+    ASSERT_UINT(expected_count, actual_count);
+
+    // assert individual pixels
+    for (uint32_t i = 324; i < 348; i += RGB_CHANNELS)
+    {
+        ASSERT_UINT(0xAA, framebuffer->data[i + 0]);
+        ASSERT_UINT(0xBB, framebuffer->data[i + 1]);
+        ASSERT_UINT(0xCC, framebuffer->data[i + 2]);
+        ASSERT_UINT(0xFF, framebuffer->data[i + 3]);
+    }
+
+    framebuffer_free(framebuffer);
+    depthbuffer_free(depthbuffer);
+}
+
+static void test_rasterize_triangle_colinear_vertical()
+{
+    // +--------------------+
+    // |                    |
+    // |                    |
+    // |                    |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |                    |
+    // +--------------------+
+
+    uint32_t width = 10;
+    uint32_t height = 10;
+    framebuffer_t* framebuffer = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
+    vec_t p1        = vec_new(1.f, 1.f, 0.f);
+    vec_t p2        = vec_new(1.f, 3.f, 0.f);
+    vec_t p3        = vec_new(1.f, 6.f, 0.f);
+    uint32_t color  = 0xAABBCCFF;
+
+    // assert initial values
+    for (uint32_t i = 0; i < width; i++)
+    {
+        for (uint32_t j = 0; j < height; j++)
+        {
+            uint32_t frame_index = (j * width + i) * RGB_CHANNELS;
+            uint32_t depth_index = (j * width + i);
+
+            ASSERT_UINT(framebuffer->data[frame_index + 0], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 1], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 2], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 3], 0);
+
+            ASSERT_FLOAT(depthbuffer->data[depth_index], MAX_DEPTH);
+        }
+    }
+
+    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
+
+    // assert pixel count that has changed
+    uint32_t actual_count = 0;
+    uint32_t expected_count = 24; // 6 pixels * 4 channels
+
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
+    {
+        if (framebuffer->data[i] != 0)
+        {
+            actual_count++;
+        }
+    }
+
+    ASSERT_UINT(expected_count, actual_count);
+
+    // assert individual pixels
+    for (uint32_t i = 124; i <= 324; i += 40)
+    {
+        ASSERT_UINT(0xAA, framebuffer->data[i + 0]);
+        ASSERT_UINT(0xBB, framebuffer->data[i + 1]);
+        ASSERT_UINT(0xCC, framebuffer->data[i + 2]);
+        ASSERT_UINT(0xFF, framebuffer->data[i + 3]);
+    }
+
+    framebuffer_free(framebuffer);
+    depthbuffer_free(depthbuffer);
+}
+
+static void test_rasterize_triangle()
+{
+    // +--------------------+
+    // /                    /
+    // /                    /
+    // /                    /
+    // /      xx            /
+    // /      xxxx          /
+    // /      xxxxxx        /
+    // /    xxxxxxxxxx      /
+    // /    xxxxxxxxxxxx    /
+    // /  xxxxxxxxxxxxxxxx  /
+    // /                    /
+    // +--------------------+
+
+    uint32_t width = 10;
+    uint32_t height = 10;
+    framebuffer_t* framebuffer = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
+    vec_t p1        = vec_new(1.f, 1.f, 0.f);
+    vec_t p2        = vec_new(8.f, 1.f, 0.f);
+    vec_t p3        = vec_new(3.f, 6.f, 0.f);
+    uint32_t color  = 0xAABBCCFF;
+
+    // assert initial values
+    for (uint32_t i = 0; i < width; i++)
+    {
+        for (uint32_t j = 0; j < height; j++)
+        {
+            uint32_t frame_index = (j * width + i) * RGB_CHANNELS;
+            uint32_t depth_index = (j * width + i);
+
+            ASSERT_UINT(framebuffer->data[frame_index + 0], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 1], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 2], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 3], 0);
+
+            ASSERT_FLOAT(depthbuffer->data[depth_index], MAX_DEPTH);
+        }
+    }
+
+    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
+
+    
+
+    // assert pixel count that has changed
+    uint32_t actual_count = 0;
+    uint32_t expected_count = 100; // 25 pixels * 4 channels
+
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
+    {
+        if (framebuffer->data[i] != 0)
+        {
+            actual_count++;
+        }
+    }
+
+    ASSERT_UINT(expected_count, actual_count);
+
+    vec_t points[25] = {vec_new(1.f, 1.f, 1.f),
+                        vec_new(2.f, 1.f, 1.f),
+                        vec_new(3.f, 1.f, 1.f),
+                        vec_new(4.f, 1.f, 1.f),
+                        vec_new(5.f, 1.f, 1.f),
+                        vec_new(6.f, 1.f, 1.f),
+                        vec_new(7.f, 1.f, 1.f),
+                        vec_new(8.f, 1.f, 1.f),
+                        vec_new(2.f, 2.f, 1.f),
+                        vec_new(3.f, 2.f, 1.f),
+                        vec_new(4.f, 2.f, 1.f),
+                        vec_new(5.f, 2.f, 1.f),
+                        vec_new(6.f, 2.f, 1.f),
+                        vec_new(7.f, 2.f, 1.f),
+                        vec_new(2.f, 3.f, 1.f),
+                        vec_new(3.f, 3.f, 1.f),
+                        vec_new(4.f, 3.f, 1.f),
+                        vec_new(5.f, 3.f, 1.f),
+                        vec_new(6.f, 3.f, 1.f),
+                        vec_new(3.f, 4.f, 1.f),
+                        vec_new(4.f, 4.f, 1.f),
+                        vec_new(5.f, 4.f, 1.f),
+                        vec_new(3.f, 5.f, 1.f),
+                        vec_new(4.f, 5.f, 1.f),
+                        vec_new(3.f, 6.f, 1.f)};
+
+    for (int32_t i = 0; i < 25; i++)
+    {
+        vec_t current = points[i];
+        int32_t origin = (int32_t)width * (int32_t)height - (int32_t)width;
+        int32_t index = (origin - (int32_t)current.y * (int32_t)width + (int32_t)current.x) * RGB_CHANNELS;
+
+        ASSERT_UINT(0xAA, framebuffer->data[index + 0]);
+        ASSERT_UINT(0xBB, framebuffer->data[index + 1]);
+        ASSERT_UINT(0xCC, framebuffer->data[index + 2]);
+        ASSERT_UINT(0xFF, framebuffer->data[index + 3]);
+    }
+
+    framebuffer_free(framebuffer);
+    depthbuffer_free(depthbuffer);
+}
+
+static void test_rasterize_multiple_triangles()
+{
+    // +--------------------+
+    // /                    /
+    // /                    /
+    // /                    /
+    // /      xx    xx      /
+    // /      xxxx  xx      /
+    // /      xxxxxxxx      /
+    // /    xxxxxxxxxxxx    /
+    // /    xxxxxxxxxxxx    /
+    // /  xxxxxxxxxxxxxxxx  /
+    // /                    /
+    // +--------------------+
+
+    uint32_t width = 10;
+    uint32_t height = 10;
+    framebuffer_t* framebuffer = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
+    vec_t p1        = vec_new(1.f, 1.f, 2.f);
+    vec_t p2        = vec_new(8.f, 1.f, 2.f);
+    vec_t p3        = vec_new(3.f, 6.f, 2.f);
+    uint32_t color  = 0xAABBCCFF;
+
+    // assert initial values
+    for (uint32_t i = 0; i < width; i++)
+    {
+        for (uint32_t j = 0; j < height; j++)
+        {
+            uint32_t frame_index = (j * width + i) * RGB_CHANNELS;
+            uint32_t depth_index = (j * width + i);
+
+            ASSERT_UINT(framebuffer->data[frame_index + 0], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 1], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 2], 0);
+            ASSERT_UINT(framebuffer->data[frame_index + 3], 0);
+
+            ASSERT_FLOAT(depthbuffer->data[depth_index], MAX_DEPTH);
+        }
+    }
+
+    // rasterize first triangle
+    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
+
+    p1 = vec_new(6.f, 6.f, 1.f);
+    p2 = vec_new(6.f, 1.f, 1.f);
+    p3 = vec_new(8.f, 1.f, 1.f);
+    color = 0x11223344;
+
+    // rasterize second triangle
+    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
+
+    // assert pixel count that has changed
+    uint32_t actual_count = 0;
+    uint32_t expected_count = 116; // 29 pixels * 4 channels
+
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
+    {
+        if (framebuffer->data[i] != 0)
+        {
+            actual_count++;
+        }
+    }
+
+    ASSERT_UINT(expected_count, actual_count);
+
+    // assert first triangle
+    vec_t points[19] = {vec_new(1.f, 1.f, 1.f),
+                        vec_new(2.f, 1.f, 1.f),
+                        vec_new(3.f, 1.f, 1.f),
+                        vec_new(4.f, 1.f, 1.f),
+                        vec_new(5.f, 1.f, 1.f),
+                        vec_new(2.f, 2.f, 1.f),
+                        vec_new(3.f, 2.f, 1.f),
+                        vec_new(4.f, 2.f, 1.f),
+                        vec_new(5.f, 2.f, 1.f),
+                        vec_new(2.f, 3.f, 1.f),
+                        vec_new(3.f, 3.f, 1.f),
+                        vec_new(4.f, 3.f, 1.f),
+                        vec_new(5.f, 3.f, 1.f),
+                        vec_new(3.f, 4.f, 1.f),
+                        vec_new(4.f, 4.f, 1.f),
+                        vec_new(5.f, 4.f, 1.f),
+                        vec_new(3.f, 5.f, 1.f),
+                        vec_new(4.f, 5.f, 1.f),
+                        vec_new(3.f, 6.f, 1.f)};
+
+    for (int32_t i = 0; i < 19; i++)
+    {
+        vec_t current = points[i];
+        int32_t origin = (int32_t)width * (int32_t)height - (int32_t)width;
+        int32_t index = (origin - (int32_t)current.y * (int32_t)width + (int32_t)current.x) * RGB_CHANNELS;
+        
+        ASSERT_UINT(0xAA, framebuffer->data[index + 0]);
+        ASSERT_UINT(0xBB, framebuffer->data[index + 1]);
+        ASSERT_UINT(0xCC, framebuffer->data[index + 2]);
+        ASSERT_UINT(0xFF, framebuffer->data[index + 3]);
+    }
+
+    // assert second triangle
+    vec_t points2[10] = {vec_new(6.f, 1.f, 1.f),
+                         vec_new(7.f, 1.f, 1.f),
+                         vec_new(8.f, 1.f, 1.f),
+                         vec_new(6.f, 2.f, 1.f),
+                         vec_new(7.f, 2.f, 1.f),
+                         vec_new(6.f, 3.f, 1.f),
+                         vec_new(7.f, 3.f, 1.f),
+                         vec_new(6.f, 4.f, 1.f),
+                         vec_new(6.f, 5.f, 1.f),
+                         vec_new(6.f, 6.f, 1.f)};
+
+    for (int32_t i = 0; i < 10; i++)
+    {
+        vec_t current = points2[i];
+        int32_t origin = (int32_t)width * (int32_t)height - (int32_t)width;
+        int32_t index = (origin - (int32_t)current.y * (int32_t)width + (int32_t)current.x) * RGB_CHANNELS;
+        
+        ASSERT_UINT(0x11, framebuffer->data[index + 0]);
+        ASSERT_UINT(0x22, framebuffer->data[index + 1]);
+        ASSERT_UINT(0x33, framebuffer->data[index + 2]);
+        ASSERT_UINT(0x44, framebuffer->data[index + 3]);
+    }
+
+    framebuffer_free(framebuffer);
+    depthbuffer_free(depthbuffer);
 }
 
 void test_rasterizer()
 {
-    test_draw_line_horizontal();
-    test_draw_line_vertical();
-    test_draw_line_steep_pos_slope();
-    test_draw_line_steep_neg_slope();
-    test_draw_line_pos_slope();
-    test_draw_line_neg_slope();
+    // printf("+--------------------+\n");
+    // for (int i = 0; i < (int)width; i++)
+    // {
+    //     printf("/");
+    //     for (int j = 0; j < (int)height; j++)
+    //     {
+    //         int index = (i * (int)width + j) * RGB_CHANNELS;
+
+    //         if (framebuffer->data[index] != 0)
+    //         {
+    //             printf("xx");
+    //         }
+    //         else
+    //         {
+    //             printf("  ");
+    //         }
+    //     }
+    //     printf("/\n");
+    // }
+    // printf("+--------------------+\n");
+    test_rasterize_line_horizontal();
+    test_rasterize_line_vertical();
+    test_rasterize_line_steep_pos_slope();
+    test_rasterize_line_steep_neg_slope();
+    test_rasterize_line_pos_slope();
+    test_rasterize_line_neg_slope();
+    test_rasterize_triangle_colinear_horizontal();
+    test_rasterize_triangle_colinear_vertical();
+    test_rasterize_triangle();
+    test_rasterize_multiple_triangles();
 }
