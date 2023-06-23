@@ -7,6 +7,60 @@
 #include "../rasterizer.h"
 #include "../rasterizer_constants.h"
 
+static void rasterize_and_assert(vec_t* input, 
+                                 uint32_t input_size, 
+                                 vec_t* output, 
+                                 uint32_t output_size, 
+                                 uint32_t color)
+{
+    uint32_t width = 10;
+    uint32_t height = 10;
+    framebuffer_t* buffer = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
+
+    for (uint32_t i = 0; i < width; i++)
+    {
+        for (uint32_t j = 0; j < height; j++)
+        {
+            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
+            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
+        }
+    }
+
+    if (input_size == 2)
+    {
+        rasterize_line(input[0], input[1], color, buffer);
+    }
+    else if (input_size == 3)
+    {
+        rasterize_triangle(input[0], input[1], input[2], color, buffer, depthbuffer);
+    }
+
+    // assert pixel count that has changed
+    uint32_t actual_count = 0;
+    uint32_t expected_count = output_size * 4; // pixels * 4 channels
+
+    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
+    {
+        if (buffer->data[i] != 0)
+        {
+            actual_count++;
+        }
+    }
+
+    ASSERT_EQUAL(expected_count, actual_count);
+
+    // assert individual pixels    
+    for (uint32_t i = 0; i < output_size; i++)
+    {
+        vec_t p = output[i];
+        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
+    }
+
+    framebuffer_free(buffer);
+    depthbuffer_free(depthbuffer);
+}
+
 static void test_rasterize_line_horizontal()
 {
     // +--------------------+
@@ -22,53 +76,21 @@ static void test_rasterize_line_horizontal()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* buffer = framebuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.f);
-    vec_t p2        = vec_new(6.f, 1.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
-        }
-    }
-
-    // draw line
-    rasterize_line(p1, p2, color, buffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 24; // 6 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (buffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
-    vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
+    vec_t input[2]  = {vec_new(1.f, 1.f, 0.f), 
+                       vec_new(6.f, 1.f, 0.f)};
+    vec_t output[6] = {vec_new(1.f, 1.f, 0.f),
                        vec_new(2.f, 1.f, 0.f),
                        vec_new(3.f, 1.f, 0.f),
                        vec_new(4.f, 1.f, 0.f),
                        vec_new(5.f, 1.f, 0.f),
                        vec_new(6.f, 1.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(buffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         output,
+                         sizeof(output) / sizeof(vec_t),
+                         0xAABBCCFF);
+
 }
 
 static void test_rasterize_line_vertical()
@@ -86,53 +108,20 @@ static void test_rasterize_line_vertical()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* buffer = framebuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.f);
-    vec_t p2        = vec_new(1.f, 6.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
-        }
-    }
-
-    // draw line
-    rasterize_line(p1, p2, color, buffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 24; // 6 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (buffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
-    vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
+    vec_t input[2]  = {vec_new(1.f, 1.f, 0.f), 
+                       vec_new(1.f, 6.f, 0.f)};
+    vec_t output[6] = {vec_new(1.f, 1.f, 0.f),
                        vec_new(1.f, 2.f, 0.f),
                        vec_new(1.f, 3.f, 0.f),
                        vec_new(1.f, 4.f, 0.f),
                        vec_new(1.f, 5.f, 0.f),
                        vec_new(1.f, 6.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(buffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         output,
+                         sizeof(output) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_line_steep_pos_slope()
@@ -150,52 +139,19 @@ static void test_rasterize_line_steep_pos_slope()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* buffer = framebuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.f);
-    vec_t p2        = vec_new(3.f, 5.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
-        }
-    }
-
-    // draw line
-    rasterize_line(p1, p2, color, buffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 20; // 5 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (buffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
+    vec_t input[2]  = {vec_new(1.f, 1.f, 0.f), 
+                       vec_new(3.f, 5.f, 0.f)};
     vec_t points[5] = {vec_new(1.f, 1.f, 0.f),
                        vec_new(2.f, 2.f, 0.f),
                        vec_new(2.f, 3.f, 0.f),
                        vec_new(3.f, 4.f, 0.f),
                        vec_new(3.f, 5.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(buffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_line_steep_neg_slope()
@@ -213,52 +169,19 @@ static void test_rasterize_line_steep_neg_slope()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* buffer = framebuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 5.f, 0.f);
-    vec_t p2        = vec_new(3.f, 1.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
-        }
-    }
-
-    // draw line
-    rasterize_line(p1, p2, color, buffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 20; // 5 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (buffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
+    vec_t input[2]  = {vec_new(1.f, 5.f, 0.f), 
+                       vec_new(3.f, 1.f, 0.f)};
     vec_t points[5] = {vec_new(1.f, 5.f, 0.f),
                        vec_new(1.f, 4.f, 0.f),
                        vec_new(2.f, 3.f, 0.f),
                        vec_new(2.f, 2.f, 0.f),
                        vec_new(3.f, 1.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(buffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_line_pos_slope()
@@ -276,52 +199,19 @@ static void test_rasterize_line_pos_slope()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* buffer = framebuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.f);
-    vec_t p2        = vec_new(5.f, 4.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
-        }
-    }
-
-    // draw line
-    rasterize_line(p1, p2, color, buffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 20; // 5 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (buffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
+    vec_t input[2]  = {vec_new(1.f, 1.f, 0.f), 
+                       vec_new(5.f, 4.f, 0.f)};
     vec_t points[5] = {vec_new(1.f, 1.f, 0.f),
                        vec_new(2.f, 2.f, 0.f),
                        vec_new(3.f, 3.f, 0.f),
                        vec_new(4.f, 3.f, 0.f),
                        vec_new(5.f, 4.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(buffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_line_neg_slope()
@@ -339,53 +229,20 @@ static void test_rasterize_line_neg_slope()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* buffer = framebuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 3.f, 0.f);
-    vec_t p2        = vec_new(6.f, 1.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
-        }
-    }
-
-    // draw line
-    rasterize_line(p1, p2, color, buffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 24; // 6 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (buffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
+    vec_t input[2]  = {vec_new(1.f, 3.f, 0.f), 
+                       vec_new(6.f, 1.f, 0.f)};
     vec_t points[6] = {vec_new(1.f, 3.f, 0.f),
                        vec_new(2.f, 3.f, 0.f),
                        vec_new(3.f, 2.f, 0.f),
                        vec_new(4.f, 2.f, 0.f),
                        vec_new(5.f, 1.f, 0.f),
                        vec_new(6.f, 1.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(buffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_triangle_colinear_horizontal()
@@ -403,57 +260,21 @@ static void test_rasterize_triangle_colinear_horizontal()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* framebuffer = framebuffer_new(width, height);
-    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.f);
-    vec_t p2        = vec_new(3.f, 1.f, 0.f);
-    vec_t p3        = vec_new(6.f, 1.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    // assert initial values
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
-        }
-    }
-
-    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 24; // 6 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (framebuffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.f), 
+                       vec_new(3.f, 1.f, 0.f),
+                       vec_new(6.f, 1.f, 0.f)};
     vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
                        vec_new(2.f, 1.f, 0.f),
                        vec_new(3.f, 1.f, 0.f),
                        vec_new(4.f, 1.f, 0.f),
                        vec_new(5.f, 1.f, 0.f),
                        vec_new(6.f, 1.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(framebuffer);
-    depthbuffer_free(depthbuffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_triangle_colinear_vertical()
@@ -471,57 +292,21 @@ static void test_rasterize_triangle_colinear_vertical()
     // |                    |
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* framebuffer = framebuffer_new(width, height);
-    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.f);
-    vec_t p2        = vec_new(1.f, 3.f, 0.f);
-    vec_t p3        = vec_new(1.f, 6.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    // assert initial values
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
-        }
-    }
-
-    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 24; // 6 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (framebuffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
-    // assert individual pixels
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.f), 
+                       vec_new(1.f, 3.f, 0.f),
+                       vec_new(1.f, 6.f, 0.f)};
     vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
                        vec_new(1.f, 2.f, 0.f),
                        vec_new(1.f, 3.f, 0.f),
                        vec_new(1.f, 4.f, 0.f),
                        vec_new(1.f, 5.f, 0.f),
                        vec_new(1.f, 6.f, 0.f)};
-    
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
 
-    framebuffer_free(framebuffer);
-    depthbuffer_free(depthbuffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_triangle()
@@ -539,43 +324,9 @@ static void test_rasterize_triangle()
     // /                    /
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* framebuffer = framebuffer_new(width, height);
-    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.f);
-    vec_t p2        = vec_new(8.f, 1.f, 0.f);
-    vec_t p3        = vec_new(3.f, 6.f, 0.f);
-    uint32_t color  = 0xAABBCCFF;
-
-    // assert initial values
-    for (uint32_t i = 0; i < width; i++)
-    {
-        for (uint32_t j = 0; j < height; j++)
-        {
-            ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
-        }
-    }
-
-    rasterize_triangle(p1, p2, p3, color, framebuffer, depthbuffer);
-
-    
-
-    // assert pixel count that has changed
-    uint32_t actual_count = 0;
-    uint32_t expected_count = 100; // 25 pixels * 4 channels
-
-    for (uint32_t i = 0; i < width * height * RGB_CHANNELS; i++)
-    {
-        if (framebuffer->data[i] != 0)
-        {
-            actual_count++;
-        }
-    }
-
-    ASSERT_EQUAL(expected_count, actual_count);
-
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.f), 
+                       vec_new(8.f, 1.f, 0.f),
+                       vec_new(3.f, 6.f, 0.f)};
     vec_t points[25] = {vec_new(1.f, 1.f, 1.f),
                         vec_new(2.f, 1.f, 1.f),
                         vec_new(3.f, 1.f, 1.f),
@@ -602,14 +353,11 @@ static void test_rasterize_triangle()
                         vec_new(4.f, 5.f, 1.f),
                         vec_new(3.f, 6.f, 1.f)};
 
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        vec_t p = points[i];
-        ASSERT_EQUAL(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
-    }
-
-    framebuffer_free(framebuffer);
-    depthbuffer_free(depthbuffer);
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
 }
 
 static void test_rasterize_multiple_triangles()
