@@ -33,7 +33,7 @@ static void test_rasterize_line_horizontal()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(buffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
         }
     }
 
@@ -52,7 +52,7 @@ static void test_rasterize_line_horizontal()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
@@ -65,7 +65,7 @@ static void test_rasterize_line_horizontal()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(buffer);
@@ -97,7 +97,7 @@ static void test_rasterize_line_vertical()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(buffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
         }
     }
 
@@ -116,7 +116,7 @@ static void test_rasterize_line_vertical()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
@@ -129,7 +129,7 @@ static void test_rasterize_line_vertical()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(buffer);
@@ -161,7 +161,7 @@ static void test_rasterize_line_steep_pos_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(buffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
         }
     }
 
@@ -180,7 +180,7 @@ static void test_rasterize_line_steep_pos_slope()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[5] = {vec_new(1.f, 1.f, 0.f),
@@ -192,7 +192,7 @@ static void test_rasterize_line_steep_pos_slope()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(buffer);
@@ -224,7 +224,7 @@ static void test_rasterize_line_steep_neg_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(buffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
         }
     }
 
@@ -243,7 +243,7 @@ static void test_rasterize_line_steep_neg_slope()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[5] = {vec_new(1.f, 5.f, 0.f),
@@ -255,7 +255,7 @@ static void test_rasterize_line_steep_neg_slope()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(buffer);
@@ -287,7 +287,7 @@ static void test_rasterize_line_pos_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(buffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
         }
     }
 
@@ -306,7 +306,7 @@ static void test_rasterize_line_pos_slope()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[5] = {vec_new(1.f, 1.f, 0.f),
@@ -318,7 +318,7 @@ static void test_rasterize_line_pos_slope()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(buffer);
@@ -350,7 +350,7 @@ static void test_rasterize_line_neg_slope()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(buffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
         }
     }
 
@@ -369,7 +369,7 @@ static void test_rasterize_line_neg_slope()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[6] = {vec_new(1.f, 3.f, 0.f),
@@ -382,7 +382,7 @@ static void test_rasterize_line_neg_slope()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(buffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(buffer);
@@ -417,8 +417,8 @@ static void test_rasterize_triangle_colinear_horizontal()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_FLOAT(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
+            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
         }
     }
 
@@ -436,7 +436,7 @@ static void test_rasterize_triangle_colinear_horizontal()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
@@ -449,7 +449,7 @@ static void test_rasterize_triangle_colinear_horizontal()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(framebuffer);
@@ -485,8 +485,8 @@ static void test_rasterize_triangle_colinear_vertical()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_FLOAT(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
+            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
         }
     }
 
@@ -504,7 +504,7 @@ static void test_rasterize_triangle_colinear_vertical()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert individual pixels
     vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
@@ -517,7 +517,7 @@ static void test_rasterize_triangle_colinear_vertical()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(framebuffer);
@@ -553,8 +553,8 @@ static void test_rasterize_triangle()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_FLOAT(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
+            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
         }
     }
 
@@ -574,7 +574,7 @@ static void test_rasterize_triangle()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     vec_t points[25] = {vec_new(1.f, 1.f, 1.f),
                         vec_new(2.f, 1.f, 1.f),
@@ -605,7 +605,7 @@ static void test_rasterize_triangle()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(framebuffer);
@@ -641,8 +641,8 @@ static void test_rasterize_multiple_triangles()
     {
         for (uint32_t j = 0; j < height; j++)
         {
-            ASSERT_UINT(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_FLOAT(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
+            ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
+            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
         }
     }
 
@@ -669,7 +669,7 @@ static void test_rasterize_multiple_triangles()
         }
     }
 
-    ASSERT_UINT(expected_count, actual_count);
+    ASSERT_EQUAL(expected_count, actual_count);
 
     // assert first triangle
     vec_t points[19] = {vec_new(1.f, 1.f, 1.f),
@@ -695,7 +695,7 @@ static void test_rasterize_multiple_triangles()
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
         vec_t p = points[i];
-        ASSERT_UINT(color1, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color1, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     // assert second triangle
@@ -713,7 +713,7 @@ static void test_rasterize_multiple_triangles()
     for (uint32_t i = 0; i < sizeof(points2) / sizeof(vec_t); i++)
     {
         vec_t p = points2[i];
-        ASSERT_UINT(color2, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
+        ASSERT_EQUAL(color2, framebuffer_get(framebuffer, (uint32_t)p.x, (uint32_t)p.y));
     }
 
     framebuffer_free(framebuffer);
@@ -742,14 +742,14 @@ void test_rasterizer()
     //     printf("/\n");
     // }
     // printf("+--------------------+\n");
-    test_rasterize_line_horizontal();
-    test_rasterize_line_vertical();
-    test_rasterize_line_steep_pos_slope();
-    test_rasterize_line_steep_neg_slope();
-    test_rasterize_line_pos_slope();
-    test_rasterize_line_neg_slope();
-    test_rasterize_triangle_colinear_horizontal();
-    test_rasterize_triangle_colinear_vertical();
-    test_rasterize_triangle();
-    test_rasterize_multiple_triangles();
+    TEST_CASE(test_rasterize_line_horizontal);
+    TEST_CASE(test_rasterize_line_vertical);
+    TEST_CASE(test_rasterize_line_steep_pos_slope);
+    TEST_CASE(test_rasterize_line_steep_neg_slope);
+    TEST_CASE(test_rasterize_line_pos_slope);
+    TEST_CASE(test_rasterize_line_neg_slope);
+    TEST_CASE(test_rasterize_triangle_colinear_horizontal);
+    TEST_CASE(test_rasterize_triangle_colinear_vertical);
+    TEST_CASE(test_rasterize_triangle);
+    TEST_CASE(test_rasterize_multiple_triangles);
 }

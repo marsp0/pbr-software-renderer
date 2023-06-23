@@ -2,66 +2,92 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
 
 #include "../math.h"
 
-void assert_vec(vec_t expected,
-                vec_t actual,
-                const char* file_name,
-                int32_t line_number);
+void        increment_test_assert_counter();
+void        reset_test_assert_counter();
+uint32_t    get_test_assert_counter();
+void        INIT_TESTS();
+void        TESTS_SUMMARY();
 
-void assert_float(float expected,
-                  float actual,
-                  const char* file_name,
-                  int32_t line_number);
+// NOTE: how does this work?
+#define GET_COMPARISON(a, b) _Generic(  a, \
+                                        float: fabs((float)a - (float)b) > 0.0005f, \
+                                        default: a != b)
 
-void assert_int(int64_t expected,
-                int64_t actual,
-                int64_t delta,
-                const char* file_name,
-                int32_t line_number);
+#define GET_FORMAT(a) _Generic( a, \
+                                int:        "%d != %d (%s != %s)\n", \
+                                int64_t:    "%ld != %ld (%s != %s)\n", \
+                                uint32_t:   "%u != %u (%s != %s)\n", \
+                                uint64_t:   "%lu != %lu (%s != %s)\n", \
+                                char:       "%c != %c (%s != %s)\n", \
+                                float:      "%f != %f (%s != %s)\n")
 
-void assert_mat(mat_t expected,
-                mat_t actual,
-                const char* file_name,
-                int32_t line_number);
+#define ASSERT_EQUAL(a, b)  do \
+                            { \
+                                bool fail = GET_COMPARISON(a, b); \
+                                if (fail) \
+                                { \
+                                    increment_test_assert_counter(); \
+                                } \
+                                if (fail && get_test_assert_counter() <= 10) \
+                                { \
+                                    printf("\t\tAssert fail: "); \
+                                    printf(GET_FORMAT(a), a, b, #a, #b); \
+                                } \
+                            } while(0);
 
-void assert_string(const char* expected,
-                   const char* actual,
-                   uint32_t size,
-                   const char* file_name,
-                   int32_t line_number);
+#define ASSERT_TRUE(a)  do \
+                        { \
+                            ASSERT_EQUAL((a), true); \
+                        } while(0);
 
-void assert_pointer(const void* expected,
-                    const void* actual,
-                    const char* file_name,
-                    int32_t line_number);
+#define ASSERT_POINTER(a, b) ASSERT_EQUAL((int64_t)a, (int64_t)b)
 
-void assert_pointer_exists(const void* pointer,
-                           const char* file_name,
-                           int32_t line_number);
+#define ASSERT_STRING(a, b, size)   do \
+                                    { \
+                                        for (uint32_t i = 0; i < size; i++) \
+                                        { \
+                                            ASSERT_EQUAL(a[i], b[i]); \
+                                        } \
+                                    } while(0);
 
-void assert_uint(uint32_t expected,
-                 uint32_t actual,
-                 bool is_hex,
-                 uint32_t delta,
-                 const char* file_name,
-                 int32_t line_number);
+#define ASSERT_VECTOR(a, b) do \
+                            { \
+                                ASSERT_EQUAL(a.x, b.x); \
+                                ASSERT_EQUAL(a.y, b.y); \
+                                ASSERT_EQUAL(a.z, b.z); \
+                            } while(0);
 
-void assert_bool(bool expected,
-                 bool actual,
-                 const char* file_name,
-                 int32_t line_number);
+#define ASSERT_MATRIX(a, b) do \
+                            { \
+                                for (uint32_t i = 0; i < 4; i++) \
+                                { \
+                                    for (uint32_t j = 0; j < 4; j++) \
+                                    { \
+                                        ASSERT_EQUAL(a.data[i][j], b.data[i][j]); \
+                                    } \
+                                } \
+                            } while(0);
 
-#define ASSERT_VEC(expected, actual) assert_vec(expected, actual, __FILE__, __LINE__);
-#define ASSERT_FLOAT(expected, actual) assert_float(expected, actual, __FILE__, __LINE__);
-#define ASSERT_INT(expected, actual) assert_int((int64_t)expected, (int64_t)actual, 0, __FILE__, __LINE__);
-#define ASSERT_INT_NEAR(expected, actual, delta) assert_int((int64_t)expected, (int64_t)actual, (int64_t)delta, __FILE__, __LINE__);
-#define ASSERT_MAT(expected, actual) assert_mat(expected, actual, __FILE__, __LINE__);
-#define ASSERT_STRING(expected, actual, size) assert_string(expected, actual, size, __FILE__, __LINE__);
-#define ASSERT_POINTER(expected, actual) assert_pointer(expected, actual, __FILE__, __LINE__);
-#define ASSERT_POINTER_EXISTS(pointer) assert_pointer_exists(pointer, __FILE__, __LINE__);
-#define ASSERT_UINT(expected, actual) assert_uint(expected, actual, false, 0, __FILE__, __LINE__);
-#define ASSERT_HEX(expected, actual) assert_uint(expected, actual, true, 0, __FILE__, __LINE__);
-#define ASSERT_UINT_NEAR(expected, actual, delta) assert_uint(expected, actual, false, delta, __FILE__, __LINE__);
-#define ASSERT_BOOL(expected, actual) assert_bool(expected, actual, __FILE__, __LINE__);
+#define TEST_CASE(test) do \
+                        { \
+                            printf("\t%s\n", #test); \
+                            reset_test_assert_counter(); \
+                            test(); \
+                            uint32_t count = get_test_assert_counter(); \
+                            if (count > 10) \
+                            { \
+                                printf("\t\t ... %u more assert fails\n", count - 10); \
+                            } \
+                        } while(0);
+
+#define TEST_GROUP(group)   do \
+                            { \
+                                printf("%s\n", #group); \
+                                group(); \
+                            } while(0);

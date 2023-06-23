@@ -12,7 +12,7 @@ static void test_matrix_add()
     expected.data[1][1] = 2.f;
     expected.data[2][2] = 2.f;
     expected.data[3][3] = 2.f;
-    ASSERT_MAT(expected, actual);
+    ASSERT_MATRIX(expected, actual);
 }
 
 static void test_matrix_sub()
@@ -25,7 +25,7 @@ static void test_matrix_sub()
     expected.data[1][1] = 0.f;
     expected.data[2][2] = 0.f;
     expected.data[3][3] = 0.f;
-    ASSERT_MAT(expected, actual);
+    ASSERT_MATRIX(expected, actual);
 }
 
 static void test_matrix_mul_matrix()
@@ -34,7 +34,7 @@ static void test_matrix_mul_matrix()
     mat_t m2 = mat_new(1, 1, 0, 1, 6, 1, 0, 3, 2, 1, 14, 0, 4, 0, 2, 1);
     mat_t actual = mat_mul_mat(m1, m2);
     mat_t expected = mat_new(39, 10, 50, 15, 6, 1, 0, 3, 90, 29, 14, 52, 31, 7, 2, 16);
-    ASSERT_MAT(expected, actual);
+    ASSERT_MATRIX(expected, actual);
 }
 
 static void test_matrix_mul_vector()
@@ -43,7 +43,7 @@ static void test_matrix_mul_vector()
     vec_t v = vec_new(1, 2, 3);
     vec_t actual = mat_mul_vec(m, v);
     vec_t expected = vec_new(18.f, 46.f, 74.f);
-    ASSERT_VEC(expected, actual);
+    ASSERT_VECTOR(expected, actual);
 }
 
 static void test_matrix_inverse_1()
@@ -54,7 +54,7 @@ static void test_matrix_inverse_1()
                              0.25f,0.25f,-0.25f,0.25f,
                              0.25f,-0.25f,0.25f,0.25f,
                              -0.25f,0.25f,0.25f,0.25f);
-    ASSERT_MAT(expected, actual);
+    ASSERT_MATRIX(expected, actual);
 }
 
 static void test_matrix_inverse_2()
@@ -68,7 +68,7 @@ static void test_matrix_inverse_2()
                            -21.f/20.f, 21/20.f, -1.f/5.f, -3.f/5.f,
                            31.f/40.f, -71.f/40.f, 1.f/10.f, 9.f/5.f,
                            1.f/4.f, 3.f/4.f, 0.f, -1.f);
-    ASSERT_MAT(expected, actual);
+    ASSERT_MATRIX(expected, actual);
 }
 
 static void test_matrix_inverse_3()
@@ -82,7 +82,7 @@ static void test_matrix_inverse_3()
                             0.06212f, -0.27240f, 0.02628f, 0.27359f,
                            -0.14575f, 0.25448f, -0.13859f, 0.01194f,
                             0.38231f, -0.06093f, 0.08482f, -0.16248f);
-    ASSERT_MAT(expected, actual);
+    ASSERT_MATRIX(expected, actual);
 }
 
 static void test_matrix_transpose()
@@ -96,17 +96,17 @@ static void test_matrix_transpose()
                              2,6,10,14,
                              3,7,11,15,
                              4,8,12,16);
-    ASSERT_MAT(expected, actual);
+    ASSERT_MATRIX(expected, actual);
 }
 
 void test_matrix()
 {
-    test_matrix_add();
-    test_matrix_sub();
-    test_matrix_mul_matrix();
-    test_matrix_mul_vector();
-    test_matrix_inverse_1();
-    test_matrix_inverse_2();
-    test_matrix_inverse_3();
-    test_matrix_transpose();
+    TEST_CASE(test_matrix_add);
+    TEST_CASE(test_matrix_sub);
+    TEST_CASE(test_matrix_mul_matrix);
+    TEST_CASE(test_matrix_mul_vector);
+    TEST_CASE(test_matrix_inverse_1);
+    TEST_CASE(test_matrix_inverse_2);
+    TEST_CASE(test_matrix_inverse_3);
+    TEST_CASE(test_matrix_transpose);
 }

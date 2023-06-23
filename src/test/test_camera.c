@@ -18,9 +18,9 @@ static void test_view_matrix_rotated_90deg_around_y()
     camera_t* camera = camera_new(position);
 
     // assert initial values
-    ASSERT_VEC(position, camera->position);
-    ASSERT_VEC(forward, camera->forward);
-    ASSERT_MAT(view, camera->view);
+    ASSERT_VECTOR(position, camera->position);
+    ASSERT_VECTOR(forward, camera->forward);
+    ASSERT_MATRIX(view, camera->view);
 
     // move camera
     // TODO: below changes with call to camera_update with some parameters
@@ -44,7 +44,7 @@ static void test_view_matrix_rotated_90deg_around_y()
     view.data[2][2] = new_front.z;
     view.data[2][3] = vec_dot(vec_negate(new_pos), new_front);
 
-    ASSERT_MAT(view, camera->view);
+    ASSERT_MATRIX(view, camera->view);
 }
 
 static void test_view_matrix_rotated_45deg_around_x()
@@ -61,9 +61,9 @@ static void test_view_matrix_rotated_45deg_around_x()
     camera_t* camera = camera_new(position);
 
     // assert initial values
-    ASSERT_VEC(position, camera->position);
-    ASSERT_VEC(forward, camera->forward);
-    ASSERT_MAT(view, camera->view);
+    ASSERT_VECTOR(position, camera->position);
+    ASSERT_VECTOR(forward, camera->forward);
+    ASSERT_MATRIX(view, camera->view);
 
     // move camera
     // TODO: below changes with call to camera_update with some parameters
@@ -87,7 +87,7 @@ static void test_view_matrix_rotated_45deg_around_x()
     view.data[2][2] = new_front.z;
     view.data[2][3] = vec_dot(vec_negate(new_pos), new_front);
 
-    ASSERT_MAT(view, camera->view);
+    ASSERT_MATRIX(view, camera->view);
 }
 
 static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
@@ -104,9 +104,9 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
     camera_t* camera = camera_new(position);
 
     // assert initial values
-    ASSERT_VEC(position, camera->position);
-    ASSERT_VEC(forward, camera->forward);
-    ASSERT_MAT(view, camera->view);
+    ASSERT_VECTOR(position, camera->position);
+    ASSERT_VECTOR(forward, camera->forward);
+    ASSERT_MATRIX(view, camera->view);
 
     // move camera
     // TODO: below changes with call to camera_update with some parameters
@@ -130,12 +130,12 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
     view.data[2][2] = new_front.z;
     view.data[2][3] = vec_dot(vec_negate(new_pos), new_front);
 
-    ASSERT_MAT(view, camera->view);
+    ASSERT_MATRIX(view, camera->view);
 }
 
 void test_camera()
 {
-    test_view_matrix_rotated_90deg_around_y();
-    test_view_matrix_rotated_45deg_around_x();
-    test_view_matrix_rotated_30deg_around_x_and_45deg_around_y();
+    TEST_CASE(test_view_matrix_rotated_90deg_around_y);
+    TEST_CASE(test_view_matrix_rotated_45deg_around_x);
+    TEST_CASE(test_view_matrix_rotated_30deg_around_x_and_45deg_around_y);
 }
