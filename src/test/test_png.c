@@ -93,5 +93,5 @@ static void test_simple_png(void)
 
 void test_png(void)
 {
-    test_simple_png();
+    TEST_CASE(test_simple_png);
 }

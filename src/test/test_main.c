@@ -7,14 +7,18 @@
 #include "test_camera.h"
 #include "test_rasterizer.h"
 
+#include "test_utils.h"
+
 int main()
 {
-    test_vector();
-    test_matrix();
-    test_json();
-    test_png();
-    test_crc();
-    test_scene();
-    test_camera();
-    test_rasterizer();
+    INIT_TESTS();
+    TEST_GROUP(test_vector);
+    TEST_GROUP(test_matrix);
+    TEST_GROUP(test_json);
+    TEST_GROUP(test_png);
+    TEST_GROUP(test_crc);
+    TEST_GROUP(test_scene);
+    TEST_GROUP(test_camera);
+    TEST_GROUP(test_rasterizer);
+    TESTS_SUMMARY();
 }

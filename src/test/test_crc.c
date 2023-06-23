@@ -17,7 +17,7 @@ static void test_crc_bitwise_no_init(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0x89A1897F;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_bitwise_w_init(void)
@@ -34,21 +34,21 @@ static void test_crc_bitwise_w_init(void)
     uint32_t actual = crc(input);
     uint32_t expected = 0x02521484;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 
     // second calc
     input.init = 0xF000000F;
     actual = crc(input);
     expected = 0x9ACA5D2C;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 
     // third calc
     input.init = 0xFFFFFFFF;
     actual = crc(input);
     expected = 0x0376E6E7;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_bitwise_no_init_w_final(void)
@@ -64,7 +64,7 @@ static void test_crc_bitwise_no_init_w_final(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0x765E7680;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_bitwise_w_init_w_final(void)
@@ -80,7 +80,7 @@ static void test_crc_bitwise_w_init_w_final(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0xEE9B0B0A;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_bitwise_no_init_no_final_reflected(void)
@@ -96,7 +96,7 @@ static void test_crc_bitwise_no_init_no_final_reflected(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0x2DFD2D88;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_bitwise_w_init_no_final_reflected(void)
@@ -113,7 +113,7 @@ static void test_crc_bitwise_w_init_no_final_reflected(void)
     uint32_t actual = crc(input);
     uint32_t expected = 0xF244E259;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_bitwise_w_init_w_final_reflected(void)
@@ -129,7 +129,7 @@ static void test_crc_bitwise_w_init_w_final_reflected(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0xD9E62B34;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_table_no_init(void)
@@ -145,7 +145,7 @@ static void test_crc_table_no_init(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0x89A1897F;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_table_w_init(void)
@@ -162,21 +162,21 @@ static void test_crc_table_w_init(void)
     uint32_t actual = crc(input);
     uint32_t expected = 0x02521484;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 
     // second calc
     input.init = 0xF000000F;
     actual = crc(input);
     expected = 0x9ACA5D2C;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 
     // third calc
     input.init = 0xFFFFFFFF;
     actual = crc(input);
     expected = 0x0376E6E7;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_table_no_init_w_final(void)
@@ -192,7 +192,7 @@ static void test_crc_table_no_init_w_final(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0x765E7680;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_table_w_init_w_final(void)
@@ -208,7 +208,7 @@ static void test_crc_table_w_init_w_final(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0xEE9B0B0A;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_table_no_init_no_final_reflected(void)
@@ -224,7 +224,7 @@ static void test_crc_table_no_init_no_final_reflected(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0x2DFD2D88;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_table_w_init_no_final_reflected(void)
@@ -241,7 +241,7 @@ static void test_crc_table_w_init_no_final_reflected(void)
     uint32_t actual = crc(input);
     uint32_t expected = 0xF244E259;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 static void test_crc_table_w_init_w_final_reflected(void)
@@ -257,23 +257,23 @@ static void test_crc_table_w_init_w_final_reflected(void)
     const uint32_t actual = crc(input);
     const uint32_t expected = 0xD9E62B34;
 
-    ASSERT_HEX(expected, actual);
+    ASSERT_EQUAL(expected, actual);
 }
 
 void test_crc(void)
 {
-    test_crc_bitwise_no_init();
-    test_crc_bitwise_w_init();
-    test_crc_bitwise_no_init_w_final();
-    test_crc_bitwise_w_init_w_final();
-    test_crc_bitwise_no_init_no_final_reflected();
-    test_crc_bitwise_w_init_no_final_reflected();
-    test_crc_bitwise_w_init_w_final_reflected();
-    test_crc_table_no_init();
-    test_crc_table_w_init();
-    test_crc_table_no_init_w_final();
-    test_crc_table_w_init_w_final();
-    test_crc_table_no_init_no_final_reflected();
-    test_crc_table_w_init_no_final_reflected();
-    test_crc_table_w_init_w_final_reflected();
+    TEST_CASE(test_crc_bitwise_no_init);
+    TEST_CASE(test_crc_bitwise_w_init);
+    TEST_CASE(test_crc_bitwise_no_init_w_final);
+    TEST_CASE(test_crc_bitwise_w_init_w_final);
+    TEST_CASE(test_crc_bitwise_no_init_no_final_reflected);
+    TEST_CASE(test_crc_bitwise_w_init_no_final_reflected);
+    TEST_CASE(test_crc_bitwise_w_init_w_final_reflected);
+    TEST_CASE(test_crc_table_no_init);
+    TEST_CASE(test_crc_table_w_init);
+    TEST_CASE(test_crc_table_no_init_w_final);
+    TEST_CASE(test_crc_table_w_init_w_final);
+    TEST_CASE(test_crc_table_no_init_no_final_reflected);
+    TEST_CASE(test_crc_table_w_init_no_final_reflected);
+    TEST_CASE(test_crc_table_w_init_w_final_reflected);
 }
