@@ -1,7 +1,5 @@
 #include "test_rasterizer.h"
 
-#include <stdio.h>
-
 #include "test_utils.h"
 
 #include "../rasterizer.h"

@@ -1,7 +1,5 @@
 #include "test_png.h"
 
-#include <stdio.h>
-
 #include "test_utils.h"
 #include "../parsers/png.h"
 

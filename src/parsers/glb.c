@@ -1,6 +1,5 @@
 #include "glb.h"
 
-#include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdint.h>

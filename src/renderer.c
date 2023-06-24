@@ -2,7 +2,6 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 
@@ -44,31 +43,23 @@ void renderer_clear(renderer_t* renderer)
 
 void renderer_run(renderer_t* renderer)
 {
-    input_t input = 0;
+    bool quit = false;
     timestamp_t start;
     timestamp_t end;
     timestamp_t diff;
     timestamp_t frame_time = 16 * MILLISECOND;
-    int counter = 0;
-    int multiplier = 1;
 
-    while (!(input & QUIT))
+    while (!quit)
     {
         start = time_now();
 
         // process input
-        handle_input(renderer->display, &input);
+        input_t input = handle_input(renderer->display);
 
         // update
         // camera_update(renderer->scene->camera);
 
         // render
-        rasterize_triangle(vec_new((float)multiplier * 50 + 100.f, 100.f, 50.f),
-                           vec_new((float)multiplier * 50 + 100.f, 200.f, 50.f),
-                           vec_new((float)multiplier * 50 + 100.f, 300.f, 50.f),
-                           0xffffffff,
-                           renderer->current,
-                           renderer->depthbuffer);
         // display_draw_mesh(renderer, renderer->mesh);
         display_draw(renderer->display, renderer->current);
         renderer_clear(renderer);
@@ -82,25 +73,13 @@ void renderer_run(renderer_t* renderer)
         end = time_now();
         diff = end - start;
 
-        printf("%luus(%lu - %lu)\n", diff / 1000, frame_time, diff);
-
         if (frame_time > diff)
         {
             nanosleep((const struct timespec[]){{ 0, frame_time - diff }}, NULL);
         }
 
-        counter++;
-        if (counter == 60)
-        {
-            multiplier += 1;
-
-            if (multiplier == 8)
-            {
-                multiplier = 0;
-            }
-
-            counter = 0;
-        }
+        // quit
+        quit = input.keys & QUIT;
     }
 }
 
