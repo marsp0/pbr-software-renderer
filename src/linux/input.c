@@ -1,7 +1,6 @@
 #include "input.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include <X11/Xlib.h>
 
