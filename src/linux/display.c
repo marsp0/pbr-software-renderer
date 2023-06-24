@@ -91,7 +91,11 @@ display_t* display_new(uint32_t width, uint32_t height)
                                0);
 
     /* event subscription */
-    long key_mask = ExposureMask | KeyReleaseMask | ButtonReleaseMask;
+    long key_mask = ExposureMask | \
+                    KeyReleaseMask | \
+                    KeyPressMask | \
+                    ButtonReleaseMask | \
+                    PointerMotionMask;
     XSelectInput(dsp->display, dsp->window, key_mask);
 
     /*
