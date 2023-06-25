@@ -14,8 +14,8 @@
 	- [ ] add quaternions to math.h
 - [ ] 21.04.2023
 	- [ ] investigate why XPutImage takes 1ms to complete. See if possible to imrove.
-- [ ] 20.04.2023
-	- [ ] both the frame buffer and the display have their own CHANNELS constants. Unify those,
+- [x] 20.04.2023
+	- [x] both the frame buffer and the display have their own CHANNELS constants. Unify those,
 		  and look at the memcpy note in display.c
 - [ ] 19.04.2023
 	- [ ] see if it makes sense to unify display and input into "platform"
