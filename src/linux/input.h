@@ -25,4 +25,3 @@ typedef struct
 } input_t;
 
 input_t handle_input(display_t* dsp);
-
