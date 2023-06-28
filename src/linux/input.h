@@ -14,9 +14,6 @@
 #define KEY_3   1L << 7
 #define KEY_4   1L << 8
 
-
-// typedef uint64_t input_t;
-
 typedef struct
 {
     uint64_t keys;

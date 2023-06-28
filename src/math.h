@@ -44,3 +44,13 @@ vec_t mat_mul_vec(mat_t m, vec_t v);
 mat_t mat_inverse(mat_t m);
 mat_t mat_transpose(mat_t m);
 void  mat_print(mat_t m);
+
+/********************/
+/*       Plane      */
+/********************/
+
+typedef struct
+{
+    vec_t p;
+    vec_t n;
+} plane_t;
