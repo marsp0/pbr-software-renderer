@@ -23,6 +23,7 @@ typedef struct
 } camera_t;
 
 camera_t*   camera_new(vec_t position,
+                       vec_t forward,
                        float fov_x,
                        float near,
                        float far,

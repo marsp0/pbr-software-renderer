@@ -15,7 +15,12 @@ static void test_view_matrix_rotated_90deg_around_y()
     mat_t view      = mat_new_identity();
 
     // create camera
-    camera_t* camera = camera_new(position, (float)M_PI_2, 1.f, 100.f, 1.3333f);
+    camera_t* camera = camera_new(position, 
+                                  forward,
+                                  (float)M_PI_2, 
+                                  1.f, 
+                                  100.f, 
+                                  1.3333f);
 
     // assert initial values
     ASSERT_VECTOR(position, camera->position);
@@ -58,7 +63,12 @@ static void test_view_matrix_rotated_45deg_around_x()
     mat_t view      = mat_new_identity();
 
     // create camera
-    camera_t* camera = camera_new(position, (float)M_PI_2, 1.f, 100.f, 1.3333f);
+    camera_t* camera = camera_new(position, 
+                                  forward,
+                                  (float)M_PI_2, 
+                                  1.f, 
+                                  100.f, 
+                                  1.3333f);
 
     // assert initial values
     ASSERT_VECTOR(position, camera->position);
@@ -101,7 +111,12 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
     mat_t view      = mat_new_identity();
 
     // create camera
-    camera_t* camera = camera_new(position, (float)M_PI_2, 1.f, 100.f, 1.3333f);
+    camera_t* camera = camera_new(position, 
+                                  forward,
+                                  (float)M_PI_2, 
+                                  1.f, 
+                                  100.f, 
+                                  1.3333f);
 
     // assert initial values
     ASSERT_VECTOR(position, camera->position);

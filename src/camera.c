@@ -23,38 +23,8 @@
 /* static functions */
 /********************/
 
-/********************/
-/* public functions */
-/********************/
-
-camera_t* camera_new(vec_t position,
-                     float fov_x,
-                     float near,
-                     float far,
-                     float aspect_ratio)
+static void update_view_transform(camera_t* cam)
 {
-    camera_t* camera        = malloc(sizeof(camera_t));
-    camera->position        = position;
-    camera->forward         = vec_new(0.f, 0.f, 1.f);
-    camera->view            = mat_new_identity();
-    camera->proj            = mat_new_identity();
-    camera->fov_x           = fov_x;
-    camera->near_dist   = near;
-    camera->far_dist    = far;
-    camera->right_dist  = tanf(fov_x / 2.f) * near;
-    camera->left_dist   = -camera->right_dist;
-    camera->top_dist    = camera->right_dist / aspect_ratio;
-    camera->bottom_dist = -camera->top_dist;
-
-    return camera;
-}
-
-void camera_update(camera_t* cam)
-{
-    // update
-
-
-    // generate new basis vectors
     vec_t world_up      = vec_new(0.f, 1.f, 0.f);
     vec_t front         = vec_negate(cam->forward);
     vec_t left          = vec_cross(world_up, front);
@@ -76,8 +46,10 @@ void camera_update(camera_t* cam)
     cam->view.data[2][1] = front.y;
     cam->view.data[2][2] = front.z;
     cam->view.data[2][3] = vec_dot(pos_negative, front);
+}
 
-    // construct projection matrix
+static void update_projection_transform(camera_t* cam)
+{
     float two_n     = 2 * cam->near_dist;
     float two_f_n   = 2 * cam->near_dist * cam->far_dist;
     float r_min_l   = cam->right_dist - cam->left_dist;
@@ -103,6 +75,43 @@ void camera_update(camera_t* cam)
     cam->proj.data[2][3] = two_f_n    / f_min_n;
 
     cam->proj.data[3][2] = -1.f;
+    cam->proj.data[3][3] = 0.f;
+}
+
+/********************/
+/* public functions */
+/********************/
+
+camera_t* camera_new(vec_t position,
+                     vec_t forward,
+                     float fov_x,
+                     float near,
+                     float far,
+                     float aspect_ratio)
+{
+    camera_t* camera        = malloc(sizeof(camera_t));
+    camera->position        = position;
+    camera->forward         = vec_normalize(forward);
+    camera->view            = mat_new_identity();
+    camera->proj            = mat_new_identity();
+    camera->fov_x           = fov_x;
+    camera->near_dist   = near;
+    camera->far_dist    = far;
+    camera->right_dist  = tanf(fov_x / 2.f) * near;
+    camera->left_dist   = -camera->right_dist;
+    camera->top_dist    = camera->right_dist / aspect_ratio;
+    camera->bottom_dist = -camera->top_dist;
+
+    return camera;
+}
+
+void camera_update(camera_t* cam)
+{
+    // update
+
+
+    update_view_transform(cam);
+    update_projection_transform(cam);
 }
 
 void camera_free(camera_t* cam)
