@@ -42,7 +42,7 @@ void TESTS_SUMMARY()
 {
     printf("\n");
     printf("+----------------------------------------+\n");
-    printf("\tPassed: %d\n", passed);
-    printf("\tFailed: %d\n", failed);
+    printf("|              Passed: %3d               |\n", passed);
+    printf("|              Failed: %3d               |\n", failed);
     printf("+----------------------------------------+\n");
 }

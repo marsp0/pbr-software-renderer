@@ -21,6 +21,4 @@ typedef struct
 
 renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path);
 void        renderer_run(renderer_t* renderer);
-void        renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh);
-void        renderer_clear(renderer_t* renderer);
 void        renderer_free(renderer_t* renderer);

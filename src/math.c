@@ -242,3 +242,33 @@ void mat_print(mat_t m)
     printf("|%f, %f, %f, %f|\n", m.data[2][0], m.data[2][1], m.data[2][2], m.data[2][3]);
     printf("|%f, %f, %f, %f|\n", m.data[3][0], m.data[3][1], m.data[3][2], m.data[3][3]);
 }
+
+mat_t x_axis_rotation(float rad)
+{
+    float sin_val = sinf(rad);
+    float cos_val = cosf(rad);
+    mat_t mat = mat_new_identity();
+
+    mat.data[1][1] = cos_val;
+    mat.data[1][2] = -sin_val;
+
+    mat.data[2][1] = sin_val;
+    mat.data[2][2] = cos_val;
+
+    return mat;
+}
+
+mat_t y_axis_rotation(float rad)
+{
+    float sin_val = sinf(rad);
+    float cos_val = cosf(rad);
+    mat_t mat = mat_new_identity();
+
+    mat.data[0][0] = cos_val;
+    mat.data[0][2] = sin_val;
+
+    mat.data[2][0] = -sin_val;
+    mat.data[2][2] = cos_val;
+
+    return mat;
+}
