@@ -9,7 +9,7 @@ typedef struct
     float yaw;
 
     vec_t forward;  // points inward
-    vec_t left;
+    vec_t side;
     vec_t up;
     vec_t position;
 

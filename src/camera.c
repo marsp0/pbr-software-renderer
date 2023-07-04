@@ -32,8 +32,8 @@ static void update_basis_vectors(camera_t* cam)
     
     mat_t rot_y_x   = mat_mul_mat(y_axis_rotation(cam->yaw), x_axis_rotation(cam->pitch));
     cam->forward    = vec_normalize(mat_mul_vec(rot_y_x, vec_new(0.f, 0.f, -1.f)));
-    cam->left       = vec_normalize(vec_cross(world_up, cam->forward));
-    cam->up         = vec_normalize(vec_cross(cam->forward, cam->left));
+    cam->side       = vec_normalize(vec_cross(world_up, cam->forward));
+    cam->up         = vec_normalize(vec_cross(cam->forward, cam->side));
 }
 
 /********************/
@@ -54,7 +54,7 @@ camera_t* camera_new(vec_t position,
     camera->pitch       = pitch;
     camera->yaw         = yaw;
     camera->forward     = vec_new(0.f, 0.f, 0.f);
-    camera->left        = vec_new(0.f, 0.f, 0.f);
+    camera->side        = vec_new(0.f, 0.f, 0.f);
     camera->up          = vec_new(0.f, 0.f, 0.f);
 
     camera->fov_x       = fov_x;
@@ -72,7 +72,6 @@ camera_t* camera_new(vec_t position,
 
 void camera_update(camera_t* cam, input_t input)
 {
-    // update
     // origin of xorg window is top-left
     cam->pitch += (float)input.dy * PI_OVER_180;
     cam->yaw   -= (float)input.dx * PI_OVER_180;
@@ -87,6 +86,27 @@ void camera_update(camera_t* cam, input_t input)
         cam->yaw = 0.f;
     }
 
+    float speed = 0.5f;
+    vec_t front = vec_scale(vec_negate(cam->forward), speed);
+    vec_t right = vec_scale(cam->side, speed);
+
+    if (input.keys & KEY_W)
+    {
+        cam->position = vec_add(cam->position, front);
+    }
+    if (input.keys & KEY_A)
+    {
+        cam->position = vec_add(cam->position, vec_negate(right));
+    }
+    if (input.keys & KEY_S)
+    {
+        cam->position = vec_add(cam->position, vec_negate(front));
+    }
+    if (input.keys & KEY_D)
+    {
+        cam->position = vec_add(cam->position, right);
+    }
+
     update_basis_vectors(cam);
 }
 
@@ -97,10 +117,10 @@ mat_t camera_view_transform(camera_t* cam)
     vec_t pos_negative = vec_negate(cam->position);
 
     // construct cam -> world transform + invert it
-    result.data[0][0] = cam->left.x;
-    result.data[0][1] = cam->left.y;
-    result.data[0][2] = cam->left.z;
-    result.data[0][3] = vec_dot(pos_negative, cam->left);
+    result.data[0][0] = cam->side.x;
+    result.data[0][1] = cam->side.y;
+    result.data[0][2] = cam->side.z;
+    result.data[0][3] = vec_dot(pos_negative, cam->side);
 
     result.data[1][0] = cam->up.x;
     result.data[1][1] = cam->up.y;
