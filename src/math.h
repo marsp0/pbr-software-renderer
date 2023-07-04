@@ -46,6 +46,13 @@ mat_t mat_transpose(mat_t m);
 void  mat_print(mat_t m);
 
 /********************/
+/*  Rotation Utils  */
+/********************/
+
+mat_t x_axis_rotation(float rad);
+mat_t y_axis_rotation(float rad);
+
+/********************/
 /*       Plane      */
 /********************/
 

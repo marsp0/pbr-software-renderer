@@ -42,7 +42,8 @@ static void render_utils(renderer_t* renderer)
                           0x00FF0000, 
                           0xFF000000};
 
-    mat_t PV = mat_mul_mat(cam->proj, cam->view);
+    mat_t PV = mat_mul_mat(camera_proj_transform(cam),
+                           camera_view_transform(cam));
 
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
@@ -105,7 +106,7 @@ void renderer_run(renderer_t* renderer)
         input_t input = handle_input(renderer->display);
 
         // update
-        camera_update(renderer->scene->camera);
+        camera_update(renderer->scene->camera, input);
 
         // render
         render_utils(renderer);

@@ -271,12 +271,13 @@ scene_t* parse_scene(const char* file_path)
     // scene->dir_light
     // scene->point_light
     scene->mesh = parse_meshes(json, binary);
-    vec_t cam_pos = vec_new(10.f, -10.f, 10.f);
-    scene->camera = camera_new(cam_pos, 
-                               vec_negate(cam_pos),
-                               (float)M_PI_2, 
-                               1.f, 
-                               100.f, 
+    vec_t cam_pos = vec_new(2.f, 2.f, 2.f);
+    scene->camera = camera_new(cam_pos,
+                               0.610866f,
+                               -2.356194f,
+                               (float)M_PI_2,
+                               1.f,
+                               100.f,
                                1.3333f);
 
     // free buffers
