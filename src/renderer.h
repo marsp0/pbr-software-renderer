@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 #include "scene.h"
 #include "framebuffer.h"
 #include "depthbuffer.h"
@@ -17,6 +19,8 @@ typedef struct
     depthbuffer_t*  depthbuffer;
     uint32_t        width;
     uint32_t        height;
+    bool            wireframe;
+
 } renderer_t;
 
 renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path);

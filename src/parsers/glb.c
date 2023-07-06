@@ -121,6 +121,8 @@ static vec_t* create_vec_array(const view_t view)
         float_arr[3] = view.data[i + 11];
         result[j].z = *(float*)float_arr;
 
+        result[j].w = 1.f;
+
         j++;
     }
 
