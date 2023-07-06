@@ -58,6 +58,43 @@ static void render_utils(renderer_t* renderer)
     rasterize_line(points[0], points[3], colors[3], renderer->current);
 }
 
+static void render_wireframe(renderer_t* renderer)
+{
+    float width     = (float)renderer->current->width;
+    float height    = (float)renderer->current->height;
+
+    mesh_t* mesh    = renderer->scene->mesh;
+    camera_t* cam   = renderer->scene->camera;
+
+    vec_t points[3];
+
+    mat_t PV = mat_mul_mat(camera_proj_transform(cam),
+                           camera_view_transform(cam));
+
+    for (uint32_t i = 0; i < mesh->indices_size; i += 3)
+    {
+        uint32_t i0 = mesh->indices[i + 0];
+        uint32_t i1 = mesh->indices[i + 1];
+        uint32_t i2 = mesh->indices[i + 2];
+
+        points[0] = mesh->vertices[i0];
+        points[1] = mesh->vertices[i1];
+        points[2] = mesh->vertices[i2];
+
+        for (uint32_t j = 0; j < sizeof(points) / sizeof(vec_t); j++)
+        {
+            points[j]   = mat_mul_vec(PV, points[j]);
+            points[j]   = vec_scale(points[j], 1.f/points[j].w);
+            points[j].x = (points[j].x + 1.f) * 0.5f * width;
+            points[j].y = (points[j].y + 1.f) * 0.5f * height;
+        }
+
+        rasterize_line(points[0], points[1], 0xFFFFFFFF, renderer->current);
+        rasterize_line(points[1], points[2], 0xFFFFFFFF, renderer->current);
+        rasterize_line(points[2], points[0], 0xFFFFFFFF, renderer->current);
+    }
+}
+
 static void clear(renderer_t* renderer)
 {
     framebuffer_clear(renderer->current);
@@ -85,6 +122,7 @@ renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 
     renderer->width         = width;
     renderer->height        = height;
+    renderer->wireframe     = false;
 
     return renderer;
 }
@@ -106,11 +144,21 @@ void renderer_run(renderer_t* renderer)
         input_t input = handle_input(renderer->display);
 
         // update
-        camera_update(renderer->scene->camera, input);
+        scene_update(renderer->scene, input);
+        if (input.keys & KEY_1)
+        {
+            renderer->wireframe = !renderer->wireframe;
+        }
 
         // render
         render_utils(renderer);
+        if (renderer->wireframe)
+        {
+            render_wireframe(renderer);
+        }
         display_draw(renderer->display, renderer->current);
+
+        // clear
         clear(renderer);
 
         // swap buffers
