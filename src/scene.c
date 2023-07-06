@@ -28,20 +28,25 @@
 
 scene_t* scene_new(const char* file_path)
 {
-	scene_t* scene = parse_scene(file_path);
-	return scene;
+    scene_t* scene = parse_scene(file_path);
+    return scene;
+}
+
+void scene_update(scene_t* scene, input_t input)
+{
+    camera_update(scene->camera, input);
 }
 
 void scene_reset(scene_t* scene)
 {
-	// reset camera position
-	// reset some other stuff
-	printf("resetting scene %p", (void*)scene);
+    // reset camera position
+    // reset some other stuff
+    printf("resetting scene %p", (void*)scene);
 }
 
 void scene_free(scene_t* scene)
 {
-	mesh_free(scene->mesh);
-	camera_free(scene->camera);
-	free(scene);
+    mesh_free(scene->mesh);
+    camera_free(scene->camera);
+    free(scene);
 }

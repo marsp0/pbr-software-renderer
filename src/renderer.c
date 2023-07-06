@@ -106,11 +106,14 @@ void renderer_run(renderer_t* renderer)
         input_t input = handle_input(renderer->display);
 
         // update
-        camera_update(renderer->scene->camera, input);
+        scene_update(renderer->scene, input);
 
         // render
         render_utils(renderer);
+        // render_meshes(renderer);
         display_draw(renderer->display, renderer->current);
+
+        // clear
         clear(renderer);
 
         // swap buffers
