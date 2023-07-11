@@ -90,4 +90,5 @@ void test_vector()
     TEST_CASE(test_vector_normalize);
     TEST_CASE(test_vector_dot);
     TEST_CASE(test_vector_magnitude);
+    TEST_CASE(test_vector_magnitude_sq);
 }
