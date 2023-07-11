@@ -63,6 +63,11 @@ float vec_magnitude(vec_t v)
     return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+float vec_magnitude_sq(vec_t v)
+{
+    return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
 void vec_print(vec_t v)
 {
     printf("vec(%f, %f, %f)\n", v.x, v.y, v.z);

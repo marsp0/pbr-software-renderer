@@ -72,6 +72,14 @@ static void test_vector_magnitude()
     ASSERT_EQUAL(expected, actual);
 }
 
+static void test_vector_magnitude_sq()
+{
+    vec_t v1 = vec_new(2.f, 3.f, 4.f);
+    float actual = vec_magnitude_sq(v1);
+    float expected = 2 * 2 + 3 * 3 + 4 * 4;
+    ASSERT_EQUAL(expected, actual);
+}
+
 void test_vector()
 {
     TEST_CASE(test_vector_addition);

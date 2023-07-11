@@ -21,6 +21,7 @@ vec_t vec_negate(vec_t v);
 vec_t vec_normalize(vec_t v);
 float vec_dot(vec_t v1, vec_t v2);
 float vec_magnitude(vec_t v);
+float vec_magnitude_sq(vec_t v);
 void  vec_print(vec_t v);
 
 /********************/
