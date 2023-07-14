@@ -129,6 +129,29 @@ static vec_t* create_vec_array(const view_t view)
     return result;
 }
 
+static sphere_t compute_bounding_sphere(vec_t* vertices, uint32_t size)
+{
+    sphere_t result = { .center = vec_new(0.f, 0.f, 0.f), .radius = 0.f };
+
+    for (uint32_t i = 0; i < size; i++)
+    {
+        result.center = vec_add(result.center, vertices[i]);
+    }
+
+    for (uint32_t i = 0; i < size; i++)
+    {
+        float new = vec_magnitude_sq(vec_sub(vertices[i], result.center));
+        if (new > result.radius)
+        {
+            result.radius = new;
+        }
+    }
+
+    result.radius = sqrtf(result.radius);
+
+    return result;
+}
+
 static view_t parse_mesh_data(const json_t* json,
                               const json_node_t* node,
                               const char* attribute,
@@ -213,14 +236,15 @@ static mesh_t* parse_meshes(const json_t* json, const chunk_t binary)
     const json_node_t* attributes   = json_find_child(primitive, JSON_ATTRIBUTES);
 
     view_t indices_view             = parse_mesh_data(json, primitive, JSON_INDICES, binary);
-    view_t positions_view           = parse_mesh_data(json, attributes, JSON_POSITION, binary);
+    view_t vertices_view            = parse_mesh_data(json, attributes, JSON_POSITION, binary);
     view_t normals_view             = parse_mesh_data(json, attributes, JSON_NORMAL, binary);
     view_t tex_coords_view          = parse_mesh_data(json, attributes, JSON_TEXCOORD_0, binary);
 
     uint32_t* indices               = create_indices_array(indices_view);
-    vec_t* positions                = create_vec_array(positions_view);
+    vec_t* vertices                 = create_vec_array(vertices_view);
     vec_t* normals                  = create_vec_array(normals_view);
     vec_t* tex_coords               = create_vec_array(tex_coords_view);
+    sphere_t bounding_sphere        = compute_bounding_sphere(vertices, vertices_view.count);
 
     // parse material data
     index                           = json_find_child(primitive, JSON_MATERIAL);
@@ -237,18 +261,19 @@ static mesh_t* parse_meshes(const json_t* json, const chunk_t binary)
     texture_t* occlusion_tex        = parse_material_texture(json, occlusion, binary);
 
     return mesh_new("name", 
-                    positions,
+                    vertices,
                     tex_coords,
                     normals,
                     indices,
-                    positions_view.count,
+                    vertices_view.count,
                     tex_coords_view.count,
                     normals_view.count,
                     indices_view.count,
                     albedo_tex,
                     metallic_tex,
                     normal_tex,
-                    occlusion_tex);
+                    occlusion_tex,
+                    bounding_sphere);
 }
 
 /********************/

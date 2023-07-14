@@ -18,9 +18,9 @@ static void test_view_matrix_rotated_90deg_around_y()
     mat_t view      = mat_new_identity();
 
     // create camera -> 
-    // left gets calculated to (-1, 0, 0)
-    // up gets calculated to (0, 1, 0)
-    // forward gets calculated to (0, 0, -1)
+    // left gets calculated to      (-1, 0, 0)
+    // up gets calculated to        (0, 1, 0)
+    // forward gets calculated to   (0, 0, -1)
     camera_t* camera = camera_new(position,
                                   0.f,
                                   0.f,

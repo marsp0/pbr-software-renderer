@@ -15,7 +15,8 @@ mesh_t* mesh_new(char*      name,
                  texture_t* albedo,
                  texture_t* metallic,
                  texture_t* normal,
-                 texture_t* occlusion)
+                 texture_t* occlusion,
+                 sphere_t   bsphere)
 {
     mesh_t* mesh = malloc(sizeof(mesh_t));
     
@@ -35,6 +36,7 @@ mesh_t* mesh_new(char*      name,
     mesh->metallic          = metallic;
     mesh->normal            = normal;
     mesh->occlusion         = occlusion;
+    mesh->bounding_sphere   = bsphere;
     
     return mesh;
 }
