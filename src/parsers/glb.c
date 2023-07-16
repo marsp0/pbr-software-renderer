@@ -131,23 +131,26 @@ static vec_t* create_vec_array(const view_t view)
 
 static sphere_t compute_bounding_sphere(vec_t* vertices, uint32_t size)
 {
-    sphere_t result = { .center = vec_new(0.f, 0.f, 0.f), .radius = 0.f };
+    sphere_t result = { .c = vec_new(0.f, 0.f, 0.f), .r = 0.f };
 
     for (uint32_t i = 0; i < size; i++)
     {
-        result.center = vec_add(result.center, vertices[i]);
+        result.c = vec_add(result.c, vertices[i]);
     }
 
+    float scale = 1.f / (float)size;
+    result.c = vec_scale(result.c, scale);
+
     for (uint32_t i = 0; i < size; i++)
     {
-        float new = vec_magnitude_sq(vec_sub(vertices[i], result.center));
-        if (new > result.radius)
+        float new = vec_magnitude_sq(vec_sub(vertices[i], result.c));
+        if (new > result.r)
         {
-            result.radius = new;
+            result.r = new;
         }
     }
 
-    result.radius = sqrtf(result.radius);
+    result.r = sqrtf(result.r);
 
     return result;
 }
@@ -298,11 +301,11 @@ scene_t* parse_scene(const char* file_path)
     // scene->dir_light
     // scene->point_light
     scene->mesh = parse_meshes(json, binary);
-    vec_t cam_pos = vec_new(2.f, 2.f, 2.f);
+    vec_t cam_pos = vec_new(5.f, 5.f, 5.f);
     scene->camera = camera_new(cam_pos,
                                0.610866f,
                                -2.356194f,
-                               (float)M_PI_2,
+                               20 * (float)M_PI / 180.f,
                                1.f,
                                100.f,
                                1.3333f);

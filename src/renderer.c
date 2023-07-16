@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+#include <stdio.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +27,67 @@
 /********************/
 /* static functions */
 /********************/
+
+// static void render_frustum(renderer_t* renderer)
+// {
+//     float width     = (float)renderer->current->width;
+//     float height    = (float)renderer->current->height;
+//     camera_t* cam   = renderer->scene->camera;
+
+//     vec_t trn = vec_add(cam->r_plane.p, vec_scale(cam->up, cam->t_dist));
+//     vec_t brn = vec_add(cam->r_plane.p, vec_scale(cam->up, -cam->t_dist));
+
+//     vec_t tln = vec_add(cam->l_plane.p, vec_scale(cam->up, cam->t_dist));
+//     vec_t bln = vec_add(cam->l_plane.p, vec_scale(cam->up, -cam->t_dist));
+
+//     float fr_dist = tanf(cam->fov_x / 2.f) * cam->f_dist;
+//     float ft_dist = fr_dist / cam->asp_ratio;
+//     vec_t fp = vec_add(cam->position, vec_scale(vec_negate(cam->forward), cam->f_dist));
+//     vec_t frp = vec_add(fp, vec_scale(cam->side, fr_dist));
+//     vec_t flp = vec_add(fp, vec_scale(cam->side, -fr_dist));
+
+//     vec_t trf = vec_add(frp, vec_scale(cam->up, ft_dist));
+//     vec_t brf = vec_add(frp, vec_scale(cam->up, -ft_dist));
+
+//     vec_t tlf = vec_add(flp, vec_scale(cam->up, ft_dist));
+//     vec_t blf = vec_add(flp, vec_scale(cam->up, -ft_dist));
+
+//     vec_t points[8] = {trn, brn, tln, bln, trf, brf, tlf, blf};
+
+//     // mat_t PV = mat_mul_mat(camera_proj_transform(cam),
+//     //                        camera_view_transform(cam));
+
+//     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
+//     {
+
+//         points[i] = vec_normalize(points[i]);
+//         // points[i] = vec_scale(points[i], 0.2f);
+
+//         // points[i]   = mat_mul_vec(PV, points[i]);
+//         points[i]   = mat_mul_vec(camera_view_transform(cam), points[i]);
+//         points[i]   = mat_mul_vec(camera_proj_transform(cam), points[i]);
+//         points[i]   = vec_scale(points[i], 1.f/points[i].w);
+//         vec_print(points[i]);
+//         points[i].x = (points[i].x + 1.f) * 0.5f * width;
+//         points[i].y = (points[i].y + 1.f) * 0.5f * height;
+//     }
+//     printf("--\n");
+
+//     rasterize_line(points[0], points[1], 0x00FF0000, renderer->current);
+//     rasterize_line(points[3], points[1], 0x00FF0000, renderer->current);
+//     rasterize_line(points[3], points[2], 0x00FF0000, renderer->current);
+//     rasterize_line(points[2], points[0], 0x00FF0000, renderer->current);
+
+//     rasterize_line(points[4], points[5], 0x00FFFF00, renderer->current);
+//     rasterize_line(points[5], points[7], 0x00FFFF00, renderer->current);
+//     rasterize_line(points[7], points[6], 0x00FFFF00, renderer->current);
+//     rasterize_line(points[6], points[4], 0x00FFFF00, renderer->current);
+
+//     rasterize_line(points[0], points[4], 0xFFFFFFFF, renderer->current);
+//     rasterize_line(points[1], points[5], 0xFFFFFFFF, renderer->current);
+//     rasterize_line(points[2], points[6], 0xFFFFFFFF, renderer->current);
+//     rasterize_line(points[3], points[7], 0xFFFFFFFF, renderer->current);
+// }
 
 static void render_utils(renderer_t* renderer)
 {
@@ -67,6 +130,12 @@ static void render_wireframe(renderer_t* renderer)
     camera_t* cam   = renderer->scene->camera;
 
     vec_t points[3];
+
+    if (!camera_is_mesh_visible(cam, mesh->bounding_sphere))
+    {
+        printf("mesh not visible\n");
+        return;
+    }
 
     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
                            camera_view_transform(cam));
@@ -151,6 +220,7 @@ void renderer_run(renderer_t* renderer)
         }
 
         // render
+        // render_frustum(renderer);
         render_utils(renderer);
         if (renderer->wireframe)
         {

@@ -59,8 +59,8 @@ mat_t y_axis_rotation(float rad);
 
 typedef struct
 {
-    vec_t point;
-    vec_t normal;
+    vec_t p;
+    vec_t n;
 } plane_t;
 
 /********************/
@@ -69,6 +69,6 @@ typedef struct
 
 typedef struct
 {
-    vec_t center;
-    float radius;
+    vec_t c;
+    float r;
 } sphere_t;

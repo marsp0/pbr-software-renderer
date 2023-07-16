@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 #include "math.h"
 #include "linux/input.h"
 
@@ -14,13 +16,20 @@ typedef struct
     vec_t position;
 
     float fov_x;
-    float aspect_ratio;
-    float near_dist;
-    float far_dist;
-    float top_dist;
-    float bottom_dist;
-    float left_dist;
-    float right_dist;
+    float asp_ratio;
+    float n_dist;
+    float f_dist;
+    float t_dist;
+    float b_dist;
+    float l_dist;
+    float r_dist;
+
+    plane_t n_plane;
+    plane_t f_plane;
+    plane_t t_plane;
+    plane_t b_plane;
+    plane_t r_plane;
+    plane_t l_plane;
 
 } camera_t;
 
@@ -32,6 +41,7 @@ camera_t*   camera_new(vec_t position,
                        float far,
                        float aspect_ratio);
 void        camera_update(camera_t* cam, input_t input);
+bool        camera_is_mesh_visible(camera_t* cam, sphere_t sphere);
 mat_t       camera_view_transform(camera_t* cam);
 mat_t       camera_proj_transform(camera_t* cam);
 void        camera_free(camera_t* cam);

@@ -70,7 +70,7 @@ float vec_magnitude_sq(vec_t v)
 
 void vec_print(vec_t v)
 {
-    printf("vec(%f, %f, %f)\n", v.x, v.y, v.z);
+    printf("vec(%f, %f, %f, %f)\n", v.x, v.y, v.z, v.w);
 }
 
 /*
