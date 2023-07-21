@@ -53,12 +53,19 @@ float depthbuffer_get(depthbuffer_t* buffer, uint32_t x, uint32_t y)
 
 void depthbuffer_clear(depthbuffer_t* buffer)
 {
-    for (uint32_t i = 0; i < buffer->width; i++)
+    float* data     = buffer->data;
+    uint32_t size   = buffer->width * buffer->height;
+
+    for (uint32_t i = 0; i < size; i += 8)
     {
-        for (uint32_t j = 0; j < buffer->height; j++)
-        {
-            buffer->data[j * buffer->width + i] = MAX_DEPTH;
-        }
+        data[i + 0] = MAX_DEPTH;
+        data[i + 1] = MAX_DEPTH;
+        data[i + 2] = MAX_DEPTH;
+        data[i + 3] = MAX_DEPTH;
+        data[i + 4] = MAX_DEPTH;
+        data[i + 5] = MAX_DEPTH;
+        data[i + 6] = MAX_DEPTH;
+        data[i + 7] = MAX_DEPTH;
     }
 }
 
