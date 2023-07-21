@@ -26,7 +26,7 @@
 /* static functions */
 /********************/
 
-static void update_basis_vectors(camera_t* cam)
+static void update(camera_t* cam)
 {
     vec_t world_up  = vec_new(0.f, 1.f, 0.f);
     
@@ -122,7 +122,7 @@ camera_t* camera_new(vec_t position,
     camera->t_dist      = camera->r_dist / aspect_ratio;
     camera->b_dist      = -camera->t_dist;
 
-    update_basis_vectors(camera);
+    update(camera);
 
     return camera;
 }
@@ -164,7 +164,7 @@ void camera_update(camera_t* cam, input_t input)
         cam->position = vec_add(cam->position, right);
     }
 
-    update_basis_vectors(cam);
+    update(cam);
 }
 
 bool camera_is_mesh_visible(camera_t* cam, sphere_t sphere)
