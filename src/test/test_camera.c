@@ -58,6 +58,8 @@ static void test_view_matrix_rotated_90deg_around_y()
     view.data[2][3] = vec_dot(vec_negate(new_pos), new_front);
 
     ASSERT_MATRIX(view, camera_view_transform(camera));
+
+    camera_free(camera);
 }
 
 static void test_view_matrix_rotated_45deg_around_x()
@@ -109,6 +111,8 @@ static void test_view_matrix_rotated_45deg_around_x()
     view.data[2][3] = vec_dot(vec_negate(new_pos), new_front);
 
     ASSERT_MATRIX(view, camera_view_transform(camera));
+
+    camera_free(camera);
 }
 
 static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
@@ -160,6 +164,8 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
     view.data[2][3] = vec_dot(vec_negate(new_pos), new_front);
 
     ASSERT_MATRIX(view, camera_view_transform(camera));
+
+    camera_free(camera);
 }
 
 void test_camera()

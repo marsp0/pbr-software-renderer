@@ -6,12 +6,14 @@
 #include "test_scene.h"
 #include "test_camera.h"
 #include "test_rasterizer.h"
+#include "test_clip.h"
 
 #include "test_utils.h"
 
 int main()
 {
     INIT_TESTS();
+
     TEST_GROUP(test_vector);
     TEST_GROUP(test_matrix);
     TEST_GROUP(test_json);

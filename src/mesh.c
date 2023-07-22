@@ -47,9 +47,9 @@ void mesh_free(mesh_t* mesh)
     free(mesh->texcoords);
     free(mesh->normals);
     free(mesh->indices);
-    free(mesh->albedo);
-    free(mesh->metallic);
-    free(mesh->normal);
-    free(mesh->occlusion);
+    texture_free(mesh->albedo);
+    texture_free(mesh->metallic);
+    texture_free(mesh->normal);
+    texture_free(mesh->occlusion);
     free(mesh);
 }
