@@ -4,6 +4,88 @@
 
 #include "../camera.h"
 
+static void assert_frustum(float pitch, float yaw, vec_t view_dir)
+{
+    float n_dist        = 1.f;
+    float f_dist        = 20.f;
+    float fov_x         = deg_to_rad(45.f);
+    float asp_ratio     = 1.3333f;
+    camera_t* camera    = camera_new(vec_new(0.f, 0.f, 0.f), 
+                                     pitch, 
+                                     yaw, 
+                                     fov_x,
+                                     n_dist,
+                                     f_dist,
+                                     asp_ratio);
+
+    // near
+    vec_t expected_n_n  = view_dir;
+    vec_t expected_n_p  = vec_scale(expected_n_n, n_dist);
+
+    // far
+    vec_t expected_f_n = vec_negate(view_dir);
+    vec_t expected_f_p = vec_scale(expected_n_n, f_dist);
+
+    // misc
+    // direction vectors relative to view dir (-cam->forward)
+    vec_t world_up  = vec_new(0.f, 1.f, 0.f);
+    vec_t right     = vec_normalize(vec_cross(expected_n_n, world_up));
+    vec_t up        = vec_normalize(vec_cross(right, expected_n_n));
+
+    // right
+    // distance from near point on plane to right point on plane
+    float r_dist        = tanf(fov_x / 2.f) * n_dist;
+    // right point
+    vec_t expected_r_p  = vec_add(expected_n_p, vec_scale(right, r_dist));
+    // cam position to right point direction
+    vec_t cp_rp_dir     = vec_normalize(vec_sub(expected_r_p, camera->position));
+    vec_t expected_r_n  = vec_normalize(vec_cross(up, cp_rp_dir));
+
+    // left
+    vec_t expected_l_p  = vec_add(expected_n_p, vec_scale(right, -r_dist));
+    // cam position to left point direction
+    vec_t cp_lp_dir     = vec_normalize(vec_sub(expected_l_p, camera->position));
+    vec_t expected_l_n  = vec_normalize(vec_cross(cp_lp_dir, up));
+
+    // top
+    // distance from near point on plane to top point on plane
+    float t_dist        = r_dist / asp_ratio;
+    // top point
+    vec_t expected_t_p  = vec_add(expected_n_p, vec_scale(up, t_dist));
+    // cam position to top point direction
+    vec_t cp_tp_dir     = vec_normalize(vec_sub(expected_t_p, camera->position));
+    vec_t expected_t_n  = vec_cross(cp_tp_dir, right);
+
+    // bot
+    // distance from near point on plane to bot point on plane
+    float b_dist        = -t_dist;
+    // bot point
+    vec_t expected_b_p  = vec_add(expected_n_p, vec_scale(up, b_dist));
+    // cam position to bot point direction
+    vec_t cp_bp_dir     = vec_normalize(vec_sub(expected_b_p, camera->position));
+    vec_t expected_b_n  = vec_cross(right, cp_bp_dir);
+
+    ASSERT_VECTOR(camera->n_plane.p, expected_n_p);
+    ASSERT_VECTOR(camera->n_plane.n, expected_n_n);
+
+    ASSERT_VECTOR(camera->f_plane.p, expected_f_p);
+    ASSERT_VECTOR(camera->f_plane.n, expected_f_n);
+
+    ASSERT_VECTOR(camera->r_plane.p, expected_r_p);
+    ASSERT_VECTOR(camera->r_plane.n, expected_r_n);
+
+    ASSERT_VECTOR(camera->l_plane.p, expected_l_p);
+    ASSERT_VECTOR(camera->l_plane.n, expected_l_n);
+
+    ASSERT_VECTOR(camera->t_plane.p, expected_t_p);
+    ASSERT_VECTOR(camera->t_plane.n, expected_t_n);
+
+    ASSERT_VECTOR(camera->b_plane.p, expected_b_p);
+    ASSERT_VECTOR(camera->b_plane.n, expected_b_n);
+
+    camera_free(camera);
+}
+
 static void test_view_matrix_rotated_90deg_around_y()
 {
     // 90 deg around y results in negative rotation 
@@ -168,9 +250,47 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
     camera_free(camera);
 }
 
+static void test_camera_frustum_no_rotation_no_translation()
+{
+    float pitch = 0.f;
+    float yaw = 0.f;
+    assert_frustum(pitch, yaw, vec_new(0.f, 0.f, 1.f));
+}
+
+static void test_camera_frustum_rotated_90deg_around_y_no_translation()
+{
+    float pitch = 0.f;
+    float yaw = deg_to_rad(90.f);
+    assert_frustum(pitch, yaw, vec_new(1.f, 0.f, 0.f));
+}
+
+static void test_camera_frustum_rotated_30deg_around_x_no_translation()
+{
+    float pitch         = deg_to_rad(30.f);
+    float yaw           = deg_to_rad(0.f);
+    mat_t rot_y_x       = mat_mul_mat(y_axis_rotation(yaw), x_axis_rotation(pitch));
+    vec_t cam_forward   = vec_normalize(mat_mul_vec(rot_y_x, vec_new(0.f, 0.f, -1.f)));
+
+    assert_frustum(pitch, yaw, vec_negate(cam_forward));
+}
+
+static void test_camera_frustum_rotated_20deg_around_x_and_60_around_y_no_translation()
+{
+    float pitch         = deg_to_rad(20.f);
+    float yaw           = deg_to_rad(60.f);
+    mat_t rot_y_x       = mat_mul_mat(y_axis_rotation(yaw), x_axis_rotation(pitch));
+    vec_t cam_forward   = vec_normalize(mat_mul_vec(rot_y_x, vec_new(0.f, 0.f, -1.f)));
+
+    assert_frustum(pitch, yaw, vec_negate(cam_forward));
+}
+
 void test_camera()
 {
     TEST_CASE(test_view_matrix_rotated_90deg_around_y);
     TEST_CASE(test_view_matrix_rotated_45deg_around_x);
     TEST_CASE(test_view_matrix_rotated_30deg_around_x_and_45deg_around_y);
+    TEST_CASE(test_camera_frustum_no_rotation_no_translation);
+    TEST_CASE(test_camera_frustum_rotated_90deg_around_y_no_translation);
+    TEST_CASE(test_camera_frustum_rotated_30deg_around_x_no_translation);
+    TEST_CASE(test_camera_frustum_rotated_20deg_around_x_and_60_around_y_no_translation);
 }

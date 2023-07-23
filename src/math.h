@@ -52,6 +52,9 @@ void  mat_print(mat_t m);
 
 mat_t x_axis_rotation(float rad);
 mat_t y_axis_rotation(float rad);
+mat_t z_axis_rotation(float rad);
+float deg_to_rad(float deg);
+float rad_to_deg(float rad);
 
 /********************/
 /*       Plane      */

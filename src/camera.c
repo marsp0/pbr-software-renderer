@@ -130,8 +130,8 @@ camera_t* camera_new(vec_t position,
 void camera_update(camera_t* cam, input_t input)
 {
     // origin of xorg window is top-left
-    cam->pitch += (float)input.dy * PI_OVER_180;
-    cam->yaw   -= (float)input.dx * PI_OVER_180;
+    cam->pitch += deg_to_rad((float)input.dy);
+    cam->yaw   -= deg_to_rad((float)input.dx);
 
     if (cam->pitch > MAX_PITCH || cam->pitch < -MAX_PITCH)
     {

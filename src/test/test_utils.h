@@ -20,12 +20,12 @@ void        TESTS_SUMMARY();
                                         default: a != b)
 
 #define GET_FORMAT(a) _Generic( a, \
-                                int:        "%d != %d (%s != %s)\n", \
-                                int64_t:    "%ld != %ld (%s != %s)\n", \
-                                uint32_t:   "%u != %u (%s != %s)\n", \
-                                uint64_t:   "%lu != %lu (%s != %s)\n", \
-                                char:       "%c != %c (%s != %s)\n", \
-                                float:      "%f != %f (%s != %s)\n")
+                                int:        "%10d  != %10d  (%20s != %-20s)\n", \
+                                int64_t:    "%10ld != %10ld (%20s != %-20s)\n", \
+                                uint32_t:   "%10u  != %10u  (%20s != %-20s)\n", \
+                                uint64_t:   "%10lu != %10lu (%20s != %-20s)\n", \
+                                char:       "%c    != %c    (%20s != %-20s)\n", \
+                                float:      "%10f  != %10f  (%20s != %-20s)\n")
 
 #define ASSERT_EQUAL(a, b)  do \
                             { \
