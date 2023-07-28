@@ -20,12 +20,13 @@ void        TESTS_SUMMARY();
                                         default: a != b)
 
 #define GET_FORMAT(a) _Generic( a, \
-                                int:        "%10d  != %10d  (%20s != %-20s)\n", \
-                                int64_t:    "%10ld != %10ld (%20s != %-20s)\n", \
-                                uint32_t:   "%10u  != %10u  (%20s != %-20s)\n", \
-                                uint64_t:   "%10lu != %10lu (%20s != %-20s)\n", \
-                                char:       "%c    != %c    (%20s != %-20s)\n", \
-                                float:      "%10f  != %10f  (%20s != %-20s)\n")
+                                int:        "%010d  != %010d  (%20s != %-20s)\n", \
+                                int64_t:    "%010ld != %010ld (%20s != %-20s)\n", \
+                                uint32_t:   "%010u  != %010u  (%20s != %-20s)\n", \
+                                uint64_t:   "%010lu != %010lu (%20s != %-20s)\n", \
+                                char:       "%c != %c    (%20s != %-20s)\n", \
+                                float:      "%010f  != %010f  (%20s != %-20s)\n", \
+                                bool:       "%010d  != %010d  (%20s != %-20s)\n")
 
 #define ASSERT_EQUAL(a, b)  do \
                             { \
@@ -44,6 +45,11 @@ void        TESTS_SUMMARY();
 #define ASSERT_TRUE(a)  do \
                         { \
                             ASSERT_EQUAL((a), true); \
+                        } while(0);
+
+#define ASSERT_FALSE(a) do \
+                        { \
+                            ASSERT_EQUAL((a), false); \
                         } while(0);
 
 #define ASSERT_POINTER(a, b) ASSERT_EQUAL((int64_t)a, (int64_t)b)

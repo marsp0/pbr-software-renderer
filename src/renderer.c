@@ -64,10 +64,12 @@
 //         // points[i] = vec_scale(points[i], 0.2f);
 
 //         // points[i]   = mat_mul_vec(PV, points[i]);
+//         vec_print(points[i]);
+//         points[i]   = mat_mul_vec(y_axis_rotation((float)M_PI_2), points[i]);
 //         points[i]   = mat_mul_vec(camera_view_transform(cam), points[i]);
 //         points[i]   = mat_mul_vec(camera_proj_transform(cam), points[i]);
 //         points[i]   = vec_scale(points[i], 1.f/points[i].w);
-//         vec_print(points[i]);
+//         // vec_print(points[i]);
 //         points[i].x = (points[i].x + 1.f) * 0.5f * width;
 //         points[i].y = (points[i].y + 1.f) * 0.5f * height;
 //     }
@@ -89,37 +91,37 @@
 //     rasterize_line(points[3], points[7], 0xFFFFFFFF, renderer->current);
 // }
 
-static void render_utils(renderer_t* renderer)
-{
-    float width     = (float)renderer->current->width;
-    float height    = (float)renderer->current->height;
-    camera_t* cam   = renderer->scene->camera;
+// static void render_utils(renderer_t* renderer)
+// {
+//     float width     = (float)renderer->current->width;
+//     float height    = (float)renderer->current->height;
+//     camera_t* cam   = renderer->scene->camera;
 
-    vec_t points[4] = {vec_new(0.f, 0.f, 0.f),
-                       vec_new(1.f, 0.f, 0.f),
-                       vec_new(0.f, 1.f, 0.f),
-                       vec_new(0.f, 0.f, 1.f)};
+//     vec_t points[4] = {vec_new(0.f, 0.f, 0.f),
+//                        vec_new(1.f, 0.f, 0.f),
+//                        vec_new(0.f, 1.f, 0.f),
+//                        vec_new(0.f, 0.f, 1.f)};
 
-    uint32_t colors[4] = {0x00000000, 
-                          0x0000FF00, 
-                          0x00FF0000, 
-                          0xFF000000};
+//     uint32_t colors[4] = {0x00000000, 
+//                           0x0000FF00, 
+//                           0x00FF0000, 
+//                           0xFF000000};
 
-    mat_t PV = mat_mul_mat(camera_proj_transform(cam),
-                           camera_view_transform(cam));
+//     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
+//                            camera_view_transform(cam));
 
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
-    {
-        points[i]   = mat_mul_vec(PV, points[i]);
-        points[i]   = vec_scale(points[i], 1.f/points[i].w);
-        points[i].x = (points[i].x + 1.f) * 0.5f * width;
-        points[i].y = (points[i].y + 1.f) * 0.5f * height;
-    }
+//     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
+//     {
+//         points[i]   = mat_mul_vec(PV, points[i]);
+//         points[i]   = vec_scale(points[i], 1.f/points[i].w);
+//         points[i].x = (points[i].x + 1.f) * 0.5f * width;
+//         points[i].y = (points[i].y + 1.f) * 0.5f * height;
+//     }
 
-    rasterize_line(points[0], points[1], colors[1], renderer->current);
-    rasterize_line(points[0], points[2], colors[2], renderer->current);
-    rasterize_line(points[0], points[3], colors[3], renderer->current);
-}
+//     rasterize_line(points[0], points[1], colors[1], renderer->current);
+//     rasterize_line(points[0], points[2], colors[2], renderer->current);
+//     rasterize_line(points[0], points[3], colors[3], renderer->current);
+// }
 
 static void render_wireframe(renderer_t* renderer)
 {
@@ -140,7 +142,8 @@ static void render_wireframe(renderer_t* renderer)
     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
                            camera_view_transform(cam));
 
-    for (uint32_t i = 0; i < mesh->indices_size; i += 3)
+    // for (uint32_t i = 0; i < mesh->indices_size; i += 3)
+    for (uint32_t i = 0; i < 3; i += 3)
     {
         uint32_t i0 = mesh->indices[i + 0];
         uint32_t i1 = mesh->indices[i + 1];
@@ -153,10 +156,12 @@ static void render_wireframe(renderer_t* renderer)
         for (uint32_t j = 0; j < sizeof(points) / sizeof(vec_t); j++)
         {
             points[j]   = mat_mul_vec(PV, points[j]);
+            vec_print(points[j]);
             points[j]   = vec_scale(points[j], 1.f/points[j].w);
             points[j].x = (points[j].x + 1.f) * 0.5f * width;
             points[j].y = (points[j].y + 1.f) * 0.5f * height;
         }
+        printf("---\n");
 
         rasterize_line(points[0], points[1], 0xFFFFFFFF, renderer->current);
         rasterize_line(points[1], points[2], 0xFFFFFFFF, renderer->current);
@@ -164,7 +169,7 @@ static void render_wireframe(renderer_t* renderer)
     }
 }
 
-static void clear(renderer_t* renderer)
+static void clear_buffers(renderer_t* renderer)
 {
     framebuffer_clear(renderer->current);
     depthbuffer_clear(renderer->depthbuffer);
@@ -221,7 +226,8 @@ void renderer_run(renderer_t* renderer)
 
         // render
         // render_frustum(renderer);
-        render_utils(renderer);
+        // render_utils(renderer);
+        render_wireframe(renderer);
         if (renderer->wireframe)
         {
             render_wireframe(renderer);
@@ -229,7 +235,7 @@ void renderer_run(renderer_t* renderer)
         display_draw(renderer->display, renderer->current);
 
         // clear
-        clear(renderer);
+        clear_buffers(renderer);
 
         // swap buffers
         renderer->current = renderer->current == renderer->front
@@ -246,7 +252,7 @@ void renderer_run(renderer_t* renderer)
             nanosleep(&sleep_timer, NULL);
         }
 
-        // printf("%ldus\n", diff / 1000);
+        printf("%ldus\n", diff / 1000);
 
         // quit
         quit = input.keys & QUIT;
