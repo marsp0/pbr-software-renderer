@@ -1,8 +1,10 @@
 ## TODO
 
 - [ ] 18.06.2023
-	- [ ] typedef float[4][4] mat_t and remove the mat_t struct [math]
-	- [ ] optimize clear operations on buffers, they are slow (close to 5ms);
+	- [ ] use mat_t* pointer instead of mat_t to avoid copying. [math]
+	- [ ] Use SIMD for mat operations. [math]
+	- [x] optimize clear operations on buffers, they are slow (close to 5ms); (21.07.2023)
+		- depthbuffer_clear was taking 90% of the time. Moved the pointer redirection out of the loop + unrolled and is now running in 200us with O2
 - [ ] 17.06.2023
 	- [ ] improve the edge detection in the rasterizer [rasterizer]
 - [ ] 16.06.2023

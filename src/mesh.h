@@ -23,6 +23,7 @@ typedef struct
     texture_t*  metallic;
     texture_t*  normal;
     texture_t*  occlusion;
+    sphere_t    bounding_sphere;
 } mesh_t;
 
 mesh_t* mesh_new(char*      name,
@@ -37,6 +38,7 @@ mesh_t* mesh_new(char*      name,
                  texture_t* albedo,
                  texture_t* metallic,
                  texture_t* normal,
-                 texture_t* occlusion);
+                 texture_t* occlusion,
+                 sphere_t   bsphere);
 
 void mesh_free(mesh_t* mesh);

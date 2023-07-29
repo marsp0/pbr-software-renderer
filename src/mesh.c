@@ -15,7 +15,8 @@ mesh_t* mesh_new(char*      name,
                  texture_t* albedo,
                  texture_t* metallic,
                  texture_t* normal,
-                 texture_t* occlusion)
+                 texture_t* occlusion,
+                 sphere_t   bsphere)
 {
     mesh_t* mesh = malloc(sizeof(mesh_t));
     
@@ -35,6 +36,7 @@ mesh_t* mesh_new(char*      name,
     mesh->metallic          = metallic;
     mesh->normal            = normal;
     mesh->occlusion         = occlusion;
+    mesh->bounding_sphere   = bsphere;
     
     return mesh;
 }
@@ -45,9 +47,9 @@ void mesh_free(mesh_t* mesh)
     free(mesh->texcoords);
     free(mesh->normals);
     free(mesh->indices);
-    free(mesh->albedo);
-    free(mesh->metallic);
-    free(mesh->normal);
-    free(mesh->occlusion);
+    texture_free(mesh->albedo);
+    texture_free(mesh->metallic);
+    texture_free(mesh->normal);
+    texture_free(mesh->occlusion);
     free(mesh);
 }

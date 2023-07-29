@@ -4,10 +4,31 @@
 #include <stdio.h>
 #include <string.h>
 
+/********************
+ *  Notes
+ *
+ ********************/
 
-/*
- * Vector
- */
+/********************/
+/*      defines     */
+/********************/
+
+#define M_PI_OVER_180 0.0174532925199f
+#define M_180_OVER_PI 57.2957795131f
+
+/********************/
+/* static variables */
+/********************/
+
+/********************/
+/* static functions */
+/********************/
+
+/********************/
+/* public functions */
+/********************/
+
+/*      Vector      */
 
 vec_t vec_new(float x, float y, float z)
 {
@@ -63,9 +84,14 @@ float vec_magnitude(vec_t v)
     return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+float vec_magnitude_sq(vec_t v)
+{
+    return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
 void vec_print(vec_t v)
 {
-    printf("vec(%f, %f, %f)\n", v.x, v.y, v.z);
+    printf("vec(%f, %f, %f, %f)\n", v.x, v.y, v.z, v.w);
 }
 
 /*
@@ -245,30 +271,58 @@ void mat_print(mat_t m)
 
 mat_t x_axis_rotation(float rad)
 {
-    float sin_val = sinf(rad);
-    float cos_val = cosf(rad);
-    mat_t mat = mat_new_identity();
+    float sin_val   = sinf(rad);
+    float cos_val   = cosf(rad);
+    
+    mat_t mat       = mat_new_identity();
 
-    mat.data[1][1] = cos_val;
-    mat.data[1][2] = -sin_val;
+    mat.data[1][1]  = cos_val;
+    mat.data[1][2]  = -sin_val;
 
-    mat.data[2][1] = sin_val;
-    mat.data[2][2] = cos_val;
+    mat.data[2][1]  = sin_val;
+    mat.data[2][2]  = cos_val;
 
     return mat;
 }
 
 mat_t y_axis_rotation(float rad)
 {
-    float sin_val = sinf(rad);
-    float cos_val = cosf(rad);
-    mat_t mat = mat_new_identity();
+    float sin_val   = sinf(rad);
+    float cos_val   = cosf(rad);
+    
+    mat_t mat       = mat_new_identity();
 
-    mat.data[0][0] = cos_val;
-    mat.data[0][2] = sin_val;
+    mat.data[0][0]  = cos_val;
+    mat.data[0][2]  = sin_val;
 
-    mat.data[2][0] = -sin_val;
-    mat.data[2][2] = cos_val;
+    mat.data[2][0]  = -sin_val;
+    mat.data[2][2]  = cos_val;
 
     return mat;
+}
+
+mat_t z_axis_rotation(float rad)
+{
+    float sin_val   = sinf(rad);
+    float cos_val   = cosf(rad);
+
+    mat_t mat       = mat_new_identity();
+
+    mat.data[0][0]  = cos_val;
+    mat.data[0][1]  = -sin_val;
+
+    mat.data[1][0]  = sin_val;
+    mat.data[1][1]  = cos_val;
+
+    return mat;
+}
+
+float deg_to_rad(float deg)
+{
+    return deg * M_PI_OVER_180;
+}
+
+float rad_to_deg(float rad)
+{
+    return rad * M_180_OVER_PI;
 }

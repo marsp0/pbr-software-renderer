@@ -15,8 +15,15 @@ TEST_OBJ_FILES  := $(TEST_SRC_NAMES:%.c=$(OBJ_DIR)/%.o)
 LDFLAGS         := -lX11 -lm
 space           :=
 VPATH           := $(subst $(space),:,$(shell find . -type d))
-GCCFLAGS        := -std=gnu17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign -g3 -pg
+GCCFLAGS        := -std=gnu17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign
 
+ifeq ($(config), release)
+	GCCFLAGS +=  -O2
+else
+	GCCFLAGS +=  -g3 -pg -fsanitize=address,leak
+endif
+
+# TARGETS
 
 .PHONY: all renderer test
 all: out/$(EXE) out/$(TEST_EXE)

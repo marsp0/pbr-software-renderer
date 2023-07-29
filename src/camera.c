@@ -26,14 +26,70 @@
 /* static functions */
 /********************/
 
-static void update_basis_vectors(camera_t* cam)
+static void update(camera_t* cam)
 {
     vec_t world_up  = vec_new(0.f, 1.f, 0.f);
     
+    // generate new basis vectors
     mat_t rot_y_x   = mat_mul_mat(y_axis_rotation(cam->yaw), x_axis_rotation(cam->pitch));
     cam->forward    = vec_normalize(mat_mul_vec(rot_y_x, vec_new(0.f, 0.f, -1.f)));
     cam->side       = vec_normalize(vec_cross(world_up, cam->forward));
     cam->up         = vec_normalize(vec_cross(cam->forward, cam->side));
+
+    // generate new planes
+    vec_t view_dir  = vec_negate(cam->forward);
+
+    vec_t n_point   = vec_add(cam->position, vec_scale(view_dir, cam->n_dist));
+    vec_t f_point   = vec_add(cam->position, vec_scale(view_dir, cam->f_dist));
+
+    vec_t r_point   = vec_add(n_point, vec_scale(cam->side, cam->r_dist));
+    vec_t r_dir     = vec_normalize(vec_sub(r_point, cam->position));
+
+    vec_t l_point   = vec_add(n_point, vec_scale(cam->side, cam->l_dist));
+    vec_t l_dir     = vec_normalize(vec_sub(l_point, cam->position));
+
+    vec_t t_point   = vec_add(n_point, vec_scale(cam->up, cam->t_dist));
+    vec_t t_dir     = vec_normalize(vec_sub(t_point, cam->position));
+
+    vec_t b_point   = vec_add(n_point, vec_scale(cam->up, cam->b_dist));
+    vec_t b_dir     = vec_normalize(vec_sub(b_point, cam->position));
+
+    cam->n_plane.p  = n_point;
+    cam->n_plane.n  = view_dir;
+
+    cam->f_plane.p  = f_point;
+    cam->f_plane.n  = cam->forward;
+
+    cam->r_plane.p  = r_point;
+    cam->r_plane.n  = vec_normalize(vec_cross(cam->up, r_dir));
+
+    cam->l_plane.p  = l_point;
+    cam->l_plane.n  = vec_normalize(vec_cross(l_dir, cam->up));
+
+    cam->t_plane.p  = t_point;
+    cam->t_plane.n  = vec_normalize(vec_cross(t_dir, cam->side));
+
+    cam->b_plane.p  = b_point;
+    cam->b_plane.n  = vec_normalize(vec_cross(cam->side, b_dir));
+}
+
+static bool plane_check(plane_t plane, sphere_t sphere)
+{
+    vec_t pc = vec_sub(sphere.c, plane.p);
+    float dot = vec_dot(pc, plane.n);
+    if (dot / vec_magnitude(pc) > 0.f)
+    {
+        return true;
+    }
+
+    printf("dist is %f\n", fabs(dot));
+    vec_print(plane.n);
+    if (fabs(dot) < sphere.r)
+    {
+        return true;
+    }
+
+    return false;
 }
 
 /********************/
@@ -58,14 +114,15 @@ camera_t* camera_new(vec_t position,
     camera->up          = vec_new(0.f, 0.f, 0.f);
 
     camera->fov_x       = fov_x;
-    camera->near_dist   = near;
-    camera->far_dist    = far;
-    camera->right_dist  = tanf(fov_x / 2.f) * near;
-    camera->left_dist   = -camera->right_dist;
-    camera->top_dist    = camera->right_dist / aspect_ratio;
-    camera->bottom_dist = -camera->top_dist;
+    camera->asp_ratio   = aspect_ratio;
+    camera->n_dist      = near;
+    camera->f_dist      = far;
+    camera->r_dist      = tanf(fov_x / 2.f) * near;
+    camera->l_dist      = -camera->r_dist;
+    camera->t_dist      = camera->r_dist / aspect_ratio;
+    camera->b_dist      = -camera->t_dist;
 
-    update_basis_vectors(camera);
+    update(camera);
 
     return camera;
 }
@@ -73,8 +130,8 @@ camera_t* camera_new(vec_t position,
 void camera_update(camera_t* cam, input_t input)
 {
     // origin of xorg window is top-left
-    cam->pitch += (float)input.dy * PI_OVER_180;
-    cam->yaw   -= (float)input.dx * PI_OVER_180;
+    cam->pitch += deg_to_rad((float)input.dy);
+    cam->yaw   -= deg_to_rad((float)input.dx);
 
     if (cam->pitch > MAX_PITCH || cam->pitch < -MAX_PITCH)
     {
@@ -107,7 +164,17 @@ void camera_update(camera_t* cam, input_t input)
         cam->position = vec_add(cam->position, right);
     }
 
-    update_basis_vectors(cam);
+    update(cam);
+}
+
+bool camera_is_mesh_visible(camera_t* cam, sphere_t sphere)
+{
+    return  plane_check(cam->n_plane, sphere) && 
+            plane_check(cam->f_plane, sphere) && 
+            plane_check(cam->r_plane, sphere) && 
+            plane_check(cam->l_plane, sphere) && 
+            plane_check(cam->t_plane, sphere) && 
+            plane_check(cam->b_plane, sphere);
 }
 
 mat_t camera_view_transform(camera_t* cam)
@@ -137,14 +204,14 @@ mat_t camera_view_transform(camera_t* cam)
 
 mat_t camera_proj_transform(camera_t* cam)
 {
-    float two_n     = 2 * cam->near_dist;
-    float two_f_n   = 2 * cam->near_dist * cam->far_dist;
-    float r_min_l   = cam->right_dist - cam->left_dist;
-    float r_plus_l  = cam->right_dist + cam->left_dist;
-    float t_min_b   = cam->top_dist - cam->bottom_dist;
-    float t_plus_b  = cam->top_dist + cam->bottom_dist;
-    float f_min_n   = cam->far_dist - cam->near_dist;
-    float f_plus_n  = cam->far_dist + cam->near_dist;
+    float two_n     = 2 * cam->n_dist;
+    float two_f_n   = 2 * cam->n_dist * cam->f_dist;
+    float r_min_l   = cam->r_dist - cam->l_dist;
+    float r_plus_l  = cam->r_dist + cam->l_dist;
+    float t_min_b   = cam->t_dist - cam->b_dist;
+    float t_plus_b  = cam->t_dist + cam->b_dist;
+    float f_min_n   = cam->f_dist - cam->n_dist;
+    float f_plus_n  = cam->f_dist + cam->n_dist;
 
     mat_t result = mat_new_identity();
 
@@ -161,7 +228,7 @@ mat_t camera_proj_transform(camera_t* cam)
     result.data[2][0] = 0.f;
     result.data[2][1] = 0.f;
     result.data[2][2] = -(f_plus_n / f_min_n);
-    result.data[2][3] = two_f_n    / f_min_n;
+    result.data[2][3] = -(two_f_n  / f_min_n);
 
     result.data[3][2] = -1.f;
     result.data[3][3] = 0.f;

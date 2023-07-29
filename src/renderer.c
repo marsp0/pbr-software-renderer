@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+#include <stdio.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,6 +70,12 @@ static void render_wireframe(renderer_t* renderer)
 
     vec_t points[3];
 
+    if (!camera_is_mesh_visible(cam, mesh->bounding_sphere))
+    {
+        printf("mesh not visible\n");
+        return;
+    }
+
     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
                            camera_view_transform(cam));
 
@@ -95,7 +103,7 @@ static void render_wireframe(renderer_t* renderer)
     }
 }
 
-static void clear(renderer_t* renderer)
+static void clear_buffers(renderer_t* renderer)
 {
     framebuffer_clear(renderer->current);
     depthbuffer_clear(renderer->depthbuffer);
@@ -159,7 +167,7 @@ void renderer_run(renderer_t* renderer)
         display_draw(renderer->display, renderer->current);
 
         // clear
-        clear(renderer);
+        clear_buffers(renderer);
 
         // swap buffers
         renderer->current = renderer->current == renderer->front
@@ -176,7 +184,7 @@ void renderer_run(renderer_t* renderer)
             nanosleep(&sleep_timer, NULL);
         }
 
-        // printf("%ldus\n", diff / 1000);
+        printf("%ldus\n", diff / 1000);
 
         // quit
         quit = input.keys & QUIT;

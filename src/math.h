@@ -21,6 +21,7 @@ vec_t vec_negate(vec_t v);
 vec_t vec_normalize(vec_t v);
 float vec_dot(vec_t v1, vec_t v2);
 float vec_magnitude(vec_t v);
+float vec_magnitude_sq(vec_t v);
 void  vec_print(vec_t v);
 
 /********************/
@@ -51,6 +52,9 @@ void  mat_print(mat_t m);
 
 mat_t x_axis_rotation(float rad);
 mat_t y_axis_rotation(float rad);
+mat_t z_axis_rotation(float rad);
+float deg_to_rad(float deg);
+float rad_to_deg(float rad);
 
 /********************/
 /*       Plane      */
@@ -61,3 +65,13 @@ typedef struct
     vec_t p;
     vec_t n;
 } plane_t;
+
+/********************/
+/*      Sphere      */
+/********************/
+
+typedef struct
+{
+    vec_t c;
+    float r;
+} sphere_t;
