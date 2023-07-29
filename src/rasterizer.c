@@ -70,20 +70,29 @@ void rasterize_line(vec_t v0,
         y1 = temp;
     }
 
-    int32_t dx = x1 - x0;
-    int32_t dy = y1 - y0;
-    int32_t de = abs(dy) << 1;
-    int32_t error = 0;
+    int32_t dx      = x1 - x0;
+    int32_t dy      = y1 - y0;
+    int32_t px      = 0.f;
+    int32_t py      = 0.f;
+    int32_t de      = abs(dy) << 1;
+    int32_t error   = 0;
+    int32_t width   = (int32_t)framebuffer->width;
+    int32_t height  = (int32_t)framebuffer->height;
 
     for (int32_t x = x0, y = y0; x <= x1; x++)
     {
+        px = x;
+        py = y;
+
         if (steep)
         {
-            framebuffer_set(framebuffer, (uint32_t)y, (uint32_t)x, color);
+            px = y;
+            py = x;
         }
-        else
+
+        if (px >= 0.f && px < width && py >= 0.f && py < height)
         {
-            framebuffer_set(framebuffer, (uint32_t)x, (uint32_t)y, color);
+            framebuffer_set(framebuffer, (uint32_t)px, (uint32_t)py, color);
         }
 
         error += de;

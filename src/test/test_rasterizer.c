@@ -91,6 +91,38 @@ static void test_rasterize_line_horizontal()
 
 }
 
+static void test_rasterize_line_horizontal_out_of_bounds()
+{
+    // +--------------------+
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |xxxxxxxxxxxxxx      |
+    // |                    |
+    // +--------------------+
+
+    vec_t input[2]  = {vec_new(-1.f, 1.f, 0.f), 
+                       vec_new(6.f, 1.f, 0.f)};
+    vec_t output[7] = {vec_new(0.f, 1.f, 0.f),
+                       vec_new(1.f, 1.f, 0.f),
+                       vec_new(2.f, 1.f, 0.f),
+                       vec_new(3.f, 1.f, 0.f),
+                       vec_new(4.f, 1.f, 0.f),
+                       vec_new(5.f, 1.f, 0.f),
+                       vec_new(6.f, 1.f, 0.f)};
+
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         output,
+                         sizeof(output) / sizeof(vec_t),
+                         0xAABBCCFF);
+}
+
 static void test_rasterize_line_vertical()
 {
     // +--------------------+
@@ -109,6 +141,38 @@ static void test_rasterize_line_vertical()
     vec_t input[2]  = {vec_new(1.f, 1.f, 0.f), 
                        vec_new(1.f, 6.f, 0.f)};
     vec_t output[6] = {vec_new(1.f, 1.f, 0.f),
+                       vec_new(1.f, 2.f, 0.f),
+                       vec_new(1.f, 3.f, 0.f),
+                       vec_new(1.f, 4.f, 0.f),
+                       vec_new(1.f, 5.f, 0.f),
+                       vec_new(1.f, 6.f, 0.f)};
+
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         output,
+                         sizeof(output) / sizeof(vec_t),
+                         0xAABBCCFF);
+}
+
+static void test_rasterize_line_vertical_out_of_bounds()
+{
+    // +--------------------+
+    // |                    |
+    // |                    |
+    // |                    |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // |  xx                |
+    // +--------------------+
+
+    vec_t input[2]  = {vec_new(1.f, -1.f, 0.f), 
+                       vec_new(1.f, 6.f, 0.f)};
+    vec_t output[7] = {vec_new(1.f, 0.f, 0.f),
+                       vec_new(1.f, 1.f, 0.f),
                        vec_new(1.f, 2.f, 0.f),
                        vec_new(1.f, 3.f, 0.f),
                        vec_new(1.f, 4.f, 0.f),
@@ -143,6 +207,37 @@ static void test_rasterize_line_steep_pos_slope()
                        vec_new(2.f, 2.f, 0.f),
                        vec_new(2.f, 3.f, 0.f),
                        vec_new(3.f, 4.f, 0.f),
+                       vec_new(3.f, 5.f, 0.f)};
+
+    rasterize_and_assert(input, 
+                         sizeof(input) / sizeof(vec_t),
+                         points,
+                         sizeof(points) / sizeof(vec_t),
+                         0xAABBCCFF);
+}
+
+static void test_rasterize_line_steep_pos_slope_out_of_bounds()
+{
+    // +--------------------+
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |      xx            |
+    // |    xx              |
+    // |    xx              |
+    // |  xx                |
+    // |xx                  |
+    // |xx                  |
+    // +--------------------+
+
+    vec_t input[2]  = {vec_new(-1.f, -1.f, 0.f), 
+                       vec_new(3.f, 5.f, 0.f)};
+    vec_t points[6] = {vec_new(0.f, 0.f, 0.f),
+                       vec_new(0.f, 1.f, 0.f),
+                       vec_new(1.f, 2.f, 0.f),
+                       vec_new(2.f, 3.f, 0.f),
+                       vec_new(2.f, 4.f, 0.f),
                        vec_new(3.f, 5.f, 0.f)};
 
     rasterize_and_assert(input, 
@@ -489,8 +584,11 @@ void test_rasterizer()
     // }
     // printf("+--------------------+\n");
     TEST_CASE(test_rasterize_line_horizontal);
+    TEST_CASE(test_rasterize_line_horizontal_out_of_bounds);
     TEST_CASE(test_rasterize_line_vertical);
+    TEST_CASE(test_rasterize_line_vertical_out_of_bounds);
     TEST_CASE(test_rasterize_line_steep_pos_slope);
+    TEST_CASE(test_rasterize_line_steep_pos_slope_out_of_bounds);
     TEST_CASE(test_rasterize_line_steep_neg_slope);
     TEST_CASE(test_rasterize_line_pos_slope);
     TEST_CASE(test_rasterize_line_neg_slope);
