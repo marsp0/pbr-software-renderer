@@ -8,7 +8,14 @@
  * Notes
  * 
  * marsp0.github.io/articles/deriving-camera-transform.html
+ * 
  *
+ * Reverse Z buffer
+ * https://developer.nvidia.com/content/depth-precision-visualized
+ * http://www.geometry.caltech.edu/pubs/UD12.pdf
+ * http://www.humus.name/Articles/Persson_CreatingVastGameWorlds.pdf
+ * http://www.terathon.com/gdc07_lengyel.pdf
+ * https://www.danielecarbone.com/reverse-depth-buffer-in-opengl/
  */
 
 /********************/
