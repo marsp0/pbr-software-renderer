@@ -16,6 +16,8 @@
  * http://www.humus.name/Articles/Persson_CreatingVastGameWorlds.pdf
  * http://www.terathon.com/gdc07_lengyel.pdf
  * https://www.danielecarbone.com/reverse-depth-buffer-in-opengl/
+ * https://stackoverflow.com/questions/63084469/when-and-how-does-opengl-calculate-f-depthdepth-value
+ * https://stackoverflow.com/questions/63096579/how-does-opengl-come-to-the-formula-f-depth-and-and-is-this-the-window-viewport
  */
 
 /********************/
