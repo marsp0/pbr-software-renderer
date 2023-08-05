@@ -1,5 +1,7 @@
 ## TODO
 
+- [ ] 5.08.2023
+    - [ ] replace mat_new with mat_new_identity
 - [ ] 18.06.2023
 	- [ ] use mat_t* pointer instead of mat_t to avoid copying. [math]
 	- [ ] Use SIMD for mat operations. [math]
