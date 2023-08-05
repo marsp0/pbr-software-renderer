@@ -60,14 +60,14 @@ void depthbuffer_clear(depthbuffer_t* buffer)
     // clear up to size - 7
     while (i + 8 < size)
     {
-        data[i + 0] = MAX_DEPTH;
-        data[i + 1] = MAX_DEPTH;
-        data[i + 2] = MAX_DEPTH;
-        data[i + 3] = MAX_DEPTH;
-        data[i + 4] = MAX_DEPTH;
-        data[i + 5] = MAX_DEPTH;
-        data[i + 6] = MAX_DEPTH;
-        data[i + 7] = MAX_DEPTH;
+        data[i + 0] = 0.f;
+        data[i + 1] = 0.f;
+        data[i + 2] = 0.f;
+        data[i + 3] = 0.f;
+        data[i + 4] = 0.f;
+        data[i + 5] = 0.f;
+        data[i + 6] = 0.f;
+        data[i + 7] = 0.f;
 
         i += 8;
     }
@@ -75,7 +75,7 @@ void depthbuffer_clear(depthbuffer_t* buffer)
     // clear the rest
     while (i < size)
     {
-        data[i] = MAX_DEPTH;
+        data[i] = 0.f;
         i++;
     }
 }

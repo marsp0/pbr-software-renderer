@@ -2,8 +2,6 @@
 
 #include <stdint.h>
 
-#define MAX_DEPTH 10000.f
-
 typedef struct
 {
     uint32_t width;

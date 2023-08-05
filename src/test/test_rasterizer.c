@@ -21,7 +21,7 @@ static void rasterize_and_assert(vec_t* input,
         for (uint32_t j = 0; j < height; j++)
         {
             ASSERT_EQUAL(0, framebuffer_get(buffer, i, j));
-            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
+            ASSERT_EQUAL(0.f, depthbuffer_get(depthbuffer, i, j));
         }
     }
 
@@ -483,7 +483,7 @@ static void test_rasterize_multiple_triangles()
         for (uint32_t j = 0; j < height; j++)
         {
             ASSERT_EQUAL(0, framebuffer_get(framebuffer, i, j));
-            ASSERT_EQUAL(MAX_DEPTH, depthbuffer_get(depthbuffer, i, j));
+            ASSERT_EQUAL(0.f, depthbuffer_get(depthbuffer, i, j));
         }
     }
 
