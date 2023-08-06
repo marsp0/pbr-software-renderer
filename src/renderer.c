@@ -91,8 +91,13 @@ static void render_wireframe(renderer_t* renderer)
 
         for (uint32_t j = 0; j < sizeof(points) / sizeof(vec_t); j++)
         {
+            // mvp transform
             points[j]   = mat_mul_vec(PV, points[j]);
+
+            // persp divide
             points[j]   = vec_scale(points[j], 1.f/points[j].w);
+
+            // viewport transform
             points[j].x = (points[j].x + 1.f) * 0.5f * width;
             points[j].y = (points[j].y + 1.f) * 0.5f * height;
         }
@@ -100,6 +105,7 @@ static void render_wireframe(renderer_t* renderer)
         rasterize_line(points[0], points[1], 0xFFFFFFFF, renderer->current);
         rasterize_line(points[1], points[2], 0xFFFFFFFF, renderer->current);
         rasterize_line(points[2], points[0], 0xFFFFFFFF, renderer->current);
+        // rasterize_triangle(points[0], points[1], points[2], 0xFFFFFFFF, renderer->current, renderer->depthbuffer);
     }
 }
 
