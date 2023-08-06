@@ -284,6 +284,52 @@ static void test_camera_frustum_rotated_20deg_around_x_and_60_around_y_no_transl
     assert_frustum(pitch, yaw, vec_negate(cam_forward));
 }
 
+static void test_proj_matrix()
+{
+    vec_t position  = vec_new(0.f, 0.f, 0.f);
+    float yaw       = 0.f;
+    float pitch     = 0.f;
+    float near      = 1.f;
+    float far       = 20.f;
+    float fov_x     = deg_to_rad(45.f);
+    float asp_ratio = 800.f / 600.f;
+    float right     = near * tanf(fov_x / 2.f);
+    float top       = right / asp_ratio;
+
+    camera_t* camera = camera_new(position,
+                                  pitch,
+                                  yaw,
+                                  fov_x,
+                                  near,
+                                  far,
+                                  asp_ratio);
+
+    mat_t actual = camera_proj_transform(camera);
+    mat_t expected = mat_new_identity();
+    expected.data[0][0] = near / right;
+    expected.data[1][1] = near / top;
+    expected.data[2][2] = near / (far - near);
+    expected.data[2][3] = near * far / (far - near);
+    expected.data[3][2] = -1.f;
+    expected.data[3][3] = 0.f;
+
+    ASSERT_MATRIX(actual, expected);
+
+    // near plane point
+    position = vec_new(0.f, 0.f, -1.f);
+    position = mat_mul_vec(actual, position);
+    position = vec_scale(position, 1.f/position.w);
+    ASSERT_VECTOR(position, vec_new(0.f, 0.f, 1.f));
+
+    // far plane point
+    position = vec_new(0.f, 0.f, -20.f);
+    position = mat_mul_vec(actual, position);
+    position = vec_scale(position, 1.f/position.w);
+    ASSERT_VECTOR(position, vec_new(0.f, 0.f, 0.f));
+
+    camera_free(camera);
+}
+
 void test_camera()
 {
     TEST_CASE(test_view_matrix_rotated_90deg_around_y);
@@ -293,4 +339,5 @@ void test_camera()
     TEST_CASE(test_camera_frustum_rotated_90deg_around_y_no_translation);
     TEST_CASE(test_camera_frustum_rotated_30deg_around_x_no_translation);
     TEST_CASE(test_camera_frustum_rotated_20deg_around_x_and_60_around_y_no_translation);
+    TEST_CASE(test_proj_matrix);
 }

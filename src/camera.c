@@ -213,32 +213,18 @@ mat_t camera_view_transform(camera_t* cam)
 
 mat_t camera_proj_transform(camera_t* cam)
 {
-    float two_n     = 2 * cam->n_dist;
-    float two_f_n   = 2 * cam->n_dist * cam->f_dist;
-    float r_min_l   = cam->r_dist - cam->l_dist;
-    float r_plus_l  = cam->r_dist + cam->l_dist;
-    float t_min_b   = cam->t_dist - cam->b_dist;
-    float t_plus_b  = cam->t_dist + cam->b_dist;
-    float f_min_n   = cam->f_dist - cam->n_dist;
-    float f_plus_n  = cam->f_dist + cam->n_dist;
-
     mat_t result = mat_new_identity();
 
-    result.data[0][0] = two_n    / r_min_l;
-    result.data[0][1] = 0.f;
-    result.data[0][2] = r_plus_l / r_min_l;
-    result.data[0][3] = 0.f;
+    float n_over_r  = cam->n_dist / cam->r_dist;
+    float n_over_t  = cam->n_dist / cam->t_dist;
+    float f_min_n   = cam->f_dist - cam->n_dist;
+    float n         = cam->n_dist;
+    float fn        = cam->n_dist * cam->f_dist;
 
-    result.data[1][0] = 0.f;
-    result.data[1][1] = two_n    / t_min_b;
-    result.data[1][2] = t_plus_b / t_min_b;
-    result.data[1][3] = 0.f;
-
-    result.data[2][0] = 0.f;
-    result.data[2][1] = 0.f;
-    result.data[2][2] = -(f_plus_n / f_min_n);
-    result.data[2][3] = -(two_f_n  / f_min_n);
-
+    result.data[0][0] = n_over_r;
+    result.data[1][1] = n_over_t;
+    result.data[2][2] = n / f_min_n;
+    result.data[2][3] = fn / f_min_n;
     result.data[3][2] = -1.f;
     result.data[3][3] = 0.f;
 
