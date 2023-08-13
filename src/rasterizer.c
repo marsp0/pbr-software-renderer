@@ -112,6 +112,14 @@ void rasterize_triangle(vec_t v0,
                         framebuffer_t* framebuffer,
                         depthbuffer_t* depthbuffer)
 {
+    // workaround until clipping is implemented
+    if (v0.z <= 0.f || v0.z > 1.f ||
+        v1.z <= 0.f || v1.z > 1.f ||
+        v2.z <= 0.f || v2.z > 1.f)
+    {
+        return;
+    }
+
     int32_t x0 = (int32_t)v0.x;
     int32_t x1 = (int32_t)v1.x;
     int32_t x2 = (int32_t)v2.x;
@@ -119,11 +127,6 @@ void rasterize_triangle(vec_t v0,
     int32_t y0 = (int32_t)v0.y;
     int32_t y1 = (int32_t)v1.y;
     int32_t y2 = (int32_t)v2.y;
-
-    // projected space 1/z
-    float inverse_z0 = 1.f/v0.z;
-    float inverse_z1 = 1.f/v1.z;
-    float inverse_z2 = 1.f/v2.z;
 
     // find min/max within buffer boundaries
     int32_t minx = (int32_t)fmax(fmin(fmin(x0, x1), x2), 0.f);
@@ -134,12 +137,13 @@ void rasterize_triangle(vec_t v0,
     // area of parallelogram
     float area = (float)edge_check(x0, y0, x1, y1, x2, y2);
 
-    if (area == 0)
+    if (area == 0.f)
     {
         return;
     }
 
-    float inverse_area  = 1.f / area;
+
+    float inv_area  = 1.f / area;
 
     for (int32_t y = miny; y <= maxy; y++)
     {
@@ -155,12 +159,12 @@ void rasterize_triangle(vec_t v0,
             }
 
             // normalized barycentric coordinates
-            w0 *= inverse_area;
-            w1 *= inverse_area;
-            w2 *= inverse_area;
+            w0 *= inv_area;
+            w1 *= inv_area;
+            w2 *= inv_area;
 
             // perspective correct interpolation of z
-            float depth = 1.f/(w0 * inverse_z0 + w1 * inverse_z1 + w2 * inverse_z2);
+            float depth = w0 * v0.z + w1 * v1.z + w2 * v2.z;
 
             if (depth < depthbuffer_get(depthbuffer, (uint32_t)x, (uint32_t)y))
             {
