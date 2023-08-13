@@ -500,11 +500,37 @@ static void test_rasterize_multiple_triangles()
 static void test_rasterize_clipped_triangle()
 {
 
-    vec_t input[3]  = {vec_new(1.f, 1.f, 0.0f), 
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.0f),
                        vec_new(8.f, 1.f, 0.5f),
                        vec_new(3.f, 6.f, 0.5f)};
 
-    rasterize_and_assert(input, 
+    rasterize_and_assert(input,
+                         sizeof(input) / sizeof(vec_t),
+                         NULL,
+                         0,
+                         0xAABBCCFF);
+}
+
+static void test_rasterize_colinear_triangle()
+{
+    // +--------------------+
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |  xxxxxxxxxxxx      |
+    // |                    |
+    // +--------------------+
+
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.5f),
+                       vec_new(6.f, 1.f, 0.5f),
+                       vec_new(3.f, 1.f, 0.5f)};
+
+    rasterize_and_assert(input,
                          sizeof(input) / sizeof(vec_t),
                          NULL,
                          0,
@@ -545,4 +571,5 @@ void test_rasterizer()
     TEST_CASE(test_rasterize_triangle);
     TEST_CASE(test_rasterize_multiple_triangles);
     TEST_CASE(test_rasterize_clipped_triangle);
+    TEST_CASE(test_rasterize_colinear_triangle);
 }
