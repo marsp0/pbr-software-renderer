@@ -8,25 +8,33 @@
 
 #include "../math.h"
 
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
+
 void        increment_test_assert_counter();
 void        reset_test_assert_counter();
 uint32_t    get_test_assert_counter();
 void        INIT_TESTS();
 void        TESTS_SUMMARY();
 
-// NOTE: how does this work?
 #define GET_COMPARISON(a, b) _Generic(  a, \
                                         float: fabs((float)a - (float)b) > 0.0005f, \
                                         default: a != b)
 
 #define GET_FORMAT(a) _Generic( a, \
-                                int:        "%010d  != %010d  (%20s != %-20s)\n", \
-                                int64_t:    "%010ld != %010ld (%20s != %-20s)\n", \
-                                uint32_t:   "%010u  != %010u  (%20s != %-20s)\n", \
-                                uint64_t:   "%010lu != %010lu (%20s != %-20s)\n", \
-                                char:       "%c != %c    (%20s != %-20s)\n", \
-                                float:      "%010f  != %010f  (%20s != %-20s)\n", \
-                                bool:       "%010d  != %010d  (%20s != %-20s)\n")
+                                int:         "%d != %d (%s != %s)\n", \
+                                int64_t:    "%ld != %ld (%s != %s)\n", \
+                                uint32_t:    "%u != %u (%s != %s)\n", \
+                                uint64_t:   "%lu != %lu (%s != %s)\n", \
+                                char:        "%c != %c (%s != %s)\n", \
+                                float:       "%f != %f (%s != %s)\n", \
+                                bool:        "%d != %d (%s != %s)\n")
 
 
 #define ASSERT_EQUAL(a, b)          do \
@@ -38,7 +46,7 @@ void        TESTS_SUMMARY();
                                         } \
                                         if (fail && get_test_assert_counter() <= 10) \
                                         { \
-                                            printf("\t\tAssert fail: "); \
+                                            printf("    [" ANSI_COLOR_RED "FAIL" ANSI_COLOR_RESET "]: "); \
                                             printf(GET_FORMAT(a), a, b, #a, #b); \
                                         } \
                                     } while(0);
@@ -93,13 +101,13 @@ void        TESTS_SUMMARY();
 
 #define TEST_CASE(test)             do \
                                     { \
-                                        printf("\t%s\n", #test); \
+                                        printf("  %s\n", #test); \
                                         reset_test_assert_counter(); \
                                         test(); \
                                         uint32_t count = get_test_assert_counter(); \
                                         if (count > 10) \
                                         { \
-                                            printf("\t\t ... %u more assert fails\n", count - 10); \
+                                            printf("    ... %u more assert fails\n", count - 10); \
                                         } \
                                     } while(0);
 

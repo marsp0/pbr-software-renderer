@@ -338,70 +338,6 @@ static void test_rasterize_line_neg_slope()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_triangle_colinear_horizontal()
-{
-    // +--------------------+
-    // |                    |
-    // |                    |
-    // |                    |
-    // |                    |
-    // |                    |
-    // |                    |
-    // |                    |
-    // |                    |
-    // |  xxxxxxxxxxxx      |
-    // |                    |
-    // +--------------------+
-
-    vec_t input[3]  = {vec_new(1.f, 1.f, 0.f), 
-                       vec_new(3.f, 1.f, 0.f),
-                       vec_new(6.f, 1.f, 0.f)};
-    vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
-                       vec_new(2.f, 1.f, 0.f),
-                       vec_new(3.f, 1.f, 0.f),
-                       vec_new(4.f, 1.f, 0.f),
-                       vec_new(5.f, 1.f, 0.f),
-                       vec_new(6.f, 1.f, 0.f)};
-
-    rasterize_and_assert(input, 
-                         sizeof(input) / sizeof(vec_t),
-                         points,
-                         sizeof(points) / sizeof(vec_t),
-                         0xAABBCCFF);
-}
-
-static void test_rasterize_triangle_colinear_vertical()
-{
-    // +--------------------+
-    // |                    |
-    // |                    |
-    // |                    |
-    // |  xx                |
-    // |  xx                |
-    // |  xx                |
-    // |  xx                |
-    // |  xx                |
-    // |  xx                |
-    // |                    |
-    // +--------------------+
-
-    vec_t input[3]  = {vec_new(1.f, 1.f, 0.f), 
-                       vec_new(1.f, 3.f, 0.f),
-                       vec_new(1.f, 6.f, 0.f)};
-    vec_t points[6] = {vec_new(1.f, 1.f, 0.f),
-                       vec_new(1.f, 2.f, 0.f),
-                       vec_new(1.f, 3.f, 0.f),
-                       vec_new(1.f, 4.f, 0.f),
-                       vec_new(1.f, 5.f, 0.f),
-                       vec_new(1.f, 6.f, 0.f)};
-
-    rasterize_and_assert(input, 
-                         sizeof(input) / sizeof(vec_t),
-                         points,
-                         sizeof(points) / sizeof(vec_t),
-                         0xAABBCCFF);
-}
-
 static void test_rasterize_triangle()
 {
     // +--------------------+
@@ -417,9 +353,9 @@ static void test_rasterize_triangle()
     // /                    /
     // +--------------------+
 
-    vec_t input[3]  = {vec_new(1.f, 1.f, 0.f), 
-                       vec_new(8.f, 1.f, 0.f),
-                       vec_new(3.f, 6.f, 0.f)};
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.5f), 
+                       vec_new(8.f, 1.f, 0.5f),
+                       vec_new(3.f, 6.f, 0.5f)};
     vec_t points[25] = {vec_new(1.f, 1.f, 1.f),
                         vec_new(2.f, 1.f, 1.f),
                         vec_new(3.f, 1.f, 1.f),
@@ -472,9 +408,9 @@ static void test_rasterize_multiple_triangles()
     uint32_t height = 10;
     framebuffer_t* framebuffer = framebuffer_new(width, height);
     depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 2.f);
-    vec_t p2        = vec_new(8.f, 1.f, 2.f);
-    vec_t p3        = vec_new(3.f, 6.f, 2.f);
+    vec_t p1        = vec_new(1.f, 1.f, 0.5f);
+    vec_t p2        = vec_new(8.f, 1.f, 0.5f);
+    vec_t p3        = vec_new(3.f, 6.f, 0.5f);
     uint32_t color1 = 0xAABBCCFF;
 
     // assert initial values
@@ -490,12 +426,12 @@ static void test_rasterize_multiple_triangles()
     // rasterize first triangle
     rasterize_triangle(p1, p2, p3, color1, framebuffer, depthbuffer);
 
-    p1 = vec_new(6.f, 6.f, 1.f);
-    p2 = vec_new(6.f, 1.f, 1.f);
-    p3 = vec_new(8.f, 1.f, 1.f);
+    p1 = vec_new(6.f, 6.f, 0.6f);
+    p2 = vec_new(6.f, 1.f, 0.6f);
+    p3 = vec_new(8.f, 1.f, 0.6f);
     uint32_t color2 = 0x11223344;
 
-    // rasterize second triangle
+    // rasterize second triangle (closer to camera)
     rasterize_triangle(p1, p2, p3, color2, framebuffer, depthbuffer);
 
     // assert pixel count that has changed
@@ -513,25 +449,25 @@ static void test_rasterize_multiple_triangles()
     ASSERT_EQUAL(expected_count, actual_count);
 
     // assert first triangle
-    vec_t points[19] = {vec_new(1.f, 1.f, 1.f),
-                        vec_new(2.f, 1.f, 1.f),
-                        vec_new(3.f, 1.f, 1.f),
-                        vec_new(4.f, 1.f, 1.f),
-                        vec_new(5.f, 1.f, 1.f),
-                        vec_new(2.f, 2.f, 1.f),
-                        vec_new(3.f, 2.f, 1.f),
-                        vec_new(4.f, 2.f, 1.f),
-                        vec_new(5.f, 2.f, 1.f),
-                        vec_new(2.f, 3.f, 1.f),
-                        vec_new(3.f, 3.f, 1.f),
-                        vec_new(4.f, 3.f, 1.f),
-                        vec_new(5.f, 3.f, 1.f),
-                        vec_new(3.f, 4.f, 1.f),
-                        vec_new(4.f, 4.f, 1.f),
-                        vec_new(5.f, 4.f, 1.f),
-                        vec_new(3.f, 5.f, 1.f),
-                        vec_new(4.f, 5.f, 1.f),
-                        vec_new(3.f, 6.f, 1.f)};
+    vec_t points[19] = {vec_new(1.f, 1.f, 0.5f),
+                        vec_new(2.f, 1.f, 0.5f),
+                        vec_new(3.f, 1.f, 0.5f),
+                        vec_new(4.f, 1.f, 0.5f),
+                        vec_new(5.f, 1.f, 0.5f),
+                        vec_new(2.f, 2.f, 0.5f),
+                        vec_new(3.f, 2.f, 0.5f),
+                        vec_new(4.f, 2.f, 0.5f),
+                        vec_new(5.f, 2.f, 0.5f),
+                        vec_new(2.f, 3.f, 0.5f),
+                        vec_new(3.f, 3.f, 0.5f),
+                        vec_new(4.f, 3.f, 0.5f),
+                        vec_new(5.f, 3.f, 0.5f),
+                        vec_new(3.f, 4.f, 0.5f),
+                        vec_new(4.f, 4.f, 0.5f),
+                        vec_new(5.f, 4.f, 0.5f),
+                        vec_new(3.f, 5.f, 0.5f),
+                        vec_new(4.f, 5.f, 0.5f),
+                        vec_new(3.f, 6.f, 0.5f)};
 
     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
     {
@@ -540,16 +476,16 @@ static void test_rasterize_multiple_triangles()
     }
 
     // assert second triangle
-    vec_t points2[10] = {vec_new(6.f, 1.f, 1.f),
-                         vec_new(7.f, 1.f, 1.f),
-                         vec_new(8.f, 1.f, 1.f),
-                         vec_new(6.f, 2.f, 1.f),
-                         vec_new(7.f, 2.f, 1.f),
-                         vec_new(6.f, 3.f, 1.f),
-                         vec_new(7.f, 3.f, 1.f),
-                         vec_new(6.f, 4.f, 1.f),
-                         vec_new(6.f, 5.f, 1.f),
-                         vec_new(6.f, 6.f, 1.f)};
+    vec_t points2[10] = {vec_new(6.f, 1.f, 0.6f),
+                         vec_new(7.f, 1.f, 0.6f),
+                         vec_new(8.f, 1.f, 0.6f),
+                         vec_new(6.f, 2.f, 0.6f),
+                         vec_new(7.f, 2.f, 0.6f),
+                         vec_new(6.f, 3.f, 0.6f),
+                         vec_new(7.f, 3.f, 0.6f),
+                         vec_new(6.f, 4.f, 0.6f),
+                         vec_new(6.f, 5.f, 0.6f),
+                         vec_new(6.f, 6.f, 0.6f)};
 
     for (uint32_t i = 0; i < sizeof(points2) / sizeof(vec_t); i++)
     {
@@ -559,6 +495,46 @@ static void test_rasterize_multiple_triangles()
 
     framebuffer_free(framebuffer);
     depthbuffer_free(depthbuffer);
+}
+
+static void test_rasterize_clipped_triangle()
+{
+
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.0f),
+                       vec_new(8.f, 1.f, 0.5f),
+                       vec_new(3.f, 6.f, 0.5f)};
+
+    rasterize_and_assert(input,
+                         sizeof(input) / sizeof(vec_t),
+                         NULL,
+                         0,
+                         0xAABBCCFF);
+}
+
+static void test_rasterize_colinear_triangle()
+{
+    // +--------------------+
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |  xxxxxxxxxxxx      |
+    // |                    |
+    // +--------------------+
+
+    vec_t input[3]  = {vec_new(1.f, 1.f, 0.5f),
+                       vec_new(6.f, 1.f, 0.5f),
+                       vec_new(3.f, 1.f, 0.5f)};
+
+    rasterize_and_assert(input,
+                         sizeof(input) / sizeof(vec_t),
+                         NULL,
+                         0,
+                         0xAABBCCFF);
 }
 
 void test_rasterizer()
@@ -592,8 +568,8 @@ void test_rasterizer()
     TEST_CASE(test_rasterize_line_steep_neg_slope);
     TEST_CASE(test_rasterize_line_pos_slope);
     TEST_CASE(test_rasterize_line_neg_slope);
-    TEST_CASE(test_rasterize_triangle_colinear_horizontal);
-    TEST_CASE(test_rasterize_triangle_colinear_vertical);
     TEST_CASE(test_rasterize_triangle);
     TEST_CASE(test_rasterize_multiple_triangles);
+    TEST_CASE(test_rasterize_clipped_triangle);
+    TEST_CASE(test_rasterize_colinear_triangle);
 }
