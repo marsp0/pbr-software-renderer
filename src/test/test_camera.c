@@ -382,7 +382,6 @@ static void test_camera_visibility_check_when_mesh_is_not_visible()
     bool visible = camera_is_mesh_visible(camera, sphere);
 
     ASSERT_FALSE(visible);
-    ASSERT_TRUE(false);
 
     camera_free(camera);
 }
