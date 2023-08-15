@@ -330,6 +330,62 @@ static void test_proj_matrix()
     camera_free(camera);
 }
 
+static void test_camera_visibility_check_when_mesh_is_visible()
+{
+    vec_t position  = vec_new(0.f, 0.f, 0.f);
+    float pitch     = 0.f;
+    float yaw       = 0.f;
+    float near      = 1.f;
+    float far       = 20.f;
+    float fov_x     = deg_to_rad(45.f);
+    float asp_ratio = 800.f / 600.f;
+
+    camera_t* camera = camera_new(position,
+                                  pitch,
+                                  yaw,
+                                  fov_x,
+                                  near,
+                                  far,
+                                  asp_ratio);
+
+    sphere_t sphere = { .c = vec_new(0.f, 0.f, 5.f),
+                        .r = 1.f };
+
+    bool visible = camera_is_mesh_visible(camera, sphere);
+
+    ASSERT_TRUE(visible);
+
+    camera_free(camera);
+}
+
+static void test_camera_visibility_check_when_mesh_is_not_visible()
+{
+    vec_t position  = vec_new(0.f, 0.f, 0.f);
+    float pitch     = 0.f;
+    float yaw       = 0.f;
+    float near      = 1.f;
+    float far       = 20.f;
+    float fov_x     = deg_to_rad(45.f);
+    float asp_ratio = 800.f / 600.f;
+
+    camera_t* camera = camera_new(position,
+                                  pitch,
+                                  yaw,
+                                  fov_x,
+                                  near,
+                                  far,
+                                  asp_ratio);
+
+    sphere_t sphere = { .c = vec_new(0.f, 0.f, -5.f),
+                        .r = 1.f };
+
+    bool visible = camera_is_mesh_visible(camera, sphere);
+
+    ASSERT_FALSE(visible);
+
+    camera_free(camera);
+}
+
 void test_camera()
 {
     TEST_CASE(test_view_matrix_rotated_90deg_around_y);
@@ -340,4 +396,6 @@ void test_camera()
     TEST_CASE(test_camera_frustum_rotated_30deg_around_x_no_translation);
     TEST_CASE(test_camera_frustum_rotated_20deg_around_x_and_60_around_y_no_translation);
     TEST_CASE(test_proj_matrix);
+    TEST_CASE(test_camera_visibility_check_when_mesh_is_visible);
+    TEST_CASE(test_camera_visibility_check_when_mesh_is_not_visible);
 }

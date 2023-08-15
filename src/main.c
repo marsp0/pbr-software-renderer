@@ -4,7 +4,7 @@
 #include "renderer.h"
 #include "time_utils.h"
 
-int main()
+int32_t main()
 {
     time_init();
 
@@ -13,4 +13,6 @@ int main()
     renderer_run(renderer);
 
     renderer_free(renderer);
+
+    return 0;
 }

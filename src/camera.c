@@ -1,8 +1,8 @@
 #include "camera.h"
 
 #include <math.h>
+#include <assert.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 /*
  * Notes
@@ -91,8 +91,6 @@ static bool plane_check(plane_t plane, sphere_t sphere)
         return true;
     }
 
-    printf("dist is %f\n", fabs(dot));
-    vec_print(plane.n);
     if (fabs(dot) < sphere.r)
     {
         return true;
@@ -113,6 +111,8 @@ camera_t* camera_new(vec_t position,
                      float far,
                      float aspect_ratio)
 {
+    assert(near > 0.f);
+
     camera_t* camera    = malloc(sizeof(camera_t));
     
     camera->position    = position;

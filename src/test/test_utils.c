@@ -32,7 +32,7 @@ uint32_t get_test_assert_counter()
     return assert_count;
 }
 
-void INIT_TESTS()
+void TESTS_INIT()
 {
     passed = 0;
     failed = 0;
@@ -45,4 +45,9 @@ void TESTS_SUMMARY()
     printf("|              Passed: %3d               |\n", passed);
     printf("|              Failed: %3d               |\n", failed);
     printf("+----------------------------------------+\n");
+}
+
+uint32_t TESTS_FAIL_COUNT()
+{
+    return failed;
 }
