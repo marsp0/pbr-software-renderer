@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <threads.h>
 
 #include "crc.h"
 
@@ -40,6 +41,7 @@
 #define ZLIB_CTRL_VAL           31
 #define ZLIB_COMPRESSION        8
 #define DEFLATE_WINDOW_SIZE     32768
+#define MAX_THREAD_COUNT        4
 
 /********************/
 /* static variables */
@@ -73,30 +75,38 @@ typedef struct node
     struct node* right;
 } node_t;
 
-static header_t header                                  = { 0 };
-static chunk_t chunk                                    = { 0 };
+typedef struct
+{
+    _Atomic uint32_t*       index;
+    texture_batch_info_t*   info;
+    texture_batch_t*        batch;
+} job_args_t;
 
-static uint8_t  bit_buffer                              = 0;
-static uint8_t  bit_count                               = 0;
+static thread_local header_t header                                  = { 0 };
+static thread_local chunk_t chunk                                    = { 0 };
 
-static uint32_t src_cursor                              = 0;
-static uint32_t src_size                                = 0;
-static const unsigned char* src_buffer                  = NULL;
+static thread_local uint8_t  bit_buffer                              = 0;
+static thread_local uint8_t  bit_count                               = 0;
 
-static uint32_t dst_cursor                              = 0;
-static uint32_t dst_size                                = 0;
-static unsigned char* dst_buffer                        = NULL;
+static thread_local uint32_t src_cursor                              = 0;
+static thread_local uint32_t src_size                                = 0;
+static thread_local const unsigned char* src_buffer                  = NULL;
 
-static uint32_t filter                                  = 0;
-static uint32_t g_cursor                                = 0;
-static uint32_t bb_cursor                               = 0;
-static unsigned char back_buffer[DEFLATE_WINDOW_SIZE]   = { 0 };
+static thread_local uint32_t dst_cursor                              = 0;
+static thread_local uint32_t dst_size                                = 0;
+static thread_local unsigned char* dst_buffer                        = NULL;
 
-static uint32_t node_index                              = 0;
-static node_t* cl_alphabet                              = NULL;
-static node_t* ll_alphabet                              = NULL;
-static node_t* d_alphabet                               = NULL;
-static node_t node_pool[PNG_NODE_POOL_SIZE]             = { 0 };
+static thread_local uint32_t filter                                  = 0;
+static thread_local uint32_t g_cursor                                = 0;
+static thread_local uint32_t bb_cursor                               = 0;
+static thread_local unsigned char back_buffer[DEFLATE_WINDOW_SIZE]   = { 0 };
+
+static thread_local uint32_t node_index                              = 0;
+static thread_local node_t* cl_alphabet                              = NULL;
+static thread_local node_t* ll_alphabet                              = NULL;
+static thread_local node_t* d_alphabet                               = NULL;
+static thread_local node_t node_pool[PNG_NODE_POOL_SIZE]             = { 0 };
+
 static const uint32_t ll_map[29][2]   = {
     {0, 3},    {0, 4},    {0, 5},    {0, 6},    {0, 7}, 
     {0, 8},    {0, 9},    {0, 10},   {1, 11},   {1, 13},
@@ -603,7 +613,22 @@ static void reset_static_data()
     d_alphabet  = NULL;
 
     memset(node_pool, 0, PNG_NODE_POOL_SIZE * sizeof(node_t));
+}
 
+static int32_t parse_single_png(void* data)
+{
+    job_args_t* args            = (job_args_t*)data;
+    texture_batch_info_t info   = *args->info;
+    uint32_t index              = (*args->index)++;
+
+    while (index < info.size)
+    {
+        args->batch->textures[index] = parse_png(info.buffers[index], info.buffer_sizes[index]);
+
+        index = (*args->index)++;
+    }
+
+    return thrd_success;
 }
 
 /********************/
@@ -651,4 +676,32 @@ texture_t* parse_png(const unsigned char* buf, uint32_t size)
     reset_static_data();
 
     return texture;
+}
+
+texture_batch_t parse_multiple_pngs(texture_batch_info_t info)
+{
+    thrd_t threads[MAX_THREAD_COUNT];
+    texture_batch_t result  = { 0 };
+    result.size             = info.size;
+
+    // atomic index to indicate which slot to use for parsed texture
+    _Atomic uint32_t index  = 0;
+    job_args_t args         = {.index   = &index,
+                               .info    = &info,
+                               .batch   = &result};
+    int32_t success;
+
+    // start parsing
+    for (int32_t i = 0; i < MAX_THREAD_COUNT; i++)
+    {
+        success = thrd_create(&threads[i], parse_single_png, (void*)&args);
+    }
+
+    // wait for all jobs to finish
+    for (int32_t i = 0; i < MAX_THREAD_COUNT; i++)
+    {
+        thrd_join(threads[i], &success);
+    }
+
+    return result;
 }
