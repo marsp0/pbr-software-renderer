@@ -9,6 +9,7 @@ TODO: nice description
 - GLB(glTF) parser
     - JSON parser
     - PNG parser with DEFLATE decoder
+    - Multi threaded parsing of texture materials
 
 ## References
 

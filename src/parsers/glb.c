@@ -179,16 +179,14 @@ static view_t parse_mesh_data(const json_t* json,
 
     uint32_t start = offset ? offset->uinteger : 0;
 
-    view_t result = {
-        .data = &binary.data[start],
-        .size = length->uinteger,
-        .count = count->uinteger,
-    };
+    view_t result = {.data = &binary.data[start],
+                     .size = length->uinteger,
+                     .count = count->uinteger};
 
     return result;
 }
 
-static texture_t* parse_material_texture(const json_t* json, const json_node_t* node, chunk_t binary)
+static view_t parse_material_texture_info(const json_t* json, const json_node_t* node, chunk_t binary)
 {
     // Material node has contains indices from textures array
     // textures array contain indices from images array
@@ -215,7 +213,11 @@ static texture_t* parse_material_texture(const json_t* json, const json_node_t* 
 
     uint32_t start = offset ? offset->uinteger : 0;
 
-    return parse_png(&binary.data[start], length->uinteger);
+    view_t result = {.data = &binary.data[start],
+                     .size = length->uinteger,
+                     .count = length->uinteger};
+
+    return result;
 }
 
 static mesh_t* parse_meshes(const json_t* json, const chunk_t binary)
@@ -258,10 +260,24 @@ static mesh_t* parse_meshes(const json_t* json, const chunk_t binary)
     const json_node_t* normal       = json_find_child(material, JSON_NORMAL_TEX);
     const json_node_t* occlusion    = json_find_child(material, JSON_OCCLUSION_TEX);
 
-    texture_t* albedo_tex           = parse_material_texture(json, albedo, binary);
-    texture_t* metallic_tex         = parse_material_texture(json, metallic, binary);
-    texture_t* normal_tex           = parse_material_texture(json, normal, binary);
-    texture_t* occlusion_tex        = parse_material_texture(json, occlusion, binary);
+    view_t albedo_view              = parse_material_texture_info(json, albedo, binary);
+    view_t metallic_view            = parse_material_texture_info(json, metallic, binary);
+    view_t normal_view              = parse_material_texture_info(json, normal, binary);
+    view_t occlusion_view           = parse_material_texture_info(json, occlusion, binary);
+
+    texture_batch_info_t batch_info;
+    batch_info.size = 4;
+    batch_info.buffers[0]           = albedo_view.data;
+    batch_info.buffers[1]           = metallic_view.data;
+    batch_info.buffers[2]           = normal_view.data;
+    batch_info.buffers[3]           = occlusion_view.data;
+
+    batch_info.buffer_sizes[0]      = albedo_view.size;
+    batch_info.buffer_sizes[1]      = metallic_view.size;
+    batch_info.buffer_sizes[2]      = normal_view.size;
+    batch_info.buffer_sizes[3]      = occlusion_view.size;
+
+    texture_batch_t parsed_batch    = parse_multiple_pngs(batch_info);
 
     return mesh_new("name", 
                     vertices,
@@ -272,10 +288,10 @@ static mesh_t* parse_meshes(const json_t* json, const chunk_t binary)
                     tex_coords_view.count,
                     normals_view.count,
                     indices_view.count,
-                    albedo_tex,
-                    metallic_tex,
-                    normal_tex,
-                    occlusion_tex,
+                    parsed_batch.textures[0],
+                    parsed_batch.textures[1],
+                    parsed_batch.textures[2],
+                    parsed_batch.textures[3],
                     bounding_sphere);
 }
 
