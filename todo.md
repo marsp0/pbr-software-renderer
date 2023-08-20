@@ -31,7 +31,7 @@
 	- [ ] add support for light settings in gltf. This might require extension
 - [ ] 13.04.2023
 	- [ ] allow for multiple meshes to be rendered
-	- [ ] parse multiple textures in parallel
+	- [x] parse multiple textures in parallel (20.08.2023)
 - [ ] 11.04.2023 
 	- [ ] separate mesh from textures. There can be a texture manager that handles all textures 
 	and meshes can request the textures they need. (or similar)
