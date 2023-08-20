@@ -9,20 +9,20 @@ on:
 
 jobs:
   Build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install dependencies
-      shell: bash
-      run: |
-         sudo apt update
-         sudo apt install gcc-10
-         sudo update-alternatives \
-          --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 \
-          --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-10 \
-          --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-10 \
-          --slave /usr/bin/gcov gcov /usr/bin/gcov-10
+    # - name: Install dependencies
+    #   shell: bash
+      # run: |
+         # sudo apt update
+         # sudo apt install gcc-10
+         # sudo update-alternatives \
+         #  --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 \
+         #  --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-10 \
+         #  --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-10 \
+         #  --slave /usr/bin/gcov gcov /usr/bin/gcov-10
     
     - name: Compile Renderer
       shell: bash
