@@ -40,7 +40,8 @@ file_t* file_new(const char* file_path)
 
     // copy file contents into buffer
     unsigned char* buffer = malloc(file_size);
-    fread(buffer, sizeof(unsigned char), file_size, handle);
+    size_t result = fread(buffer, sizeof(unsigned char), file_size, handle);
+    assert((uint32_t)result == file_size);
 
     // close file as its no longer needed
     fclose(handle);

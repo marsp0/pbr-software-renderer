@@ -17,10 +17,10 @@ space           :=
 VPATH           := $(subst $(space),:,$(shell find . -type d))
 GCCFLAGS        := -std=gnu17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign
 
-ifeq ($(config), release)
-	GCCFLAGS +=  -O2
-else
+ifeq ($(config), debug)
 	GCCFLAGS +=  -g3 -pg -fsanitize=address,leak
+else
+	GCCFLAGS +=  -O2
 endif
 
 # TARGETS
