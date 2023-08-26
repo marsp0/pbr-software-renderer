@@ -129,9 +129,9 @@ mat_t mat_new(float a, float b, float c, float d,
 mat_t mat_new_identity()
 {
     mat_t mat;
-    for (int i = 0; i < 4; i++)
+    for (uint32_t i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (uint32_t j = 0; j < 4; j++)
         {
             float val = 0.f;
             if (i == j)
@@ -145,9 +145,9 @@ mat_t mat_new_identity()
 mat_t mat_add(mat_t m1, mat_t m2)
 {
     mat_t mat;
-    for (int i = 0; i < 4; i++)
+    for (uint32_t i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (uint32_t j = 0; j < 4; j++)
         {
             mat.data[i][j] = m1.data[i][j] + m2.data[i][j];
         }
@@ -158,9 +158,9 @@ mat_t mat_add(mat_t m1, mat_t m2)
 mat_t mat_sub(mat_t m1, mat_t m2)
 {
     mat_t mat;
-    for (int i = 0; i < 4; i++)
+    for (uint32_t i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (uint32_t j = 0; j < 4; j++)
         {
             mat.data[i][j] = m1.data[i][j] - m2.data[i][j];
         }
@@ -171,12 +171,12 @@ mat_t mat_sub(mat_t m1, mat_t m2)
 mat_t mat_mul_mat(mat_t m1, mat_t m2)
 {
     mat_t mat;
-    for (int i = 0; i < 4; i++)
+    for (uint32_t i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (uint32_t j = 0; j < 4; j++)
         {
             float sum = 0.f;
-            for (int x = 0; x < 4; x++)
+            for (uint32_t x = 0; x < 4; x++)
             {
                 sum += m1.data[i][x] * m2.data[x][j];
             }
@@ -250,9 +250,9 @@ mat_t mat_inverse(mat_t m)
 mat_t mat_transpose(mat_t m)
 {
     mat_t mat;
-    for (int i = 0; i < 4; i++)
+    for (uint32_t i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (uint32_t j = 0; j < 4; j++)
         {
             mat.data[i][j] = m.data[j][i];
         }

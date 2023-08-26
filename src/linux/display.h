@@ -12,7 +12,7 @@ typedef struct
     uint32_t        height;
     Display*        display;
     Window          window;
-    int             screen;
+    int32_t         screen;
     XImage*         ximage;
     unsigned char*  buffer;
 
