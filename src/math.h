@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 /********************/
 /*      Vector      */
 /********************/
@@ -75,3 +77,12 @@ typedef struct
     vec_t c;
     float r;
 } sphere_t;
+
+/********************/
+/*    Utilities     */
+/********************/
+
+int32_t imax(int32_t a, int32_t b);
+int32_t imin(int32_t a, int32_t b);
+uint32_t umax(uint32_t a, uint32_t b);
+uint32_t umin(uint32_t a, uint32_t b);

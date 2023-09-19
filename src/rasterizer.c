@@ -128,11 +128,14 @@ void rasterize_triangle(vec_t v0,
     int32_t y1 = (int32_t)v1.y;
     int32_t y2 = (int32_t)v2.y;
 
+    int32_t width = (int32_t)framebuffer->width - 1;
+    int32_t height = (int32_t)framebuffer->height - 1;
+
     // find min/max within buffer boundaries
-    int32_t minx = (int32_t)fmax(fmin(fmin(x0, x1), x2), 0.f);
-    int32_t miny = (int32_t)fmax(fmin(fmin(y0, y1), y2), 0.f);
-    int32_t maxx = (int32_t)fmin(fmax(fmax(x0, x1), x2), framebuffer->width - 1);
-    int32_t maxy = (int32_t)fmin(fmax(fmax(y0, y1), y2), framebuffer->height - 1);
+    int32_t minx = imax(imin(imin(x0, x1), x2), 0.f);
+    int32_t miny = imax(imin(imin(y0, y1), y2), 0.f);
+    int32_t maxx = imin(imax(imax(x0, x1), x2), width);
+    int32_t maxy = imin(imax(imax(y0, y1), y2), height);
 
     // area of parallelogram
     float area = (float)edge_check(x0, y0, x1, y1, x2, y2);
