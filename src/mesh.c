@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 mesh_t* mesh_new(char*      name,
                  vec_t*     vertices,
@@ -37,6 +38,13 @@ mesh_t* mesh_new(char*      name,
     mesh->normal            = normal;
     mesh->occlusion         = occlusion;
     mesh->bounding_sphere   = bsphere;
+
+    uint32_t size_in_bytes;
+
+    mesh->triangles_size    = indices_size / 3U;
+    size_in_bytes           = sizeof(triangle_t) * mesh->triangles_size;
+    mesh->triangles         = malloc(size_in_bytes);
+    memset(mesh->triangles, 0, size_in_bytes);
     
     return mesh;
 }
@@ -47,6 +55,7 @@ void mesh_free(mesh_t* mesh)
     free(mesh->texcoords);
     free(mesh->normals);
     free(mesh->indices);
+    free(mesh->triangles);
     texture_free(mesh->albedo);
     texture_free(mesh->metallic);
     texture_free(mesh->normal);

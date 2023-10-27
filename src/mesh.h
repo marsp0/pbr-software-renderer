@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "math.h"
 #include "texture.h"
@@ -10,15 +11,33 @@
 
 typedef struct
 {
+    bool    process;
+
+    vec_t   v0;
+    vec_t   v1;
+    vec_t   v2;
+
+    //other per triangle data
+
+    uint32_t color;
+
+} triangle_t;
+
+typedef struct
+{
     char        name[MESH_NAME_SIZE];
     vec_t*      vertices;
     vec_t*      texcoords;
     vec_t*      normals;
     uint32_t*   indices;
+    triangle_t* triangles;
+
     uint32_t    vertices_size;
     uint32_t    texcoords_size;
     uint32_t    normals_size;
     uint32_t    indices_size;
+    uint32_t    triangles_size;
+
     texture_t*  albedo;
     texture_t*  metallic;
     texture_t*  normal;
