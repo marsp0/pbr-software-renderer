@@ -39,10 +39,8 @@ mesh_t* mesh_new(char*      name,
     mesh->occlusion         = occlusion;
     mesh->bounding_sphere   = bsphere;
 
-    uint32_t size_in_bytes;
-
     mesh->triangles_size    = indices_size / 3U;
-    size_in_bytes           = sizeof(triangle_t) * mesh->triangles_size;
+    uint32_t size_in_bytes  = sizeof(triangle_t) * mesh->triangles_size;
     mesh->triangles         = malloc(size_in_bytes);
     memset(mesh->triangles, 0, size_in_bytes);
     
