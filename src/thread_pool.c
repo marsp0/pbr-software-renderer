@@ -170,5 +170,6 @@ void thread_pool_free(thread_pool_t* pool)
 
     mtx_destroy(&pool->mtx);
     cnd_destroy(&pool->work_cnd);
+    cnd_destroy(&pool->done_cnd);
     free(pool);
 }
