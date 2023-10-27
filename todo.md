@@ -1,5 +1,7 @@
 ## TODO
 
+- [ ] 20.09.2023
+    - [ ] remove scene and just keep everything in renderer?
 - [ ] 5.08.2023
     - [ ] replace mat_new with mat_new_identity
 - [ ] 18.06.2023
