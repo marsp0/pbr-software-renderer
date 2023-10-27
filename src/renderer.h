@@ -5,21 +5,41 @@
 #include "scene.h"
 #include "framebuffer.h"
 #include "depthbuffer.h"
+#include "thread_pool.h"
 #include "linux/display.h"
 
 typedef struct
 {
-    scene_t*        scene;
-    display_t*      display;
+    uint32_t    offset;
+    uint32_t    size;
 
-    framebuffer_t*  current;
-    framebuffer_t*  front;
-    framebuffer_t*  back;
+    uint32_t    width;
+    uint32_t    height;
 
-    depthbuffer_t*  depthbuffer;
-    uint32_t        width;
-    uint32_t        height;
-    bool            wireframe;
+    mesh_t*     mesh;
+    camera_t*   camera;
+
+    uint32_t    color;
+} triangle_batch_t;
+
+typedef struct
+{
+    uint32_t                width;
+    uint32_t                height;
+
+    scene_t*                scene;
+    display_t*              display;
+
+    framebuffer_t*          current;
+    framebuffer_t*          front;
+    framebuffer_t*          back;
+
+    depthbuffer_t*          depthbuffer;
+
+    bool                    wireframe;
+
+    thread_pool_t*          thread_pool;
+    triangle_batch_t        thread_data[THREAD_COUNT];
 
 } renderer_t;
 
