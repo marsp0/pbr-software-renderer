@@ -149,10 +149,10 @@ void rasterizer_draw_triangle(vec_t v0,
     int32_t height = (int32_t)framebuffer->height - 1;
 
     // find min/max within buffer boundaries
-    int32_t minx = imax(imin(imin(x0, x1), x2), 0.f);
-    int32_t miny = imax(imin(imin(y0, y1), y2), 0.f);
-    int32_t maxx = imin(imax(imax(x0, x1), x2), width);
-    int32_t maxy = imin(imax(imax(y0, y1), y2), height);
+    int32_t min_x = imax(imin(imin(x0, x1), x2), 0.f);
+    int32_t min_y = imax(imin(imin(y0, y1), y2), 0.f);
+    int32_t max_x = imin(imax(imax(x0, x1), x2), width);
+    int32_t max_y = imin(imax(imax(y0, y1), y2), height);
 
     // area of parallelogram
     float area = (float)edge_check(x0, y0, x1, y1, x2, y2);
@@ -165,9 +165,9 @@ void rasterizer_draw_triangle(vec_t v0,
 
     float inv_area  = 1.f / area;
 
-    for (int32_t y = miny; y <= maxy; y++)
+    for (int32_t y = min_y; y <= max_y; y++)
     {
-        for (int32_t x = minx; x <= maxx; x++)
+        for (int32_t x = min_x; x <= max_x; x++)
         {
             float w0 = (float)edge_check(x1, y1, x2, y2, x, y);
             float w1 = (float)edge_check(x2, y2, x0, y0, x, y);
