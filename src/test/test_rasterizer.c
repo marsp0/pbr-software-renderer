@@ -11,10 +11,10 @@ static void rasterize_and_assert(vec_t* input,
                                  uint32_t output_size, 
                                  uint32_t color)
 {
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* buffer = framebuffer_new(width, height);
-    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
+    uint32_t width              = 10;
+    uint32_t height             = 10;
+    framebuffer_t* buffer       = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer  = depthbuffer_new(width, height);
 
     for (uint32_t i = 0; i < width; i++)
     {
@@ -27,11 +27,11 @@ static void rasterize_and_assert(vec_t* input,
 
     if (input_size == 2)
     {
-        rasterize_line(input[0], input[1], color, buffer);
+        rasterizer_draw_line(input[0], input[1], color, buffer);
     }
     else if (input_size == 3)
     {
-        rasterize_triangle(input[0], input[1], input[2], color, buffer, depthbuffer);
+        rasterizer_draw_triangle(input[0], input[1], input[2], color, buffer, depthbuffer);
     }
 
     // assert pixel count that has changed
@@ -404,14 +404,14 @@ static void test_rasterize_multiple_triangles_in_order()
     // /                    /
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* framebuffer = framebuffer_new(width, height);
-    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.5f);
-    vec_t p2        = vec_new(8.f, 1.f, 0.5f);
-    vec_t p3        = vec_new(3.f, 6.f, 0.5f);
-    uint32_t color1 = 0xAABBCCFF;
+    uint32_t width              = 10;
+    uint32_t height             = 10;
+    framebuffer_t* framebuffer  = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer  = depthbuffer_new(width, height);
+    vec_t p1                    = vec_new(1.f, 1.f, 0.5f);
+    vec_t p2                    = vec_new(8.f, 1.f, 0.5f);
+    vec_t p3                    = vec_new(3.f, 6.f, 0.5f);
+    uint32_t color1             = 0xAABBCCFF;
 
     // assert initial values
     for (uint32_t i = 0; i < width; i++)
@@ -424,15 +424,15 @@ static void test_rasterize_multiple_triangles_in_order()
     }
 
     // rasterize first triangle (far from camera)
-    rasterize_triangle(p1, p2, p3, color1, framebuffer, depthbuffer);
+    rasterizer_draw_triangle(p1, p2, p3, color1, framebuffer, depthbuffer);
 
-    p1 = vec_new(6.f, 6.f, 0.6f);
-    p2 = vec_new(6.f, 1.f, 0.6f);
-    p3 = vec_new(8.f, 1.f, 0.6f);
+    p1              = vec_new(6.f, 6.f, 0.6f);
+    p2              = vec_new(6.f, 1.f, 0.6f);
+    p3              = vec_new(8.f, 1.f, 0.6f);
     uint32_t color2 = 0x11223344;
 
     // rasterize second triangle (closer to camera)
-    rasterize_triangle(p1, p2, p3, color2, framebuffer, depthbuffer);
+    rasterizer_draw_triangle(p1, p2, p3, color2, framebuffer, depthbuffer);
 
     // assert pixel count that has changed
     uint32_t actual_count = 0;
@@ -512,14 +512,14 @@ static void test_rasterize_multiple_triangles_in_reverse_order()
     // /                    /
     // +--------------------+
 
-    uint32_t width = 10;
-    uint32_t height = 10;
-    framebuffer_t* framebuffer = framebuffer_new(width, height);
-    depthbuffer_t* depthbuffer = depthbuffer_new(width, height);
-    vec_t p1        = vec_new(1.f, 1.f, 0.6f);
-    vec_t p2        = vec_new(8.f, 1.f, 0.6f);
-    vec_t p3        = vec_new(3.f, 6.f, 0.6f);
-    uint32_t color1 = 0xAABBCCFF;
+    uint32_t width              = 10;
+    uint32_t height             = 10;
+    framebuffer_t* framebuffer  = framebuffer_new(width, height);
+    depthbuffer_t* depthbuffer  = depthbuffer_new(width, height);
+    vec_t p1                    = vec_new(1.f, 1.f, 0.6f);
+    vec_t p2                    = vec_new(8.f, 1.f, 0.6f);
+    vec_t p3                    = vec_new(3.f, 6.f, 0.6f);
+    uint32_t color1             = 0xAABBCCFF;
 
     // assert initial values
     for (uint32_t i = 0; i < width; i++)
@@ -532,7 +532,7 @@ static void test_rasterize_multiple_triangles_in_reverse_order()
     }
 
     // rasterize first triangle (closer to camera)
-    rasterize_triangle(p1, p2, p3, color1, framebuffer, depthbuffer);
+    rasterizer_draw_triangle(p1, p2, p3, color1, framebuffer, depthbuffer);
 
     p1 = vec_new(6.f, 6.f, 0.5f);
     p2 = vec_new(6.f, 1.f, 0.5f);
@@ -540,7 +540,7 @@ static void test_rasterize_multiple_triangles_in_reverse_order()
     uint32_t color2 = 0x11223344;
 
     // rasterize second triangle (far from camera)
-    rasterize_triangle(p1, p2, p3, color2, framebuffer, depthbuffer);
+    rasterizer_draw_triangle(p1, p2, p3, color2, framebuffer, depthbuffer);
 
     // assert pixel count that has changed
     uint32_t actual_count = 0;
@@ -667,6 +667,7 @@ void test_rasterizer()
     //     printf("/\n");
     // }
     // printf("+--------------------+\n");
+    rasterizer_init();
     TEST_CASE(test_rasterize_line_horizontal);
     TEST_CASE(test_rasterize_line_horizontal_out_of_bounds);
     TEST_CASE(test_rasterize_line_vertical);
@@ -681,4 +682,5 @@ void test_rasterizer()
     TEST_CASE(test_rasterize_multiple_triangles_in_reverse_order);
     TEST_CASE(test_rasterize_clipped_triangle);
     TEST_CASE(test_rasterize_colinear_triangle);
+    rasterizer_free();
 }

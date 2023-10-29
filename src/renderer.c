@@ -57,9 +57,9 @@ static void render_utils(renderer_t* renderer)
         points[i].y = (points[i].y + 1.f) * 0.5f * height;
     }
 
-    rasterize_line(points[0], points[1], colors[1], renderer->current);
-    rasterize_line(points[0], points[2], colors[2], renderer->current);
-    rasterize_line(points[0], points[3], colors[3], renderer->current);
+    rasterizer_draw_line(points[0], points[1], colors[1], renderer->current);
+    rasterizer_draw_line(points[0], points[2], colors[2], renderer->current);
+    rasterizer_draw_line(points[0], points[3], colors[3], renderer->current);
 }
 
 static void render_wireframe(renderer_t* renderer)
@@ -104,9 +104,9 @@ static void render_wireframe(renderer_t* renderer)
             points[j].y = (points[j].y + 1.f) * 0.5f * height;
         }
 
-        rasterize_line(points[0], points[1], 0xFFFFFFFF, renderer->current);
-        rasterize_line(points[1], points[2], 0xFFFFFFFF, renderer->current);
-        rasterize_line(points[2], points[0], 0xFFFFFFFF, renderer->current);
+        rasterizer_draw_line(points[0], points[1], 0xFFFFFFFF, renderer->current);
+        rasterizer_draw_line(points[1], points[2], 0xFFFFFFFF, renderer->current);
+        rasterizer_draw_line(points[2], points[0], 0xFFFFFFFF, renderer->current);
         // rasterize_triangle(points[0], points[1], points[2], 0xFFFFFFFF, renderer->current, renderer->depthbuffer);
     }
 }
@@ -202,12 +202,12 @@ static void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh)
 
     for (uint32_t i = 0; i < triangles_size; i++)
     {
-        rasterize_triangle(triangles[i].v0,
-                           triangles[i].v1,
-                           triangles[i].v2,
-                           triangles[i].color,
-                           renderer->current,
-                           renderer->depthbuffer);
+        rasterizer_draw_triangle(triangles[i].v0,
+                                 triangles[i].v1,
+                                 triangles[i].v2,
+                                 triangles[i].color,
+                                 renderer->current,
+                                 renderer->depthbuffer);
     }
 }
 
@@ -218,7 +218,7 @@ static void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh)
 renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
 {
 
-    renderer_t* renderer = malloc(sizeof(renderer_t));
+    renderer_t* renderer    = malloc(sizeof(renderer_t));
 
     renderer->width         = width;
     renderer->height        = height;

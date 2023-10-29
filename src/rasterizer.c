@@ -1,8 +1,11 @@
 #include "rasterizer.h"
 
+#include <math.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <math.h>
+
+#include "thread_pool.h"
 
 /********************
  *  Notes
@@ -16,6 +19,14 @@
 /********************/
 /* static variables */
 /********************/
+
+typedef struct
+{
+    uint32_t p;
+} pixel_batch_t;
+
+thread_pool_t* pool = NULL;
+pixel_batch_t  pool_data[THREAD_COUNT];
 
 /********************/
 /* static functions */
@@ -32,10 +43,16 @@ static int32_t edge_check(int32_t x0, int32_t y0,
 /* public functions */
 /********************/
 
-void rasterize_line(vec_t v0,
-                    vec_t v1,
-                    uint32_t color, 
-                    framebuffer_t* framebuffer)
+void rasterizer_init()
+{
+    pool = thread_pool_new("Pixel Processor");
+    memset(pool_data, 0, sizeof(pixel_batch_t) * THREAD_COUNT);
+}
+
+void rasterizer_draw_line(vec_t v0,
+                          vec_t v1,
+                          uint32_t color, 
+                          framebuffer_t* framebuffer)
 {
     int32_t x0 = (int32_t)v0.x;
     int32_t y0 = (int32_t)v0.y;
@@ -105,12 +122,12 @@ void rasterize_line(vec_t v0,
 
 }
 
-void rasterize_triangle(vec_t v0,
-                        vec_t v1,
-                        vec_t v2,
-                        uint32_t color,
-                        framebuffer_t* framebuffer,
-                        depthbuffer_t* depthbuffer)
+void rasterizer_draw_triangle(vec_t v0,
+                              vec_t v1,
+                              vec_t v2,
+                              uint32_t color,
+                              framebuffer_t* framebuffer,
+                              depthbuffer_t* depthbuffer)
 {
     // workaround until clipping is implemented
     if (v0.z <= 0.f || v0.z > 1.f ||
@@ -178,4 +195,9 @@ void rasterize_triangle(vec_t v0,
             framebuffer_set(framebuffer, (uint32_t)x, (uint32_t)y, color);
         }
     }
+}
+
+void rasterizer_free()
+{
+    thread_pool_free(pool);
 }
