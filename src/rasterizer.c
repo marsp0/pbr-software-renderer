@@ -25,8 +25,8 @@ typedef struct
     uint32_t p;
 } pixel_batch_t;
 
-thread_pool_t* pool = NULL;
-pixel_batch_t  pool_data[THREAD_COUNT];
+static thread_pool_t* pool = NULL;
+static pixel_batch_t  pool_data[THREAD_COUNT];
 
 /********************/
 /* static functions */

@@ -10,7 +10,7 @@ int32_t main()
     // initialize
     time_init();
     rasterizer_init();
-    renderer_init(800, 600, "./assets/WaterBottle.glb");
+    renderer_init(800, 600, "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb");
 
     // run
     renderer_run();
