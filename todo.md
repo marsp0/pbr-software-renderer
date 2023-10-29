@@ -1,5 +1,7 @@
 ## TODO
 
+- [ ] 29.10.2023
+    - [ ] not sure if tests should start threads. Look at the rasterizer setup
 - [ ] 20.09.2023
     - [ ] remove scene and just keep everything in renderer?
 - [ ] 5.08.2023

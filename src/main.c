@@ -7,14 +7,16 @@
 
 int32_t main()
 {
+    // initialize
     time_init();
     rasterizer_init();
+    renderer_init(800, 600, "./assets/WaterBottle.glb");
 
-    renderer_t* renderer = renderer_new(800, 600, "./assets/WaterBottle.glb");
+    // run
+    renderer_run();
 
-    renderer_run(renderer);
-
-    renderer_free(renderer);
+    // clean up
+    renderer_free();
     rasterizer_free();
 
     return 0;
