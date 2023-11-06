@@ -7,10 +7,14 @@
 
 int32_t main()
 {
+    uint32_t width      = 800;
+    uint32_t height     = 600;
+    const char* scene   = "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb";
+
     // initialize
     time_init();
     rasterizer_init();
-    renderer_init(800, 600, "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb");
+    renderer_init(width, height, scene);
 
     // run
     renderer_run();

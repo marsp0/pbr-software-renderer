@@ -1,5 +1,7 @@
 ## TODO
 
+- [ ] 06.11.2023
+    - [ ] add defines for different targets. I might want to define something for test exe but not for main exe (THREAD_COUNT for example)
 - [ ] 29.10.2023
     - [ ] not sure if tests should start threads. Look at the rasterizer setup
 - [ ] 20.09.2023

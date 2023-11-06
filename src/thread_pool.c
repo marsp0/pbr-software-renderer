@@ -55,14 +55,12 @@ static int32_t worker(void* args)
 
     while (!pool->stop)
     {
-        // printf("[%ld] about to lock\n", thread_id);
         mtx_lock(&pool->mtx);
         
         job = thread_pool_get_job(pool);
 
         if (!job)
         {
-            // printf("[%ld] about to wait\n", thread_id);
             cnd_wait(&pool->work_cnd, &pool->mtx);
         }
 
@@ -72,12 +70,8 @@ static int32_t worker(void* args)
         {
             continue;
         }
-
-        // printf("[%ld] job found\n", thread_id);
         
         job->func(job->args);
-        
-        // printf("[%ld] job done\n", thread_id);
         
         mtx_lock(&pool->mtx);
 
@@ -122,7 +116,6 @@ thread_pool_t* thread_pool_new(const char* pool_name)
 
 void thread_pool_add_job(thread_pool_t* pool, thread_func_t func, void* args)
 {
-    // printf("trying to acquire add job lock\n");
     mtx_lock(&pool->mtx);
 
     pool->jobs[pool->head].func = func;
@@ -135,7 +128,6 @@ void thread_pool_add_job(thread_pool_t* pool, thread_func_t func, void* args)
         pool->head = 0;
     }
 
-    // printf("signaling\n");
     cnd_signal(&pool->work_cnd);
     mtx_unlock(&pool->mtx);
 }

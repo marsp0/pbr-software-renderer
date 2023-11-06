@@ -218,18 +218,13 @@ void renderer_init(uint32_t w, uint32_t h, const char* file_path)
 
     width       = w;
     height      = h;
-
     scene       = scene_new(file_path);
     display     = display_new(width, height);
-
     front       = framebuffer_new(width, height);
     back        = framebuffer_new(width, height);
     current     = front;
-
     depthbuffer = depthbuffer_new(width, height);
-
     wireframe   = false;
-
     thread_pool = thread_pool_new("Triangle Processor");
     
     memset(thread_data, 0, sizeof(triangle_batch_t) * THREAD_COUNT);

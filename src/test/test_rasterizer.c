@@ -630,7 +630,7 @@ static void test_rasterize_colinear_triangle()
     // |                    |
     // |                    |
     // |                    |
-    // |  xxxxxxxxxxxx      |
+    // |                    |
     // |                    |
     // +--------------------+
 
