@@ -18,7 +18,7 @@ VPATH           := $(subst $(space),:,$(shell find . -type d))
 GCCFLAGS        := -std=gnu17 -Wall -Wextra -Werror -Wshadow -Wpedantic -Wnull-dereference -Wunused -Wconversion -Wno-pointer-sign
 
 ifeq ($(config), debug)
-	GCCFLAGS +=  -g3 -pg -fsanitize=address,leak
+	GCCFLAGS +=  -g3 -p -fsanitize=address,leak
 else
 	GCCFLAGS +=  -O2
 endif
