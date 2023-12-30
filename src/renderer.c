@@ -252,19 +252,14 @@ void renderer_run()
     {
         start = time_now();
 
-        // process input
         input_t input = handle_input(display);
 
-        // update
         renderer_update(input);
 
-        // render
         renderer_draw();
 
-        // clear
         renderer_clear_buffers();
 
-        // swap buffers
         current = current == front ? back : front;
 
         // maintain 60fps
