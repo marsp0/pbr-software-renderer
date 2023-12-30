@@ -14,7 +14,8 @@ int32_t main()
     // initialize
     time_init();
     rasterizer_init();
-    renderer_init(width, height, scene);
+    renderer_init(width, height);
+    renderer_load(scene);
 
     // run
     renderer_run();

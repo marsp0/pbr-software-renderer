@@ -213,12 +213,11 @@ static void renderer_draw()
 /* public functions */
 /********************/
 
-void renderer_init(uint32_t w, uint32_t h, const char* file_path)
+void renderer_init(uint32_t w, uint32_t h)
 {
-
     width       = w;
     height      = h;
-    scene       = scene_new(file_path);
+    scene       = NULL;
     display     = display_new(width, height);
     front       = framebuffer_new(width, height);
     back        = framebuffer_new(width, height);
@@ -228,6 +227,16 @@ void renderer_init(uint32_t w, uint32_t h, const char* file_path)
     thread_pool = thread_pool_new("Triangle Processor");
     
     memset(thread_data, 0, sizeof(triangle_batch_t) * THREAD_COUNT);
+}
+
+void renderer_load(const char* file_path)
+{
+    if (scene)
+    {
+        scene_free(scene);
+    }
+
+    scene = scene_new(file_path);
 }
 
 void renderer_run()

@@ -8,6 +8,7 @@
 #include "thread_pool.h"
 #include "linux/display.h"
 
-void renderer_init(uint32_t width, uint32_t height, const char* file_path);
+void renderer_init(uint32_t width, uint32_t height);
+void renderer_load(const char* file_path);
 void renderer_run();
 void renderer_free();
