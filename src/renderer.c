@@ -91,13 +91,6 @@ static void renderer_draw_utilities()
     rasterizer_draw_line(points[0], points[3], colors[3], current);
 }
 
-static void renderer_clear_buffers()
-{
-    framebuffer_clear(current);
-    depthbuffer_clear(depthbuffer);
-    display_clear(display);
-}
-
 static void renderer_process_triangles(void* args)
 {
     triangle_batch_t* batch = (triangle_batch_t*)args;
@@ -207,6 +200,13 @@ static void renderer_draw()
     renderer_draw_mesh(scene->mesh);
 
     display_draw(display, current);
+}
+
+static void renderer_clear_buffers()
+{
+    framebuffer_clear(current);
+    depthbuffer_clear(depthbuffer);
+    display_clear(display);
 }
 
 /********************/
