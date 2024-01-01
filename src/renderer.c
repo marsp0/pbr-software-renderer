@@ -162,7 +162,7 @@ static void renderer_draw_mesh(mesh_t* mesh)
         }
 
         thread_data[i] = t;
-        thread_pool_add_job(thread_pool, renderer_process_triangles, &thread_data[i]);
+        thread_pool_add(thread_pool, renderer_process_triangles, &thread_data[i]);
     }
 
     thread_pool_wait(thread_pool);

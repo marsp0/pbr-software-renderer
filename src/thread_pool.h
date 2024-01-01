@@ -36,6 +36,6 @@ typedef struct
 } thread_pool_t;
 
 thread_pool_t*  thread_pool_new(const char* pool_name);
-void            thread_pool_add_job(thread_pool_t* pool, thread_func_t func, void* args);
+void            thread_pool_add(thread_pool_t* pool, thread_func_t func, void* args);
 void            thread_pool_wait(thread_pool_t* pool);
 void            thread_pool_free(thread_pool_t* pool);

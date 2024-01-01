@@ -260,7 +260,7 @@ void rasterizer_draw_triangle(vec_t v0,
         batch.depthbuffer   = depthbuffer;
 
         thread_data[job_id] = batch;
-        thread_pool_add_job(thread_pool, rasterizer_process_pixels, &thread_data[job_id]);
+        thread_pool_add(thread_pool, rasterizer_process_pixels, &thread_data[job_id]);
 
         job_id++;
         submitted += batch_size;

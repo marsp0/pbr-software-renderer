@@ -114,7 +114,7 @@ thread_pool_t* thread_pool_new(const char* pool_name)
     return pool;
 }
 
-void thread_pool_add_job(thread_pool_t* pool, thread_func_t func, void* args)
+void thread_pool_add(thread_pool_t* pool, thread_func_t func, void* args)
 {
     mtx_lock(&pool->mtx);
 
