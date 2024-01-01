@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
+#include "shader.h"
 #include "linux/input.h"
 #include "time_utils.h"
 #include "rasterizer.h"
@@ -95,49 +96,45 @@ static void renderer_process_triangles(void* args)
 {
     triangle_batch_t* batch = (triangle_batch_t*)args;
 
-    uint32_t offset     = batch->offset;
-    uint32_t size       = batch->size;
+    uint32_t offset = batch->offset;
+    uint32_t size   = batch->size;
 
-    float w             = (float)batch->width;
-    float h             = (float)batch->height;
+    float w_over_2  = (float)batch->width * 0.5f;
+    float h_over_2  = (float)batch->height * 0.5f;
 
-    mesh_t* mesh        = batch->mesh;
-    camera_t* camera    = batch->camera;
-
-    vec_t points[3];
-
-    mat_t PV = mat_mul_mat(camera_proj_transform(camera),
-                           camera_view_transform(camera));
+    mesh_t* m       = batch->mesh;
+    camera_t* c     = batch->camera;
 
     for (uint32_t i = offset; i < offset + size; i++)
     {
         uint32_t v    = i * 3;
-        triangle_t* t = &mesh->triangles[i];
+        triangle_t* t = &m->triangles[i];
 
-        uint32_t i0 = mesh->indices[v + 0];
-        uint32_t i1 = mesh->indices[v + 1];
-        uint32_t i2 = mesh->indices[v + 2];
+        uint32_t i0 = m->indices[v + 0];
+        uint32_t i1 = m->indices[v + 1];
+        uint32_t i2 = m->indices[v + 2];
 
-        points[0] = mesh->vertices[i0];
-        points[1] = mesh->vertices[i1];
-        points[2] = mesh->vertices[i2];
+        t->v0 = m->vertices[i0];
+        t->v1 = m->vertices[i1];
+        t->v2 = m->vertices[i2];
 
-        for (uint32_t j = 0; j < sizeof(points) / sizeof(vec_t); j++)
-        {
-            // mvp transform
-            points[j]   = mat_mul_vec(PV, points[j]);
+        //TODO: add backface culling
 
-            // persp divide
-            points[j]   = vec_scale(points[j], 1.f/points[j].w);
+        process_vertex(t, c, NULL, 0);
 
-            // viewport transform
-            points[j].x = (points[j].x + 1.f) * 0.5f * w;
-            points[j].y = (points[j].y + 1.f) * 0.5f * h;
-        }
+        // persp divide
+        t->v0 = vec_scale(t->v0, 1.f / t->v0.w);
+        t->v1 = vec_scale(t->v1, 1.f / t->v1.w);
+        t->v2 = vec_scale(t->v2, 1.f / t->v2.w);
 
-        t->v0 = points[0];
-        t->v1 = points[1];
-        t->v2 = points[2];
+        // viewport transform
+        t->v0.x = (t->v0.x + 1.f) * w_over_2;
+        t->v0.y = (t->v0.y + 1.f) * h_over_2;
+        t->v1.x = (t->v1.x + 1.f) * w_over_2;
+        t->v1.y = (t->v1.y + 1.f) * h_over_2;
+        t->v2.x = (t->v2.x + 1.f) * w_over_2;
+        t->v2.y = (t->v2.y + 1.f) * h_over_2;
+
     }
 }
 
