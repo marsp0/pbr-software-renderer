@@ -22,18 +22,27 @@
 /* static variables */
 /********************/
 
+typedef enum
+{
+    SCALAR,
+    VEC_2,
+    VEC_3,
+    VEC_4
+} type_e;
+
 typedef struct
 {
-    const unsigned char* data;
-    uint32_t size;
-    uint32_t type; // 0x4E4F534A or 0x004E4942
+    const unsigned char*    data;
+    uint32_t                size;
+    uint32_t                type; // 0x4E4F534A or 0x004E4942
 } chunk_t;
 
 typedef struct
 {
-    const unsigned char* data;
-    uint32_t size;
-    uint32_t count;
+    const unsigned char*    data;
+    uint32_t                size;
+    uint32_t                count;
+    type_e                  type;
 } view_t;
 
 /********************/
@@ -91,6 +100,8 @@ static uint32_t* create_indices_array(const view_t view)
         j++;
     }
 
+    assert(j == view.count);
+
     return indices;
 }
 
@@ -99,9 +110,23 @@ static vec_t* create_vec_array(const view_t view)
     vec_t* result = malloc(sizeof(vec_t) * view.count);
 
     uint32_t j = 0;
+    uint32_t stride = 4;
     unsigned char float_arr[4] = { 0 };
 
-    for (uint32_t i = 0; i < view.size; i += 12)
+    if (view.type == VEC_2)
+    {
+        stride = 8;
+    }
+    else if (view.type == VEC_3)
+    {
+        stride = 12;
+    }
+    else if (view.type == VEC_4)
+    {
+        stride = 16;
+    }
+
+    for (uint32_t i = 0; i < view.size; i += stride)
     {
         float_arr[0] = view.data[i + 0];
         float_arr[1] = view.data[i + 1];
@@ -109,22 +134,41 @@ static vec_t* create_vec_array(const view_t view)
         float_arr[3] = view.data[i + 3];
         result[j].x = *(float*)float_arr;
 
-        float_arr[0] = view.data[i + 4];
-        float_arr[1] = view.data[i + 5];
-        float_arr[2] = view.data[i + 6];
-        float_arr[3] = view.data[i + 7];
-        result[j].y = *(float*)float_arr;
+        if (stride > 4)
+        {
+            float_arr[0] = view.data[i + 4];
+            float_arr[1] = view.data[i + 5];
+            float_arr[2] = view.data[i + 6];
+            float_arr[3] = view.data[i + 7];
+            result[j].y = *(float*)float_arr;
+        }
 
-        float_arr[0] = view.data[i + 8];
-        float_arr[1] = view.data[i + 9];
-        float_arr[2] = view.data[i + 10];
-        float_arr[3] = view.data[i + 11];
-        result[j].z = *(float*)float_arr;
+        if (stride > 8)
+        {
+            float_arr[0] = view.data[i + 8];
+            float_arr[1] = view.data[i + 9];
+            float_arr[2] = view.data[i + 10];
+            float_arr[3] = view.data[i + 11];
+            result[j].z = *(float*)float_arr;
+        }
 
-        result[j].w = 1.f;
+        if (stride > 12)
+        {
+            float_arr[0] = view.data[i + 12];
+            float_arr[1] = view.data[i + 13];
+            float_arr[2] = view.data[i + 14];
+            float_arr[3] = view.data[i + 15];
+            result[j].w = *(float*)float_arr;
+        }
+        else
+        {
+            result[j].w = 1.f;
+        }
 
         j++;
     }
+
+    assert(j == view.count);
 
     return result;
 }
@@ -155,6 +199,26 @@ static sphere_t compute_bounding_sphere(vec_t* vertices, uint32_t size)
     return result;
 }
 
+static type_e parse_type(const json_node_t* node)
+{
+    assert(node->type == JSON_STRING);
+
+    if (strncmp(node->string, "VEC2", node->size) == 0)
+    {
+        return VEC_2;
+    }
+    else if (strncmp(node->string, "VEC3", node->size) == 0)
+    {
+        return VEC_3;
+    }
+    else if (strncmp(node->string, "VEC4", node->size) == 0)
+    {
+        return VEC_4;
+    }
+
+    return SCALAR;
+}
+
 static view_t parse_mesh_data(const json_t* json,
                               const json_node_t* node,
                               const char* attribute,
@@ -172,16 +236,19 @@ static view_t parse_mesh_data(const json_t* json,
     
     index                        = json_find_child(accessor, JSON_BUFFER_VIEW);
     const json_node_t* count     = json_find_child(accessor, JSON_COUNT);
+    const json_node_t* type_node = json_find_child(accessor, JSON_TYPE);
     const json_node_t* view      = json_find_index(views, index->uinteger);
-    // const json_node_t* buffer    = json_find_child(view, JSON_BUFFER);
+
     const json_node_t* offset    = json_find_child(view, JSON_BYTE_OFFSET);
     const json_node_t* length    = json_find_child(view, JSON_BYTE_LEN);
 
-    uint32_t start = offset ? offset->uinteger : 0;
+    type_e type     = parse_type(type_node);
+    uint32_t start  = offset ? offset->uinteger : 0;
 
-    view_t result = {.data = &binary.data[start],
-                     .size = length->uinteger,
-                     .count = count->uinteger};
+    view_t result   = {.data = &binary.data[start],
+                       .size = length->uinteger,
+                       .count = count->uinteger,
+                       .type = type};
 
     return result;
 }
