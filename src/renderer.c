@@ -118,9 +118,15 @@ static void renderer_process_triangles(void* args)
         t->v1 = m->vertices[i1];
         t->v2 = m->vertices[i2];
 
+        t->t0 = m->texcoords[i0];
+        t->t1 = m->texcoords[i1];
+        t->t2 = m->texcoords[i2];
+
+        t->albedo = m->albedo;
+
         //TODO: add backface culling
 
-        process_vertex(t, c, NULL, 0);
+        process_vertex(t, c);
 
         // persp divide
         t->v0 = vec_scale(t->v0, 1.f / t->v0.w);
@@ -172,10 +178,7 @@ static void renderer_draw_mesh(mesh_t* mesh)
 
     for (uint32_t i = 0; i < triangles_size; i++)
     {
-        rasterizer_draw_triangle(triangles[i].v0,
-                                 triangles[i].v1,
-                                 triangles[i].v2,
-                                 0xFFFFFFFF, //triangles[i].color,
+        rasterizer_draw_triangle(&triangles[i],
                                  current,
                                  depthbuffer);
     }

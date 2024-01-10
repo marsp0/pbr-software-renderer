@@ -175,6 +175,7 @@ static vec_t* create_vec_array(const view_t view)
 
 static sphere_t compute_bounding_sphere(vec_t* vertices, uint32_t size)
 {
+    // TODO: This will break if object not in center
     sphere_t result = { .c = vec_new(0.f, 0.f, 0.f), .r = 0.f };
 
     for (uint32_t i = 0; i < size; i++)

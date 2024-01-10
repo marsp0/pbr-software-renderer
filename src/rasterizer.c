@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "shader.h"
 #include "thread_pool.h"
 
 /********************
@@ -27,13 +28,9 @@ typedef struct
     int32_t         min_y;
     int32_t         max_y;
 
-    vec_t           v0;
-    vec_t           v1;
-    vec_t           v2;
+    triangle_t*     triangle;
 
     float           inv_area;
-
-    uint32_t        color;
 
     framebuffer_t*  framebuffer;
     depthbuffer_t*  depthbuffer;
@@ -58,12 +55,12 @@ static void rasterizer_process_pixels(void* args)
 {
     pixel_batch_t* batch = (pixel_batch_t*)args;
 
-    vec_t v0        = batch->v0;
-    vec_t v1        = batch->v1;
-    vec_t v2        = batch->v2;
+    triangle_t* t   = batch->triangle;
+    vec_t v0        = t->v0;
+    vec_t v1        = t->v1;
+    vec_t v2        = t->v2;
 
     float inv_area  = batch->inv_area;
-    uint32_t color  = batch->color;
 
     int32_t x0      = (int32_t)v0.x;
     int32_t x1      = (int32_t)v1.x;
@@ -108,6 +105,8 @@ static void rasterizer_process_pixels(void* args)
             }
 
             depthbuffer_set(depthbuffer, (uint32_t)x, (uint32_t)y, depth);
+            
+            uint32_t color = process_fragment(t, w0, w1, w2);
             framebuffer_set(framebuffer, (uint32_t)x, (uint32_t)y, color);
         }
     }
@@ -196,13 +195,14 @@ void rasterizer_draw_line(vec_t v0,
 
 }
 
-void rasterizer_draw_triangle(vec_t v0,
-                              vec_t v1,
-                              vec_t v2,
-                              uint32_t color,
+void rasterizer_draw_triangle(triangle_t* triangle,
                               framebuffer_t* framebuffer,
                               depthbuffer_t* depthbuffer)
 {
+    vec_t v0 = triangle->v0;
+    vec_t v1 = triangle->v1;
+    vec_t v2 = triangle->v2;
+
     // workaround until clipping is implemented
     if (v0.z <= 0.f || v0.z > 1.f ||
         v1.z <= 0.f || v1.z > 1.f ||
@@ -251,11 +251,8 @@ void rasterizer_draw_triangle(vec_t v0,
         batch.max_x         = min_x + batch_size * job_id + batch_size;
         batch.min_y         = min_y;
         batch.max_y         = max_y;
-        batch.v0            = v0;
-        batch.v1            = v1;
-        batch.v2            = v2;
+        batch.triangle      = triangle;
         batch.inv_area      = inv_area;
-        batch.color         = color;
         batch.framebuffer   = framebuffer;
         batch.depthbuffer   = depthbuffer;
 

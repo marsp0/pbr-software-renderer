@@ -17,9 +17,11 @@ typedef struct
     vec_t   v1;
     vec_t   v2;
 
-    //other per triangle data
+    vec_t   t0;
+    vec_t   t1;
+    vec_t   t2;
 
-    uint32_t color;
+    texture_t* albedo;
 
 } triangle_t;
 
