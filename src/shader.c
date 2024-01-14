@@ -19,6 +19,16 @@
 /* static functions */
 /********************/
 
+static void diffuse()
+{
+
+}
+
+static void specular()
+{
+
+}
+
 /********************/
 /* public functions */
 /********************/
@@ -41,5 +51,9 @@ uint32_t process_fragment(triangle_t* t, float w0, float w1, float w2)
     float v = w0 * t->t0.y + w1 * t->t1.y + w2 * t->t2.y;
     uint32_t u_idx = (uint32_t)(u * (float)t->albedo->width);
     uint32_t v_idx = (uint32_t)(v * (float)t->albedo->height);
+
+    diffuse();
+    specular();
+
     return texture_get(t->albedo, u_idx, v_idx);
 }
