@@ -55,6 +55,16 @@ static void test_vector_normalize()
     ASSERT_VECTOR(expected, actual);
 }
 
+static void test_vector_hadamard()
+{
+    vec_t v1        = vec_new(1.f, 2.f, 3.f);
+    vec_t v2        = vec_new(4.f, 5.f, 6.f);
+    vec_t actual    = vec_hadamard(v1, v2);
+    vec_t expected  = vec_new(4.f, 10.f, 18.f);
+
+    ASSERT_VECTOR(expected, actual);
+}
+
 static void test_vector_dot()
 {
     vec_t v1 = vec_new(1.f, 2.f, 3.f);
@@ -88,6 +98,7 @@ void test_vector()
     TEST_CASE(test_vector_scale);
     TEST_CASE(test_vector_negate);
     TEST_CASE(test_vector_normalize);
+    TEST_CASE(test_vector_hadamard);
     TEST_CASE(test_vector_dot);
     TEST_CASE(test_vector_magnitude);
     TEST_CASE(test_vector_magnitude_sq);

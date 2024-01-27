@@ -75,6 +75,11 @@ vec_t vec_normalize(vec_t v)
     return vec_scale(v, 1.f/magnitude);
 }
 
+vec_t vec_hadamard(vec_t v1, vec_t v2)
+{
+    return vec_new(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+}
+
 float vec_dot(vec_t v1, vec_t v2)
 {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;

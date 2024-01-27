@@ -21,6 +21,7 @@ vec_t vec_cross(vec_t v1, vec_t v2);
 vec_t vec_scale(vec_t v, float scale);
 vec_t vec_negate(vec_t v);
 vec_t vec_normalize(vec_t v);
+vec_t vec_hadamard(vec_t v1, vec_t v2);
 float vec_dot(vec_t v1, vec_t v2);
 float vec_magnitude(vec_t v);
 float vec_magnitude_sq(vec_t v);
