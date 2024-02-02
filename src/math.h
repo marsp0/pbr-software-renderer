@@ -83,7 +83,9 @@ typedef struct
 /*    Utilities     */
 /********************/
 
-int32_t imax(int32_t a, int32_t b);
-int32_t imin(int32_t a, int32_t b);
-uint32_t umax(uint32_t a, uint32_t b);
-uint32_t umin(uint32_t a, uint32_t b);
+float f_min(float a, float b);
+float f_max(float a, float b);
+int32_t i_max(int32_t a, int32_t b);
+int32_t i_min(int32_t a, int32_t b);
+uint32_t u_max(uint32_t a, uint32_t b);
+uint32_t u_min(uint32_t a, uint32_t b);

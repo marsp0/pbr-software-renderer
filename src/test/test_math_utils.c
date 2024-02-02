@@ -12,8 +12,8 @@ static void test_max_functions()
     uint32_t c = 3;
     uint32_t d = 4;
     
-    ASSERT_EQUAL(imax(a, b), a);
-    ASSERT_EQUAL(umax(c, d), d);
+    ASSERT_EQUAL(i_max(a, b), a);
+    ASSERT_EQUAL(u_max(c, d), d);
 }
 
 static void test_min_functions()
@@ -24,8 +24,8 @@ static void test_min_functions()
     uint32_t c = 3;
     uint32_t d = 4;
     
-    ASSERT_EQUAL(imin(a, b), b);
-    ASSERT_EQUAL(umin(c, d), c);
+    ASSERT_EQUAL(i_min(a, b), b);
+    ASSERT_EQUAL(u_min(c, d), c);
 }
 
 void test_math_utils()

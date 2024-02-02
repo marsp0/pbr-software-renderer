@@ -234,10 +234,10 @@ void rasterizer_draw_triangle(triangle_t* triangle,
     float inv_area  = 1.f / area;
 
     // find min/max within buffer boundaries
-    int32_t min_x = imax(imin(imin(x0, x1), x2), 0.f);
-    int32_t min_y = imax(imin(imin(y0, y1), y2), 0.f);
-    int32_t max_x = imin(imax(imax(x0, x1), x2), width);
-    int32_t max_y = imin(imax(imax(y0, y1), y2), height);
+    int32_t min_x = i_max(i_min(i_min(x0, x1), x2), 0.f);
+    int32_t min_y = i_max(i_min(i_min(y0, y1), y2), 0.f);
+    int32_t max_x = i_min(i_max(i_max(x0, x1), x2), width);
+    int32_t max_y = i_min(i_max(i_max(y0, y1), y2), height);
 
     pixel_batch_t batch;
     int32_t job_id      = 0;

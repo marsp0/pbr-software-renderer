@@ -35,8 +35,6 @@ static void specular()
 
 void process_vertex(triangle_t* t, camera_t* c)
 {
-    //TODO REMOVE
-
     mat_t PV = mat_mul_mat(camera_proj_transform(c), camera_view_transform(c));
 
     // mvp transform
