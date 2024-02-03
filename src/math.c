@@ -14,9 +14,6 @@
 /*      defines     */
 /********************/
 
-#define M_PI_OVER_180 0.0174532925199f
-#define M_180_OVER_PI 57.2957795131f
-
 /********************/
 /* static variables */
 /********************/
@@ -348,12 +345,12 @@ mat_t z_axis_rotation(float rad)
 
 float deg_to_rad(float deg)
 {
-    return deg * M_PI_OVER_180;
+    return deg * F_PI_OVER_180;
 }
 
 float rad_to_deg(float rad)
 {
-    return rad * M_180_OVER_PI;
+    return rad * F_180_OVER_PI;
 }
 
 /********************/

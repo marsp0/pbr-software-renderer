@@ -10,7 +10,7 @@ static void test_clip_when_all_points_are_inside()
     camera_t* camera = camera_new(position, 
                                   0.f, 
                                   0.f, 
-                                  90 * (float)M_PI / 180.f,
+                                  90 * F_PI / 180.f,
                                   1.f,
                                   20.f,
                                   1.3333f);
@@ -32,7 +32,7 @@ static void test_clip_when_two_points_are_inside()
     camera_t* camera = camera_new(position, 
                                   0.f, 
                                   0.f, 
-                                  90 * (float)M_PI / 180.f,
+                                  90 * F_PI / 180.f,
                                   1.f,
                                   20.f,
                                   1.3333f);
@@ -54,7 +54,7 @@ static void test_clip_when_all_points_are_outside()
     camera_t* camera = camera_new(position, 
                                   0.f, 
                                   0.f, 
-                                  90 * (float)M_PI / 180.f,
+                                  90 * F_PI / 180.f,
                                   1.f,
                                   20.f,
                                   1.3333f);

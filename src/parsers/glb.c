@@ -389,7 +389,7 @@ scene_t* parse_scene(const char* file_path)
     scene->camera = camera_new(cam_pos,
                                0.610866f,
                                -2.356194f,
-                               45 * (float)M_PI / 180.f,
+                               45 * F_PI / 180.f,
                                1.f,
                                20.f,
                                1.3333f);

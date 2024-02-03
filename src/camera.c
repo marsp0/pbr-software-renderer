@@ -147,7 +147,7 @@ void camera_update(camera_t* cam, input_t input)
         cam->pitch = cam->pitch > MAX_PITCH ? MAX_PITCH : -MAX_PITCH;
     }
 
-    if (cam->yaw > 2 * M_PI || cam->yaw < -M_PI * 2)
+    if (cam->yaw > 2 * F_PI || cam->yaw < -F_PI * 2)
     {
         cam->yaw = 0.f;
     }

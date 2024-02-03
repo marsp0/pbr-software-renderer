@@ -106,7 +106,7 @@ static void test_view_matrix_rotated_90deg_around_y()
     camera_t* camera = camera_new(position,
                                   0.f,
                                   0.f,
-                                  (float)M_PI_2, 
+                                  F_PI_2, 
                                   1.f, 
                                   100.f, 
                                   1.3333f);
@@ -159,7 +159,7 @@ static void test_view_matrix_rotated_45deg_around_x()
     camera_t* camera = camera_new(position, 
                                   0.f,
                                   0.f,
-                                  (float)M_PI_2, 
+                                  F_PI_2, 
                                   1.f, 
                                   100.f, 
                                   1.3333f);
@@ -212,7 +212,7 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
     camera_t* camera = camera_new(position, 
                                   0.f,
                                   0.f,
-                                  (float)M_PI_2, 
+                                  F_PI_2, 
                                   1.f, 
                                   100.f, 
                                   1.3333f);
