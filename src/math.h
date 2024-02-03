@@ -15,6 +15,7 @@ typedef struct
 } vec_t;
 
 vec_t vec_new(float x, float y, float z);
+vec_t vec_from_bgra(uint32_t c);
 vec_t vec_add(vec_t v1, vec_t v2);
 vec_t vec_sub(vec_t v1, vec_t v2);
 vec_t vec_cross(vec_t v1, vec_t v2);
@@ -22,6 +23,7 @@ vec_t vec_scale(vec_t v, float scale);
 vec_t vec_negate(vec_t v);
 vec_t vec_normalize(vec_t v);
 vec_t vec_hadamard(vec_t v1, vec_t v2);
+vec_t vec_clamp(vec_t v, float min, float max);
 float vec_dot(vec_t v1, vec_t v2);
 float vec_magnitude(vec_t v);
 float vec_magnitude_sq(vec_t v);

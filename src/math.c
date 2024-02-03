@@ -41,6 +41,21 @@ vec_t vec_new(float x, float y, float z)
     return vec;
 }
 
+vec_t vec_from_bgra(uint32_t c)
+{
+    float d = 1.f / 255.f;
+    float b = (float)((c >> 24) & 0xFF);
+    float g = (float)((c >> 16) & 0xFF);
+    float r = (float)((c >>  8) & 0xFF);
+    float a = (float)((c >>  0) & 0xFF);
+
+    vec_t v = { .x = b * d,
+                .y = g * d,
+                .z = r * d,
+                .w = a * d };
+    return v;
+}
+
 vec_t vec_add(vec_t v1, vec_t v2)
 {
     return vec_new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
@@ -78,6 +93,14 @@ vec_t vec_normalize(vec_t v)
 vec_t vec_hadamard(vec_t v1, vec_t v2)
 {
     return vec_new(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+}
+
+vec_t vec_clamp(vec_t v, float min, float max)
+{
+    float x = f_max(f_min(v.x, max), min);
+    float y = f_max(f_min(v.y, max), min);
+    float z = f_max(f_min(v.z, max), min);
+    return vec_new(x, y, z);
 }
 
 float vec_dot(vec_t v1, vec_t v2)

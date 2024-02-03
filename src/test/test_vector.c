@@ -65,6 +65,15 @@ static void test_vector_hadamard()
     ASSERT_VECTOR(expected, actual);
 }
 
+static void test_vector_clamp()
+{
+    vec_t v         = vec_new(-2.5f, 2.f, 0.5f);
+    vec_t actual    = vec_clamp(v, 0.f, 1.f);
+    vec_t expected  = vec_new(0.f, 1.f, 0.5f);
+
+    ASSERT_VECTOR(expected, actual);
+}
+
 static void test_vector_dot()
 {
     vec_t v1 = vec_new(1.f, 2.f, 3.f);
@@ -90,6 +99,19 @@ static void test_vector_magnitude_sq()
     ASSERT_EQUAL(expected, actual);
 }
 
+static void test_vector_from_bgra()
+{
+    uint32_t color  = 0xFFAABBCC;
+    vec_t actual    = vec_from_bgra(color);
+
+    vec_t expected  = { .x = 255.f / 255.f,
+                        .y = 170.f / 255.f,
+                        .z = 187.f / 255.f,
+                        .w = 204.f / 255.f };
+
+    ASSERT_VECTOR(expected, actual);
+}
+
 void test_vector()
 {
     TEST_CASE(test_vector_addition);
@@ -99,7 +121,9 @@ void test_vector()
     TEST_CASE(test_vector_negate);
     TEST_CASE(test_vector_normalize);
     TEST_CASE(test_vector_hadamard);
+    TEST_CASE(test_vector_clamp);
     TEST_CASE(test_vector_dot);
     TEST_CASE(test_vector_magnitude);
     TEST_CASE(test_vector_magnitude_sq);
+    TEST_CASE(test_vector_from_bgra);
 }
