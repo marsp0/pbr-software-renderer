@@ -121,6 +121,27 @@ static void test_vector_from_bgra()
     ASSERT_VECTOR(expected, actual);
 }
 
+static void test_vector_to_bgra()
+{
+    vec_t color         = { .x = 255.f / 255.f,
+                            .y = 170.f / 255.f,
+                            .z = 187.f / 255.f,
+                            .w = 204.f / 255.f };
+    uint32_t actual     = vec_to_bgra(color);
+    uint32_t expected   = 0xFFAABBCC;
+
+    ASSERT_EQUAL(expected, actual);
+}
+
+static void test_vector_from_scalar()
+{
+    float s = 1.f;
+    vec_t actual = vec_from_scalar(s);
+    vec_t expected = vec_new(1.f, 1.f, 1.f);
+
+    ASSERT_VECTOR(expected, actual);
+}
+
 void test_vector()
 {
     TEST_CASE(test_vector_addition);
@@ -135,4 +156,6 @@ void test_vector()
     TEST_CASE(test_vector_magnitude);
     TEST_CASE(test_vector_magnitude_sq);
     TEST_CASE(test_vector_from_bgra);
+    TEST_CASE(test_vector_to_bgra);
+    TEST_CASE(test_vector_from_scalar);
 }

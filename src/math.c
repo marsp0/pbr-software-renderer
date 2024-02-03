@@ -53,6 +53,23 @@ vec_t vec_from_bgra(uint32_t c)
     return v;
 }
 
+uint32_t vec_to_bgra(vec_t c)
+{
+    // Note: should i clamp before?
+
+    uint32_t b = ((uint32_t)(c.x * 255)) << 24;
+    uint32_t g = ((uint32_t)(c.y * 255)) << 16;
+    uint32_t r = ((uint32_t)(c.z * 255)) <<  8;
+    uint32_t a = ((uint32_t)(c.w * 255)) <<  0;
+
+    return b + g + r + a;
+}
+
+vec_t vec_from_scalar(float s)
+{
+    return vec_new(s, s, s);
+}
+
 vec_t vec_add(vec_t v1, vec_t v2)
 {
     return vec_new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
