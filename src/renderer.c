@@ -66,10 +66,10 @@ static void renderer_draw_utilities()
 {
     camera_t* cam   = scene->camera;
 
-    vec_t points[4] = {vec_new(0.f, 0.f, 0.f),
-                       vec_new(1.f, 0.f, 0.f),
-                       vec_new(0.f, 1.f, 0.f),
-                       vec_new(0.f, 0.f, 1.f)};
+    vec4_t points[4] = {vec4_new(0.f, 0.f, 0.f),
+                        vec4_new(1.f, 0.f, 0.f),
+                        vec4_new(0.f, 1.f, 0.f),
+                        vec4_new(0.f, 0.f, 1.f)};
 
     uint32_t colors[4] = {0x00000000, 
                           0x0000FF00, 
@@ -79,10 +79,10 @@ static void renderer_draw_utilities()
     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
                            camera_view_transform(cam));
 
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
+    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec4_t); i++)
     {
         points[i]   = mat_mul_vec(PV, points[i]);
-        points[i]   = vec_scale(points[i], 1.f/points[i].w);
+        points[i]   = vec4_scale(points[i], 1.f/points[i].w);
         points[i].x = (points[i].x + 1.f) * 0.5f * (float)width;
         points[i].y = (points[i].y + 1.f) * 0.5f * (float)height;
     }
@@ -129,9 +129,9 @@ static void renderer_process_triangles(void* args)
         process_vertex(t, c);
 
         // persp divide
-        t->v0 = vec_scale(t->v0, 1.f / t->v0.w);
-        t->v1 = vec_scale(t->v1, 1.f / t->v1.w);
-        t->v2 = vec_scale(t->v2, 1.f / t->v2.w);
+        t->v0 = vec4_scale(t->v0, 1.f / t->v0.w);
+        t->v1 = vec4_scale(t->v1, 1.f / t->v1.w);
+        t->v2 = vec4_scale(t->v2, 1.f / t->v2.w);
 
         // viewport transform
         t->v0.x = (t->v0.x + 1.f) * w_over_2;

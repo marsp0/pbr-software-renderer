@@ -26,11 +26,167 @@
 /* public functions */
 /********************/
 
-/*      Vector      */
+/*      Vector2      */
 
-vec_t vec_new(float x, float y, float z)
+vec2_t vec2_new(float x, float y)
 {
-    vec_t vec;
+    vec2_t vec;
+    vec.x = x;
+    vec.y = y;
+    return vec;
+}
+
+vec2_t vec2_from_scalar(float s)
+{
+    return vec2_new(s, s);
+}
+
+vec2_t vec2_add(vec2_t v1, vec2_t v2)
+{
+    return vec2_new(v1.x + v2.x, v1.y + v2.y);
+}
+
+vec2_t vec2_sub(vec2_t v1, vec2_t v2)
+{
+    return vec2_new(v1.x - v2.x, v1.y - v2.y);
+}
+
+vec2_t vec2_scale(vec2_t v, float scale)
+{
+    return vec2_new(v.x * scale, v.y * scale);
+}
+
+vec2_t vec2_negate(vec2_t v)
+{
+    return vec2_new(-v.x, -v.y);
+}
+
+vec2_t vec2_normalize(vec2_t v)
+{
+    float magnitude = vec2_magnitude(v);
+    return vec2_scale(v, 1.f/magnitude);
+}
+
+vec2_t vec2_hadamard(vec2_t v1, vec2_t v2)
+{
+    return vec2_new(v1.x * v2.x, v1.y * v2.y);
+}
+
+vec2_t vec2_clamp(vec2_t v, float min, float max)
+{
+    float x = f_max(f_min(v.x, max), min);
+    float y = f_max(f_min(v.y, max), min);
+    return vec2_new(x, y);
+}
+
+float vec2_dot(vec2_t v1, vec2_t v2)
+{
+    return v1.x * v2.x + v1.y * v2.y;
+}
+
+float vec2_magnitude(vec2_t v)
+{
+    return sqrtf(v.x * v.x + v.y * v.y);
+}
+
+float vec2_magnitude_sq(vec2_t v)
+{
+    return v.x * v.x + v.y * v.y;
+}
+
+void vec2_print(vec2_t v)
+{
+    printf("vec(%f, %f)\n", v.x, v.y);
+}
+
+/*      Vector3      */
+
+vec3_t vec3_new(float x, float y, float z)
+{
+    vec3_t vec;
+    vec.x = x;
+    vec.y = y;
+    vec.z = z;
+    return vec;
+}
+
+vec3_t vec3_from_scalar(float s)
+{
+    return vec3_new(s, s, s);
+}
+
+vec3_t vec3_add(vec3_t v1, vec3_t v2)
+{
+    return vec3_new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+}
+
+vec3_t vec3_sub(vec3_t v1, vec3_t v2)
+{
+    return vec3_new(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+}
+
+vec3_t vec3_cross(vec3_t v1, vec3_t v2)
+{
+    float x = v1.y * v2.z - v1.z * v2.y;
+    float y = v1.z * v2.x - v1.x * v2.z;
+    float z = v1.x * v2.y - v1.y * v2.x;
+    return vec3_new(x, y, z);
+}
+
+vec3_t vec3_scale(vec3_t v, float scale)
+{
+    return vec3_new(v.x * scale, v.y * scale, v.z * scale);
+}
+
+vec3_t vec3_negate(vec3_t v)
+{
+    return vec3_new(-v.x, -v.y, -v.z);
+}
+
+vec3_t vec3_normalize(vec3_t v)
+{
+    float magnitude = vec3_magnitude(v);
+    return vec3_scale(v, 1.f/magnitude);
+}
+
+vec3_t vec3_hadamard(vec3_t v1, vec3_t v2)
+{
+    return vec3_new(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+}
+
+vec3_t vec3_clamp(vec3_t v, float min, float max)
+{
+    float x = f_max(f_min(v.x, max), min);
+    float y = f_max(f_min(v.y, max), min);
+    float z = f_max(f_min(v.z, max), min);
+    return vec3_new(x, y, z);
+}
+
+float vec3_dot(vec3_t v1, vec3_t v2)
+{
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+float vec3_magnitude(vec3_t v)
+{
+    return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+float vec3_magnitude_sq(vec3_t v)
+{
+    return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
+void vec3_print(vec3_t v)
+{
+    printf("vec(%f, %f, %f)\n", v.x, v.y, v.z);
+}
+
+/*      Vector4      */
+
+vec4_t vec4_new(float x, float y, float z)
+{
+    vec4_t vec;
     vec.x = x;
     vec.y = y;
     vec.z = z;
@@ -38,7 +194,7 @@ vec_t vec_new(float x, float y, float z)
     return vec;
 }
 
-vec_t vec_from_bgra(uint32_t c)
+vec4_t vec4_from_bgra(uint32_t c)
 {
     float d = 1.f / 255.f;
     float b = (float)((c >> 24) & 0xFF);
@@ -46,14 +202,14 @@ vec_t vec_from_bgra(uint32_t c)
     float r = (float)((c >>  8) & 0xFF);
     float a = (float)((c >>  0) & 0xFF);
 
-    vec_t v = { .x = b * d,
+    vec4_t v = {.x = b * d,
                 .y = g * d,
                 .z = r * d,
                 .w = a * d };
     return v;
 }
 
-uint32_t vec_to_bgra(vec_t c)
+uint32_t vec4_to_bgra(vec4_t c)
 {
     // Note: should i clamp before?
 
@@ -65,74 +221,74 @@ uint32_t vec_to_bgra(vec_t c)
     return b + g + r + a;
 }
 
-vec_t vec_from_scalar(float s)
+vec4_t vec4_from_scalar(float s)
 {
-    return vec_new(s, s, s);
+    return vec4_new(s, s, s);
 }
 
-vec_t vec_add(vec_t v1, vec_t v2)
+vec4_t vec4_add(vec4_t v1, vec4_t v2)
 {
-    return vec_new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+    return vec4_new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
 
-vec_t vec_sub(vec_t v1, vec_t v2)
+vec4_t vec4_sub(vec4_t v1, vec4_t v2)
 {
-    return vec_new(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+    return vec4_new(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
-vec_t vec_cross(vec_t v1, vec_t v2)
+vec4_t vec4_cross(vec4_t v1, vec4_t v2)
 {
     float x = v1.y * v2.z - v1.z * v2.y;
     float y = v1.z * v2.x - v1.x * v2.z;
     float z = v1.x * v2.y - v1.y * v2.x;
-    return vec_new(x, y, z);
+    return vec4_new(x, y, z);
 }
 
-vec_t vec_scale(vec_t v, float scale)
+vec4_t vec4_scale(vec4_t v, float scale)
 {
-    return vec_new(v.x * scale, v.y * scale, v.z * scale);
+    return vec4_new(v.x * scale, v.y * scale, v.z * scale);
 }
 
-vec_t vec_negate(vec_t v)
+vec4_t vec4_negate(vec4_t v)
 {
-    return vec_new(-v.x, -v.y, -v.z);
+    return vec4_new(-v.x, -v.y, -v.z);
 }
 
-vec_t vec_normalize(vec_t v)
+vec4_t vec4_normalize(vec4_t v)
 {
-    float magnitude = vec_magnitude(v);
-    return vec_scale(v, 1.f/magnitude);
+    float magnitude = vec4_magnitude(v);
+    return vec4_scale(v, 1.f/magnitude);
 }
 
-vec_t vec_hadamard(vec_t v1, vec_t v2)
+vec4_t vec4_hadamard(vec4_t v1, vec4_t v2)
 {
-    return vec_new(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+    return vec4_new(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 }
 
-vec_t vec_clamp(vec_t v, float min, float max)
+vec4_t vec4_clamp(vec4_t v, float min, float max)
 {
     float x = f_max(f_min(v.x, max), min);
     float y = f_max(f_min(v.y, max), min);
     float z = f_max(f_min(v.z, max), min);
-    return vec_new(x, y, z);
+    return vec4_new(x, y, z);
 }
 
-float vec_dot(vec_t v1, vec_t v2)
+float vec4_dot(vec4_t v1, vec4_t v2)
 {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-float vec_magnitude(vec_t v)
+float vec4_magnitude(vec4_t v)
 {
     return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
-float vec_magnitude_sq(vec_t v)
+float vec4_magnitude_sq(vec4_t v)
 {
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-void vec_print(vec_t v)
+void vec4_print(vec4_t v)
 {
     printf("vec(%f, %f, %f, %f)\n", v.x, v.y, v.z, v.w);
 }
@@ -229,9 +385,9 @@ mat_t mat_mul_mat(mat_t m1, mat_t m2)
     return mat;
 }
 
-vec_t mat_mul_vec(mat_t m, vec_t v)
+vec4_t mat_mul_vec(mat_t m, vec4_t v)
 {
-    vec_t vec;
+    vec4_t vec;
     vec.x = m.data[0][0] * v.x + m.data[0][1] * v.y + m.data[0][2] * v.z + m.data[0][3] * v.w;
     vec.y = m.data[1][0] * v.x + m.data[1][1] * v.y + m.data[1][2] * v.z + m.data[1][3] * v.w;
     vec.z = m.data[2][0] * v.x + m.data[2][1] * v.y + m.data[2][2] * v.z + m.data[2][3] * v.w;

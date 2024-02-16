@@ -102,15 +102,15 @@
 //     *o_size = output_size;
 // }
 
-static bool is_outside(plane_t plane, vec_t v0, vec_t v1, vec_t v2)
+static bool is_outside(plane_t plane, vec4_t v0, vec4_t v1, vec4_t v2)
 {
-    vec_t p0v0 = vec_normalize(vec_sub(v0, plane.p));
-    vec_t p0v1 = vec_normalize(vec_sub(v1, plane.p));
-    vec_t p0v2 = vec_normalize(vec_sub(v2, plane.p));
+    vec4_t p0v0 = vec4_normalize(vec4_sub(v0, plane.p));
+    vec4_t p0v1 = vec4_normalize(vec4_sub(v1, plane.p));
+    vec4_t p0v2 = vec4_normalize(vec4_sub(v2, plane.p));
 
-    float dot0 = vec_dot(p0v0, plane.n);
-    float dot1 = vec_dot(p0v1, plane.n);
-    float dot2 = vec_dot(p0v2, plane.n);
+    float dot0 = vec4_dot(p0v0, plane.n);
+    float dot1 = vec4_dot(p0v1, plane.n);
+    float dot2 = vec4_dot(p0v2, plane.n);
 
     if (dot0 < 0.f || dot1 < 0.f || dot2 < 0.f)
     {
@@ -124,7 +124,7 @@ static bool is_outside(plane_t plane, vec_t v0, vec_t v1, vec_t v2)
 /* public functions */
 /********************/
 
-bool clip_polygon(camera_t* camera, vec_t v0, vec_t v1, vec_t v2)
+bool clip_polygon(camera_t* camera, vec4_t v0, vec4_t v1, vec4_t v2)
 {
     return  is_outside(camera->n_plane, v0, v1, v2) ||
             is_outside(camera->f_plane, v0, v1, v2) ||

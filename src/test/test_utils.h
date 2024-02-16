@@ -80,11 +80,27 @@ uint32_t    TESTS_FAIL_COUNT();
                                     } while(0);
 
 
-#define ASSERT_VECTOR(a, b)         do \
+#define ASSERT_VECTOR2(a, b)        do \
+                                    { \
+                                        ASSERT_EQUAL(a.x, b.x); \
+                                        ASSERT_EQUAL(a.y, b.y); \
+                                    } while(0);
+
+
+#define ASSERT_VECTOR3(a, b)        do \
                                     { \
                                         ASSERT_EQUAL(a.x, b.x); \
                                         ASSERT_EQUAL(a.y, b.y); \
                                         ASSERT_EQUAL(a.z, b.z); \
+                                    } while(0);
+
+
+#define ASSERT_VECTOR4(a, b)        do \
+                                    { \
+                                        ASSERT_EQUAL(a.x, b.x); \
+                                        ASSERT_EQUAL(a.y, b.y); \
+                                        ASSERT_EQUAL(a.z, b.z); \
+                                        ASSERT_EQUAL(a.w, b.w); \
                                     } while(0);
 
 

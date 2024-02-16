@@ -105,26 +105,13 @@ static uint32_t* create_indices_array(const view_t view)
     return indices;
 }
 
-static vec_t* create_vec_array(const view_t view)
+static vec2_t* create_vec2_array(const view_t view)
 {
-    vec_t* result = malloc(sizeof(vec_t) * view.count);
+    vec2_t* result = malloc(sizeof(vec2_t) * view.count);
 
     uint32_t j = 0;
-    uint32_t stride = 4;
+    uint32_t stride = 8;
     unsigned char float_arr[4] = { 0 };
-
-    if (view.type == VEC_2)
-    {
-        stride = 8;
-    }
-    else if (view.type == VEC_3)
-    {
-        stride = 12;
-    }
-    else if (view.type == VEC_4)
-    {
-        stride = 16;
-    }
 
     for (uint32_t i = 0; i < view.size; i += stride)
     {
@@ -134,36 +121,11 @@ static vec_t* create_vec_array(const view_t view)
         float_arr[3] = view.data[i + 3];
         result[j].x = *(float*)float_arr;
 
-        if (stride > 4)
-        {
-            float_arr[0] = view.data[i + 4];
-            float_arr[1] = view.data[i + 5];
-            float_arr[2] = view.data[i + 6];
-            float_arr[3] = view.data[i + 7];
-            result[j].y = *(float*)float_arr;
-        }
-
-        if (stride > 8)
-        {
-            float_arr[0] = view.data[i + 8];
-            float_arr[1] = view.data[i + 9];
-            float_arr[2] = view.data[i + 10];
-            float_arr[3] = view.data[i + 11];
-            result[j].z = *(float*)float_arr;
-        }
-
-        if (stride > 12)
-        {
-            float_arr[0] = view.data[i + 12];
-            float_arr[1] = view.data[i + 13];
-            float_arr[2] = view.data[i + 14];
-            float_arr[3] = view.data[i + 15];
-            result[j].w = *(float*)float_arr;
-        }
-        else
-        {
-            result[j].w = 1.f;
-        }
+        float_arr[0] = view.data[i + 4];
+        float_arr[1] = view.data[i + 5];
+        float_arr[2] = view.data[i + 6];
+        float_arr[3] = view.data[i + 7];
+        result[j].y = *(float*)float_arr;
 
         j++;
     }
@@ -173,22 +135,60 @@ static vec_t* create_vec_array(const view_t view)
     return result;
 }
 
-static sphere_t compute_bounding_sphere(vec_t* vertices, uint32_t size)
+static vec4_t* create_vec3_array(const view_t view)
+{
+    vec4_t* result = malloc(sizeof(vec4_t) * view.count);
+
+    uint32_t j = 0;
+    uint32_t stride = 12;
+    unsigned char float_arr[4] = { 0 };
+
+    for (uint32_t i = 0; i < view.size; i += stride)
+    {
+        float_arr[0] = view.data[i + 0];
+        float_arr[1] = view.data[i + 1];
+        float_arr[2] = view.data[i + 2];
+        float_arr[3] = view.data[i + 3];
+        result[j].x = *(float*)float_arr;
+
+        float_arr[0] = view.data[i + 4];
+        float_arr[1] = view.data[i + 5];
+        float_arr[2] = view.data[i + 6];
+        float_arr[3] = view.data[i + 7];
+        result[j].y = *(float*)float_arr;
+
+        float_arr[0] = view.data[i + 8];
+        float_arr[1] = view.data[i + 9];
+        float_arr[2] = view.data[i + 10];
+        float_arr[3] = view.data[i + 11];
+        result[j].z = *(float*)float_arr;
+
+        result[j].w = 1.f;
+
+        j++;
+    }
+
+    assert(j == view.count);
+
+    return result;
+}
+
+static sphere_t compute_bounding_sphere(vec4_t* vertices, uint32_t size)
 {
     // TODO: This will break if object not in center
-    sphere_t result = { .c = vec_new(0.f, 0.f, 0.f), .r = 0.f };
+    sphere_t result = { .c = vec4_new(0.f, 0.f, 0.f), .r = 0.f };
 
     for (uint32_t i = 0; i < size; i++)
     {
-        result.c = vec_add(result.c, vertices[i]);
+        result.c = vec4_add(result.c, vertices[i]);
     }
 
     float scale = 1.f / (float)size;
-    result.c = vec_scale(result.c, scale);
+    result.c = vec4_scale(result.c, scale);
 
     for (uint32_t i = 0; i < size; i++)
     {
-        float new = vec_magnitude_sq(vec_sub(vertices[i], result.c));
+        float new = vec4_magnitude_sq(vec4_sub(vertices[i], result.c));
         if (new > result.r)
         {
             result.r = new;
@@ -314,9 +314,9 @@ static mesh_t* parse_meshes(const json_t* json, const chunk_t binary)
     view_t tex_coords_view          = parse_mesh_data(json, attributes, JSON_TEXCOORD_0, binary);
 
     uint32_t* indices               = create_indices_array(indices_view);
-    vec_t* vertices                 = create_vec_array(vertices_view);
-    vec_t* normals                  = create_vec_array(normals_view);
-    vec_t* tex_coords               = create_vec_array(tex_coords_view);
+    vec4_t* vertices                = create_vec3_array(vertices_view);
+    vec4_t* normals                 = create_vec3_array(normals_view);
+    vec2_t* tex_coords              = create_vec2_array(tex_coords_view);
     sphere_t bounding_sphere        = compute_bounding_sphere(vertices, vertices_view.count);
 
     // parse material data
@@ -384,15 +384,15 @@ scene_t* parse_scene(const char* file_path)
 
     // scene->dir_light
     // scene->point_light
-    scene->mesh = parse_meshes(json, binary);
-    vec_t cam_pos = vec_new(1.f, 1.f, 1.f);
-    scene->camera = camera_new(cam_pos,
-                               0.610866f,
-                               -2.356194f,
-                               45 * F_PI / 180.f,
-                               1.f,
-                               20.f,
-                               1.3333f);
+    scene->mesh     = parse_meshes(json, binary);
+    vec4_t cam_pos  = vec4_new(1.f, 1.f, 1.f);
+    scene->camera   = camera_new(cam_pos,
+                                 0.610866f,
+                                 -2.356194f,
+                                 45 * F_PI / 180.f,
+                                 1.f,
+                                 20.f,
+                                 1.3333f);
 
     // free buffers
     json_free(json);

@@ -56,9 +56,9 @@ static void rasterizer_process_pixels(void* args)
     pixel_batch_t* batch = (pixel_batch_t*)args;
 
     triangle_t* t   = batch->triangle;
-    vec_t v0        = t->v0;
-    vec_t v1        = t->v1;
-    vec_t v2        = t->v2;
+    vec4_t v0       = t->v0;
+    vec4_t v1       = t->v1;
+    vec4_t v2       = t->v2;
 
     float inv_area  = batch->inv_area;
 
@@ -122,8 +122,8 @@ void rasterizer_init()
     memset(thread_data, 0, sizeof(pixel_batch_t) * THREAD_COUNT);
 }
 
-void rasterizer_draw_line(vec_t v0,
-                          vec_t v1,
+void rasterizer_draw_line(vec4_t v0,
+                          vec4_t v1,
                           uint32_t color, 
                           framebuffer_t* framebuffer)
 {
@@ -199,9 +199,9 @@ void rasterizer_draw_triangle(triangle_t* triangle,
                               framebuffer_t* framebuffer,
                               depthbuffer_t* depthbuffer)
 {
-    vec_t v0 = triangle->v0;
-    vec_t v1 = triangle->v1;
-    vec_t v2 = triangle->v2;
+    vec4_t v0 = triangle->v0;
+    vec4_t v1 = triangle->v1;
+    vec4_t v2 = triangle->v2;
 
     // workaround until clipping is implemented
     if (v0.z <= 0.f || v0.z > 1.f ||

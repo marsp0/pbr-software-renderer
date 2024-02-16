@@ -13,13 +13,13 @@ typedef struct
 {
     bool    process;
 
-    vec_t   v0;
-    vec_t   v1;
-    vec_t   v2;
+    vec4_t   v0;
+    vec4_t   v1;
+    vec4_t   v2;
 
-    vec_t   t0;
-    vec_t   t1;
-    vec_t   t2;
+    vec2_t   t0;
+    vec2_t   t1;
+    vec2_t   t2;
 
     texture_t* albedo;
 
@@ -28,9 +28,9 @@ typedef struct
 typedef struct
 {
     char        name[MESH_NAME_SIZE];
-    vec_t*      vertices;
-    vec_t*      texcoords;
-    vec_t*      normals;
+    vec4_t*     vertices;
+    vec2_t*     texcoords;
+    vec4_t*     normals;
     uint32_t*   indices;
     triangle_t* triangles;
 
@@ -48,9 +48,9 @@ typedef struct
 } mesh_t;
 
 mesh_t* mesh_new(char*      name,
-                 vec_t*     vertices,
-                 vec_t*     texcoords,
-                 vec_t*     normals,
+                 vec4_t*    vertices,
+                 vec2_t*    texcoords,
+                 vec4_t*    normals,
                  uint32_t*  indices,
                  uint32_t   vertices_size,
                  uint32_t   texcoords_size,

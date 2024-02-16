@@ -7,8 +7,8 @@
 
 void rasterizer_init();
 
-void rasterizer_draw_line(vec_t p0,
-                          vec_t p1,
+void rasterizer_draw_line(vec4_t p0,
+                          vec4_t p1,
                           uint32_t color,
                           framebuffer_t* framebuffer);
 
