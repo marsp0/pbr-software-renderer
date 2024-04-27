@@ -96,6 +96,7 @@ mat_t   mat_new(float a, float b, float c, float d,
                 float i, float j, float k, float l,
                 float m, float n, float o, float p);
 mat_t   mat_new_identity();
+mat_t   mat_from_vec4(vec4_t v1, vec4_t v2, vec4_t v3);
 mat_t   mat_add(mat_t m1, mat_t m2);
 mat_t   mat_sub(mat_t m1, mat_t m2);
 mat_t   mat_mul_mat(mat_t m1, mat_t m2);

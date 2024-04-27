@@ -341,6 +341,33 @@ mat_t mat_new_identity()
     return mat;
 }
 
+mat_t mat_from_vec4(vec4_t v1, vec4_t v2, vec4_t v3)
+{
+    mat_t m;
+
+    m.data[0][0] = v1.x;
+    m.data[0][1] = v2.x;
+    m.data[0][2] = v3.x;
+    m.data[0][3] = 0.f;
+
+    m.data[1][0] = v1.y;
+    m.data[1][1] = v2.y;
+    m.data[1][2] = v3.y;
+    m.data[1][3] = 0.f;
+
+    m.data[2][0] = v1.z;
+    m.data[2][1] = v2.z;
+    m.data[2][2] = v3.z;
+    m.data[2][3] = 0.f;
+
+    m.data[3][0] = 0.f;
+    m.data[3][1] = 0.f;
+    m.data[3][2] = 0.f;
+    m.data[3][3] = 1.f;
+
+    return m;
+}
+
 mat_t mat_add(mat_t m1, mat_t m2)
 {
     mat_t mat;
