@@ -1,5 +1,26 @@
 ## TODO
 
+- [ ] 05.05.2024
+    - [ ] Shared textures. We might have a scene where textures for different properties are shared (metallic, occlusion, roughness for example)
+    - [ ] Allow PBR parameters to be constant values (not textures)
+- [ ] 10.02.2024
+    - [x] add vec2_t vec3_t vec4_t (16.02.2024)
+    - [ ] Add Model transforms
+- [ ] 02.02.2024
+    - [ ] check if color should be removed from vec and added to its own thing
+    - [ ] check perspective correct interpolation
+- [ ] 27.01.2024
+    - [ ] adjust rasterizer thread pool to split screen into chunks instead of splitting triangles.
+    - [ ] adjust how data is passed to shader
+    - [ ] keep triangle buffer separate from mesh ?
+- [ ] 01.01.2024
+    - [ ] fix wireframe rendering
+- [ ] 06.11.2023
+    - [ ] add defines for different targets. I might want to define something for test exe but not for main exe (THREAD_COUNT for example)
+- [ ] 29.10.2023
+    - [ ] not sure if tests should start threads. Look at the rasterizer setup
+- [ ] 20.09.2023
+    - [ ] remove scene and just keep everything in renderer?
 - [ ] 5.08.2023
     - [ ] replace mat_new with mat_new_identity
 - [ ] 18.06.2023
@@ -31,7 +52,7 @@
 	- [ ] add support for light settings in gltf. This might require extension
 - [ ] 13.04.2023
 	- [ ] allow for multiple meshes to be rendered
-	- [ ] parse multiple textures in parallel
+	- [x] parse multiple textures in parallel (20.08.2023)
 - [ ] 11.04.2023 
 	- [ ] separate mesh from textures. There can be a texture manager that handles all textures 
 	and meshes can request the textures they need. (or similar)

@@ -7,22 +7,22 @@
 
 typedef struct
 {
-    float pitch;
-    float yaw;
+    float   pitch;
+    float   yaw;
 
-    vec_t forward;  // points inward
-    vec_t side;
-    vec_t up;
-    vec_t position;
+    vec4_t  forward;  // points inward
+    vec4_t  side;
+    vec4_t  up;
+    vec4_t  position;
 
-    float fov_x;
-    float asp_ratio;
-    float n_dist;
-    float f_dist;
-    float t_dist;
-    float b_dist;
-    float l_dist;
-    float r_dist;
+    float   fov_x;
+    float   asp_ratio;
+    float   n_dist;
+    float   f_dist;
+    float   t_dist;
+    float   b_dist;
+    float   l_dist;
+    float   r_dist;
 
     plane_t n_plane;
     plane_t f_plane;
@@ -33,7 +33,7 @@ typedef struct
 
 } camera_t;
 
-camera_t*   camera_new(vec_t position,
+camera_t*   camera_new(vec4_t position,
                        float pitch,
                        float yaw,
                        float fov_x,

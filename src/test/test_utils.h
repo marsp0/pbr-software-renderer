@@ -20,8 +20,9 @@
 void        increment_test_assert_counter();
 void        reset_test_assert_counter();
 uint32_t    get_test_assert_counter();
-void        INIT_TESTS();
+void        TESTS_INIT();
 void        TESTS_SUMMARY();
+uint32_t    TESTS_FAIL_COUNT();
 
 #define GET_COMPARISON(a, b) _Generic(  a, \
                                         float: fabs((float)a - (float)b) > 0.0005f, \
@@ -79,11 +80,27 @@ void        TESTS_SUMMARY();
                                     } while(0);
 
 
-#define ASSERT_VECTOR(a, b)         do \
+#define ASSERT_VECTOR2(a, b)        do \
+                                    { \
+                                        ASSERT_EQUAL(a.x, b.x); \
+                                        ASSERT_EQUAL(a.y, b.y); \
+                                    } while(0);
+
+
+#define ASSERT_VECTOR3(a, b)        do \
                                     { \
                                         ASSERT_EQUAL(a.x, b.x); \
                                         ASSERT_EQUAL(a.y, b.y); \
                                         ASSERT_EQUAL(a.z, b.z); \
+                                    } while(0);
+
+
+#define ASSERT_VECTOR4(a, b)        do \
+                                    { \
+                                        ASSERT_EQUAL(a.x, b.x); \
+                                        ASSERT_EQUAL(a.y, b.y); \
+                                        ASSERT_EQUAL(a.z, b.z); \
+                                        ASSERT_EQUAL(a.w, b.w); \
                                     } while(0);
 
 

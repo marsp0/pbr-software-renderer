@@ -13,5 +13,4 @@ typedef struct
 
 scene_t*    scene_new(const char* file_path);
 void        scene_update(scene_t* scene, input_t input);
-void        scene_reset(scene_t* scene);
 void        scene_free(scene_t* scene);
