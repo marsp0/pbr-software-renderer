@@ -1,5 +1,18 @@
 ## TODO
 
+- [ ] 05.05.2024
+    - [ ] Shared textures. We might have a scene where textures for different properties are shared (metallic, occlusion, roughness for example)
+    - [ ] Allow PBR parameters to be constant values (not textures)
+- [ ] 10.02.2024
+    - [x] add vec2_t vec3_t vec4_t (16.02.2024)
+    - [ ] Add Model transforms
+- [ ] 02.02.2024
+    - [ ] check if color should be removed from vec and added to its own thing
+    - [ ] check perspective correct interpolation
+- [ ] 27.01.2024
+    - [ ] adjust rasterizer thread pool to split screen into chunks instead of splitting triangles.
+    - [ ] adjust how data is passed to shader
+    - [ ] keep triangle buffer separate from mesh ?
 - [ ] 01.01.2024
     - [ ] fix wireframe rendering
 - [ ] 06.11.2023

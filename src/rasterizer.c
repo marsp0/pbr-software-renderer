@@ -106,7 +106,7 @@ static void rasterizer_process_pixels(void* args)
 
             depthbuffer_set(depthbuffer, (uint32_t)x, (uint32_t)y, depth);
             
-            uint32_t color = process_fragment(t, w0, w1, w2);
+            uint32_t color = shader_process_fragment(t, w0, w1, w2);
             framebuffer_set(framebuffer, (uint32_t)x, (uint32_t)y, color);
         }
     }

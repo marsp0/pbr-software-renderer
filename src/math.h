@@ -145,3 +145,4 @@ int32_t     i_max(int32_t a, int32_t b);
 int32_t     i_min(int32_t a, int32_t b);
 uint32_t    u_max(uint32_t a, uint32_t b);
 uint32_t    u_min(uint32_t a, uint32_t b);
+float       f_clamp(float v, float min, float max);

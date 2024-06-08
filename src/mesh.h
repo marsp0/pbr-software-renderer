@@ -11,17 +11,32 @@
 
 typedef struct
 {
-    bool    process;
+    bool        process;
 
-    vec4_t   v0;
-    vec4_t   v1;
-    vec4_t   v2;
+    vec4_t      v0;
+    vec4_t      v1;
+    vec4_t      v2;
 
-    vec2_t   t0;
-    vec2_t   t1;
-    vec2_t   t2;
+    vec2_t      t0;
+    vec2_t      t1;
+    vec2_t      t2;
+    
+    vec4_t      n0;
+    vec4_t      n1;
+    vec4_t      n2;
 
-    texture_t* albedo;
+    vec4_t      view0_T;
+    vec4_t      view1_T;
+    vec4_t      view2_T;
+    
+    vec4_t      light0_T;
+    vec4_t      light1_T;
+    vec4_t      light2_T;
+
+    texture_t*  albedo;
+    texture_t*  metallic;
+    texture_t*  normal;
+    texture_t*  occlusion;
 
 } triangle_t;
 

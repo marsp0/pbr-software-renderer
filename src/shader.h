@@ -6,5 +6,6 @@
 #include "mesh.h"
 #include "camera.h"
 
-void process_vertex(triangle_t* t, camera_t* c);
-uint32_t process_fragment(triangle_t* t, float w0, float w1, float w2);
+void shader_set_camera(camera_t* c);
+void shader_process_triangle(triangle_t* t);
+uint32_t shader_process_fragment(triangle_t* tri, float w0, float w1, float w2);

@@ -586,3 +586,8 @@ uint32_t u_min(uint32_t a, uint32_t b)
 {
     return a < b ? a : b;
 }
+
+float f_clamp(float v, float min, float max)
+{
+    return f_min(max, f_max(min, v));
+}

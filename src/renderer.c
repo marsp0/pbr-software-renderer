@@ -107,26 +107,36 @@ static void renderer_process_triangles(void* args)
 
     for (uint32_t i = offset; i < offset + size; i++)
     {
-        uint32_t v    = i * 3;
-        triangle_t* t = &m->triangles[i];
+        uint32_t v      = i * 3;
+        triangle_t* t   = &m->triangles[i];
 
-        uint32_t i0 = m->indices[v + 0];
-        uint32_t i1 = m->indices[v + 1];
-        uint32_t i2 = m->indices[v + 2];
+        uint32_t i0     = m->indices[v + 0];
+        uint32_t i1     = m->indices[v + 1];
+        uint32_t i2     = m->indices[v + 2];
 
-        t->v0 = m->vertices[i0];
-        t->v1 = m->vertices[i1];
-        t->v2 = m->vertices[i2];
+        t->v0           = m->vertices[i0];
+        t->v1           = m->vertices[i1];
+        t->v2           = m->vertices[i2];
 
-        t->t0 = m->texcoords[i0];
-        t->t1 = m->texcoords[i1];
-        t->t2 = m->texcoords[i2];
+        t->t0           = m->texcoords[i0];
+        t->t1           = m->texcoords[i1];
+        t->t2           = m->texcoords[i2];
+        
+        t->n0           = m->normals[i0];
+        t->n1           = m->normals[i1];
+        t->n2           = m->normals[i2];
 
-        t->albedo = m->albedo;
+        t->albedo       = m->albedo;
+        t->metallic     = m->metallic;
+        t->normal       = m->normal;
+        t->occlusion    = m->occlusion;
 
         //TODO: add backface culling
 
-        process_vertex(t, c);
+        // set shader stuff
+        shader_set_camera(c);
+
+        shader_process_triangle(t);
 
         // persp divide
         t->v0 = vec4_scale(t->v0, 1.f / t->v0.w);
