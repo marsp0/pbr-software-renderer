@@ -37,31 +37,31 @@
 
 static void update(camera_t* cam)
 {
-    vec_t world_up  = vec_new(0.f, 1.f, 0.f);
+    vec4_t world_up  = vec4_new(0.f, 1.f, 0.f);
     
     // generate new basis vectors
     mat_t rot_y_x   = mat_mul_mat(y_axis_rotation(cam->yaw), x_axis_rotation(cam->pitch));
-    cam->forward    = vec_normalize(mat_mul_vec(rot_y_x, vec_new(0.f, 0.f, -1.f)));
-    cam->side       = vec_normalize(vec_cross(world_up, cam->forward));
-    cam->up         = vec_normalize(vec_cross(cam->forward, cam->side));
+    cam->forward    = vec4_normalize(mat_mul_vec(rot_y_x, vec4_new(0.f, 0.f, -1.f)));
+    cam->side       = vec4_normalize(vec4_cross(world_up, cam->forward));
+    cam->up         = vec4_normalize(vec4_cross(cam->forward, cam->side));
 
     // generate new planes
-    vec_t view_dir  = vec_negate(cam->forward);
+    vec4_t view_dir  = vec4_negate(cam->forward);
 
-    vec_t n_point   = vec_add(cam->position, vec_scale(view_dir, cam->n_dist));
-    vec_t f_point   = vec_add(cam->position, vec_scale(view_dir, cam->f_dist));
+    vec4_t n_point   = vec4_add(cam->position, vec4_scale(view_dir, cam->n_dist));
+    vec4_t f_point   = vec4_add(cam->position, vec4_scale(view_dir, cam->f_dist));
 
-    vec_t r_point   = vec_add(n_point, vec_scale(cam->side, cam->r_dist));
-    vec_t r_dir     = vec_normalize(vec_sub(r_point, cam->position));
+    vec4_t r_point   = vec4_add(n_point, vec4_scale(cam->side, cam->r_dist));
+    vec4_t r_dir     = vec4_normalize(vec4_sub(r_point, cam->position));
 
-    vec_t l_point   = vec_add(n_point, vec_scale(cam->side, cam->l_dist));
-    vec_t l_dir     = vec_normalize(vec_sub(l_point, cam->position));
+    vec4_t l_point   = vec4_add(n_point, vec4_scale(cam->side, cam->l_dist));
+    vec4_t l_dir     = vec4_normalize(vec4_sub(l_point, cam->position));
 
-    vec_t t_point   = vec_add(n_point, vec_scale(cam->up, cam->t_dist));
-    vec_t t_dir     = vec_normalize(vec_sub(t_point, cam->position));
+    vec4_t t_point   = vec4_add(n_point, vec4_scale(cam->up, cam->t_dist));
+    vec4_t t_dir     = vec4_normalize(vec4_sub(t_point, cam->position));
 
-    vec_t b_point   = vec_add(n_point, vec_scale(cam->up, cam->b_dist));
-    vec_t b_dir     = vec_normalize(vec_sub(b_point, cam->position));
+    vec4_t b_point   = vec4_add(n_point, vec4_scale(cam->up, cam->b_dist));
+    vec4_t b_dir     = vec4_normalize(vec4_sub(b_point, cam->position));
 
     cam->n_plane.p  = n_point;
     cam->n_plane.n  = view_dir;
@@ -70,29 +70,29 @@ static void update(camera_t* cam)
     cam->f_plane.n  = cam->forward;
 
     cam->r_plane.p  = r_point;
-    cam->r_plane.n  = vec_normalize(vec_cross(cam->up, r_dir));
+    cam->r_plane.n  = vec4_normalize(vec4_cross(cam->up, r_dir));
 
     cam->l_plane.p  = l_point;
-    cam->l_plane.n  = vec_normalize(vec_cross(l_dir, cam->up));
+    cam->l_plane.n  = vec4_normalize(vec4_cross(l_dir, cam->up));
 
     cam->t_plane.p  = t_point;
-    cam->t_plane.n  = vec_normalize(vec_cross(t_dir, cam->side));
+    cam->t_plane.n  = vec4_normalize(vec4_cross(t_dir, cam->side));
 
     cam->b_plane.p  = b_point;
-    cam->b_plane.n  = vec_normalize(vec_cross(cam->side, b_dir));
+    cam->b_plane.n  = vec4_normalize(vec4_cross(cam->side, b_dir));
 }
 
 static bool plane_check(plane_t plane, sphere_t sphere)
 {
-    vec_t pc = vec_sub(sphere.c, plane.p);
-    float dot = vec_dot(pc, plane.n);
-    if (dot / vec_magnitude(pc) > 0.f)
+    vec4_t pc = vec4_sub(sphere.c, plane.p);
+    float dot = vec4_dot(pc, plane.n);
+    if (dot / vec4_magnitude(pc) > 0.f)
     {
         return true;
     }
 
     printf("dist is %f\n", fabs(dot));
-    vec_print(plane.n);
+    vec4_print(plane.n);
     if (fabs(dot) < sphere.r)
     {
         return true;
@@ -105,7 +105,7 @@ static bool plane_check(plane_t plane, sphere_t sphere)
 /* public functions */
 /********************/
 
-camera_t* camera_new(vec_t position,
+camera_t* camera_new(vec4_t position,
                      float pitch,
                      float yaw,
                      float fov_x,
@@ -118,9 +118,9 @@ camera_t* camera_new(vec_t position,
     camera->position    = position;
     camera->pitch       = pitch;
     camera->yaw         = yaw;
-    camera->forward     = vec_new(0.f, 0.f, 0.f);
-    camera->side        = vec_new(0.f, 0.f, 0.f);
-    camera->up          = vec_new(0.f, 0.f, 0.f);
+    camera->forward     = vec4_new(0.f, 0.f, 0.f);
+    camera->side        = vec4_new(0.f, 0.f, 0.f);
+    camera->up          = vec4_new(0.f, 0.f, 0.f);
 
     camera->fov_x       = fov_x;
     camera->asp_ratio   = aspect_ratio;
@@ -153,24 +153,24 @@ void camera_update(camera_t* cam, input_t input)
     }
 
     float speed = 0.5f;
-    vec_t front = vec_scale(vec_negate(cam->forward), speed);
-    vec_t right = vec_scale(cam->side, speed);
+    vec4_t front = vec4_scale(vec4_negate(cam->forward), speed);
+    vec4_t right = vec4_scale(cam->side, speed);
 
     if (input.keys & KEY_W)
     {
-        cam->position = vec_add(cam->position, front);
+        cam->position = vec4_add(cam->position, front);
     }
     if (input.keys & KEY_A)
     {
-        cam->position = vec_add(cam->position, vec_negate(right));
+        cam->position = vec4_add(cam->position, vec4_negate(right));
     }
     if (input.keys & KEY_S)
     {
-        cam->position = vec_add(cam->position, vec_negate(front));
+        cam->position = vec4_add(cam->position, vec4_negate(front));
     }
     if (input.keys & KEY_D)
     {
-        cam->position = vec_add(cam->position, right);
+        cam->position = vec4_add(cam->position, right);
     }
 
     update(cam);
@@ -190,23 +190,23 @@ mat_t camera_view_transform(camera_t* cam)
 {
     mat_t result = mat_new_identity();
 
-    vec_t pos_negative = vec_negate(cam->position);
+    vec4_t pos_negative = vec4_negate(cam->position);
 
     // construct cam -> world transform + invert it
     result.data[0][0] = cam->side.x;
     result.data[0][1] = cam->side.y;
     result.data[0][2] = cam->side.z;
-    result.data[0][3] = vec_dot(pos_negative, cam->side);
+    result.data[0][3] = vec4_dot(pos_negative, cam->side);
 
     result.data[1][0] = cam->up.x;
     result.data[1][1] = cam->up.y;
     result.data[1][2] = cam->up.z;
-    result.data[1][3] = vec_dot(pos_negative, cam->up);
+    result.data[1][3] = vec4_dot(pos_negative, cam->up);
 
     result.data[2][0] = cam->forward.x;
     result.data[2][1] = cam->forward.y;
     result.data[2][2] = cam->forward.z;
-    result.data[2][3] = vec_dot(pos_negative, cam->forward);
+    result.data[2][3] = vec4_dot(pos_negative, cam->forward);
 
     return result;
 }
