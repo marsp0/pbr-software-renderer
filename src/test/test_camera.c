@@ -65,23 +65,23 @@ static void assert_frustum(float pitch, float yaw, vec4_t view_dir)
     vec4_t cp_bp_dir        = vec4_normalize(vec4_sub(expected_b_p, camera->position));
     vec4_t expected_b_n     = vec4_cross(right, cp_bp_dir);
 
-    ASSERT_VECTOR(camera->n_plane.p, expected_n_p);
-    ASSERT_VECTOR(camera->n_plane.n, expected_n_n);
+    ASSERT_VECTOR3(camera->n_plane.p, expected_n_p);
+    ASSERT_VECTOR3(camera->n_plane.n, expected_n_n);
 
-    ASSERT_VECTOR(camera->f_plane.p, expected_f_p);
-    ASSERT_VECTOR(camera->f_plane.n, expected_f_n);
+    ASSERT_VECTOR3(camera->f_plane.p, expected_f_p);
+    ASSERT_VECTOR3(camera->f_plane.n, expected_f_n);
 
-    ASSERT_VECTOR(camera->r_plane.p, expected_r_p);
-    ASSERT_VECTOR(camera->r_plane.n, expected_r_n);
+    ASSERT_VECTOR3(camera->r_plane.p, expected_r_p);
+    ASSERT_VECTOR3(camera->r_plane.n, expected_r_n);
 
-    ASSERT_VECTOR(camera->l_plane.p, expected_l_p);
-    ASSERT_VECTOR(camera->l_plane.n, expected_l_n);
+    ASSERT_VECTOR3(camera->l_plane.p, expected_l_p);
+    ASSERT_VECTOR3(camera->l_plane.n, expected_l_n);
 
-    ASSERT_VECTOR(camera->t_plane.p, expected_t_p);
-    ASSERT_VECTOR(camera->t_plane.n, expected_t_n);
+    ASSERT_VECTOR3(camera->t_plane.p, expected_t_p);
+    ASSERT_VECTOR3(camera->t_plane.n, expected_t_n);
 
-    ASSERT_VECTOR(camera->b_plane.p, expected_b_p);
-    ASSERT_VECTOR(camera->b_plane.n, expected_b_n);
+    ASSERT_VECTOR3(camera->b_plane.p, expected_b_p);
+    ASSERT_VECTOR3(camera->b_plane.n, expected_b_n);
 
     camera_free(camera);
 }
@@ -112,8 +112,8 @@ static void test_view_matrix_rotated_90deg_around_y()
                                      1.3333f);
 
     // assert initial values
-    ASSERT_VECTOR(position, camera->position);
-    ASSERT_VECTOR(forward, camera->forward);
+    ASSERT_VECTOR3(position, camera->position);
+    ASSERT_VECTOR3(forward, camera->forward);
 
     view.data[0][0] = -1.f;
     view.data[2][2] = -1.f;
@@ -165,8 +165,8 @@ static void test_view_matrix_rotated_45deg_around_x()
                                      1.3333f);
 
     // assert initial values
-    ASSERT_VECTOR(position, camera->position);
-    ASSERT_VECTOR(forward, camera->forward);
+    ASSERT_VECTOR3(position, camera->position);
+    ASSERT_VECTOR3(forward, camera->forward);
 
     view.data[0][0] = -1.f;
     view.data[2][2] = -1.f;
@@ -218,8 +218,8 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
                                      1.3333f);
 
     // assert initial values
-    ASSERT_VECTOR(position, camera->position);
-    ASSERT_VECTOR(forward, camera->forward);
+    ASSERT_VECTOR3(position, camera->position);
+    ASSERT_VECTOR3(forward, camera->forward);
 
     view.data[0][0] = -1.f;
     view.data[2][2] = -1.f;
@@ -319,13 +319,13 @@ static void test_proj_matrix()
     position = vec4_new(0.f, 0.f, -1.f);
     position = mat_mul_vec(actual, position);
     position = vec4_scale(position, 1.f/position.w);
-    ASSERT_VECTOR(position, vec4_new(0.f, 0.f, 1.f));
+    ASSERT_VECTOR3(position, vec4_new(0.f, 0.f, 1.f));
 
     // far plane point
     position = vec4_new(0.f, 0.f, -20.f);
     position = mat_mul_vec(actual, position);
     position = vec4_scale(position, 1.f/position.w);
-    ASSERT_VECTOR(position, vec4_new(0.f, 0.f, 0.f));
+    ASSERT_VECTOR3(position, vec4_new(0.f, 0.f, 0.f));
 
     camera_free(camera);
 }

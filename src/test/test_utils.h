@@ -23,6 +23,7 @@ uint32_t    get_test_assert_counter();
 void        INIT_TESTS();
 void        TESTS_SUMMARY();
 
+
 #define GET_COMPARISON(a, b) _Generic(  a, \
                                         float: fabs((float)a - (float)b) > 0.0005f, \
                                         default: a != b)
@@ -79,7 +80,14 @@ void        TESTS_SUMMARY();
                                     } while(0);
 
 
-#define ASSERT_VECTOR(a, b)         do \
+#define ASSERT_VECTOR2(a, b)         do \
+                                    { \
+                                        ASSERT_EQUAL(a.x, b.x); \
+                                        ASSERT_EQUAL(a.y, b.y); \
+                                    } while(0);
+
+
+#define ASSERT_VECTOR3(a, b)         do \
                                     { \
                                         ASSERT_EQUAL(a.x, b.x); \
                                         ASSERT_EQUAL(a.y, b.y); \

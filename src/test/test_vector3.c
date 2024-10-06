@@ -9,7 +9,7 @@ static void test_vector_addition()
     vec3_t v2 = vec3_new(3.f, 2.f, 1.f);
     vec3_t actual = vec3_add(v1, v2);
     vec3_t expected = vec3_new(4.f, 4.f, 4.f);
-    ASSERT_VECTOR(expected, actual);
+    ASSERT_VECTOR3(expected, actual);
 }
 
 static void test_vector_subtraction()
@@ -18,7 +18,7 @@ static void test_vector_subtraction()
     vec3_t v2 = vec3_new(3.f, 2.f, 1.f);
     vec3_t actual = vec3_sub(v1, v2);
     vec3_t expected = vec3_new(-2.f, 0.f, 2.f);
-    ASSERT_VECTOR(expected, actual);
+    ASSERT_VECTOR3(expected, actual);
 }
 
 static void test_vector_cross()
@@ -27,7 +27,7 @@ static void test_vector_cross()
     vec3_t v2 = vec3_new(2.f, 3.5f, 14.2f);
     vec3_t actual = vec3_cross(v1, v2);
     vec3_t expected = vec3_new(17.9f, -8.2f, -0.5f);
-    ASSERT_VECTOR(expected, actual);
+    ASSERT_VECTOR3(expected, actual);
 }
 
 static void test_vector_scale()
@@ -35,7 +35,7 @@ static void test_vector_scale()
     vec3_t v1 = vec3_new(1.f, 2.f, 3.f);
     vec3_t actual = vec3_scale(v1, 5.f);
     vec3_t expected = vec3_new(5.f, 10.f, 15.f);
-    ASSERT_VECTOR(expected, actual);
+    ASSERT_VECTOR3(expected, actual);
 }
 
 static void test_vector_negate()
@@ -43,7 +43,7 @@ static void test_vector_negate()
     vec3_t v1 = vec3_new(1.f, 2.f, 3.f);
     vec3_t actual = vec3_negate(v1);
     vec3_t expected = vec3_new(-1.f, -2.f, -3.f);
-    ASSERT_VECTOR(expected, actual);
+    ASSERT_VECTOR3(expected, actual);
 }
 
 static void test_vector_normalize()
@@ -52,7 +52,7 @@ static void test_vector_normalize()
     vec3_t actual = vec3_normalize(v1);
     float scale = sqrtf(2 * 2 + 3 * 3 + 4 * 4);
     vec3_t expected = vec3_new(2.f/scale, 3.f/scale, 4.f/scale);
-    ASSERT_VECTOR(expected, actual);
+    ASSERT_VECTOR3(expected, actual);
 }
 
 static void test_vector_dot()

@@ -47,7 +47,7 @@ static void test_matrix_mul_vector()
     vec4_t actual       = mat_mul_vec(m, v);
     vec4_t expected     = vec4_new(18.f, 46.f, 74.f);
 
-    ASSERT_VECTOR(expected, actual);
+    ASSERT_VECTOR3(expected, actual);
 }
 
 static void test_matrix_inverse_1()
