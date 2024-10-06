@@ -182,6 +182,23 @@ static void test_x_axis_rotation()
      actual  = rad_to_deg(rad);
      ASSERT_EQUAL(390.f, actual);
  }
+ 
+ static void test_mat_from_vec4()
+ {
+     vec4_t v1 = vec4_new(1.f, 2.f, 3.f);
+     vec4_t v2 = vec4_new(11.f, 22.f, 33.f);
+     vec4_t v3 = vec4_new(111.f, 222.f, 333.f);
+
+     v1.w = 4.f;
+
+     mat_t actual = mat_from_vec4(v1, v2, v3);
+     mat_t expected = mat_new(1.f,   11.f,   111.f,  0.f,
+                              2.f,   22.f,   222.f,  0.f,
+                              3.f,   33.f,   333.f,  0.f,
+                              0.f,   0.f,    0.f,    1.f);
+
+     ASSERT_MATRIX(expected, actual);
+ }
 
 void test_matrix()
 {
@@ -198,4 +215,5 @@ void test_matrix()
     TEST_CASE(test_z_axis_rotation);
     TEST_CASE(test_deg_to_rad);
     TEST_CASE(test_rad_to_deg);
+    TEST_CASE(test_mat_from_vec4);
 }
