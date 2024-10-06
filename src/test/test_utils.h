@@ -96,6 +96,15 @@ uint32_t    TESTS_FAIL_COUNT();
                                     } while(0);
 
 
+#define ASSERT_VECTOR4(a, b)         do \
+                                    { \
+                                        ASSERT_EQUAL(a.x, b.x); \
+                                        ASSERT_EQUAL(a.y, b.y); \
+                                        ASSERT_EQUAL(a.z, b.z); \
+                                        ASSERT_EQUAL(a.w, b.w); \
+                                    } while(0);
+
+
 #define ASSERT_MATRIX(a, b)         do \
                                     { \
                                         for (uint32_t i = 0; i < 4; i++) \
