@@ -107,7 +107,6 @@ static void renderer_draw_mesh(mesh_t* mesh)
     uint32_t indices_size   = mesh->indices_size;
     uint32_t* indices       = mesh->indices;
 
-    uint32_t vertices_size  = mesh->vertices_size;
     vec4_t* vertices        = mesh->vertices;
 
     // uint32_t texcoords_size = mesh->texcoords_size;
