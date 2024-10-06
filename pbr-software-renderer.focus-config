@@ -1,0 +1,12 @@
+[1]  # Version number. Do not delete.
+
+[[workspace]]
+
+[workspace dirs]
+/home/martin/Documents/Projects/pbr-software-renderer
+
+[ignore dirs]
+
+[allow file extensions]
+
+[ignore file extensions]
