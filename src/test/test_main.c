@@ -9,6 +9,7 @@
 #include "test_camera.h"
 #include "test_rasterizer.h"
 #include "test_clip.h"
+#include "test_time_utils.h"
 
 #include "test_utils.h"
 
@@ -27,6 +28,7 @@ int main()
     TEST_GROUP(test_rasterizer);
     TEST_GROUP(test_clip);
     TEST_GROUP(test_scene);
+    TEST_GROUP(test_time_utils);
 
     TESTS_SUMMARY();
 }
