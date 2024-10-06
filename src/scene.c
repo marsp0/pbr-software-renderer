@@ -37,13 +37,6 @@ void scene_update(scene_t* scene, input_t input)
     camera_update(scene->camera, input);
 }
 
-void scene_reset(scene_t* scene)
-{
-    // reset camera position
-    // reset some other stuff
-    printf("resetting scene %p", (void*)scene);
-}
-
 void scene_free(scene_t* scene)
 {
     mesh_free(scene->mesh);

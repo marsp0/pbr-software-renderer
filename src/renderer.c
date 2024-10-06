@@ -24,15 +24,34 @@
 /* static variables */
 /********************/
 
+static scene_t* scene               = NULL;
+static display_t* display           = NULL;
+static framebuffer_t* front         = NULL;
+static framebuffer_t* back          = NULL;
+static framebuffer_t* current       = NULL;
+static depthbuffer_t* depthbuffer   = NULL;
+static uint32_t width               = 800;
+static uint32_t height              = 600;
+static bool wireframe               = false;
+
 /********************/
 /* static functions */
 /********************/
 
-static void render_utils(renderer_t* renderer)
+static void renderer_update(input_t input)
 {
-    float width         = (float)renderer->current->width;
-    float height        = (float)renderer->current->height;
-    camera_t* cam       = renderer->scene->camera;
+    scene_update(scene, input);
+    if (input.keys & KEY_1)
+    {
+        wireframe = !wireframe;
+    }
+}
+
+static void renderer_draw_utilities()
+{
+    float w         = (float)width;
+    float h         = (float)height;
+    camera_t* cam   = scene->camera;
 
     vec4_t points[4]    = {vec4_new(0.f, 0.f, 0.f),
                            vec4_new(1.f, 0.f, 0.f),
@@ -51,97 +70,66 @@ static void render_utils(renderer_t* renderer)
     {
         points[i]   = mat_mul_vec(PV, points[i]);
         points[i]   = vec4_scale(points[i], 1.f/points[i].w);
-        points[i].x = (points[i].x + 1.f) * 0.5f * width;
-        points[i].y = (points[i].y + 1.f) * 0.5f * height;
+        points[i].x = (points[i].x + 1.f) * 0.5f * w;
+        points[i].y = (points[i].y + 1.f) * 0.5f * h;
     }
 
-    rasterize_line(points[0], points[1], colors[1], renderer->current);
-    rasterize_line(points[0], points[2], colors[2], renderer->current);
-    rasterize_line(points[0], points[3], colors[3], renderer->current);
+    rasterizer_draw_line(points[0], points[1], colors[1], current);
+    rasterizer_draw_line(points[0], points[2], colors[2], current);
+    rasterizer_draw_line(points[0], points[3], colors[3], current);
 }
 
-static void render_wireframe(renderer_t* renderer)
+static void renderer_draw_mesh(mesh_t* mesh)
 {
-    float width     = (float)renderer->current->width;
-    float height    = (float)renderer->current->height;
-
-    mesh_t* mesh    = renderer->scene->mesh;
-    camera_t* cam   = renderer->scene->camera;
-
-    vec4_t points[3];
-
-    if (!camera_is_mesh_visible(cam, mesh->bounding_sphere))
-    {
-        printf("mesh not visible\n");
-        return;
-    }
-
-    mat_t PV = mat_mul_mat(camera_proj_transform(cam),
-                           camera_view_transform(cam));
-
-    for (uint32_t i = 0; i < mesh->indices_size; i += 3)
-    {
-        uint32_t i0 = mesh->indices[i + 0];
-        uint32_t i1 = mesh->indices[i + 1];
-        uint32_t i2 = mesh->indices[i + 2];
-
-        points[0] = mesh->vertices[i0];
-        points[1] = mesh->vertices[i1];
-        points[2] = mesh->vertices[i2];
-
-        for (uint32_t j = 0; j < sizeof(points) / sizeof(vec4_t); j++)
-        {
-            // mvp transform
-            points[j]   = mat_mul_vec(PV, points[j]);
-
-            // persp divide
-            points[j]   = vec4_scale(points[j], 1.f/points[j].w);
-
-            // viewport transform
-            points[j].x = (points[j].x + 1.f) * 0.5f * width;
-            points[j].y = (points[j].y + 1.f) * 0.5f * height;
-        }
-
-        rasterize_line(points[0], points[1], 0xFFFFFFFF, renderer->current);
-        rasterize_line(points[1], points[2], 0xFFFFFFFF, renderer->current);
-        rasterize_line(points[2], points[0], 0xFFFFFFFF, renderer->current);
-        // rasterize_triangle(points[0], points[1], points[2], 0xFFFFFFFF, renderer->current, renderer->depthbuffer);
-    }
+    printf("mesh draw called %p\n", (void*)mesh);
 }
 
-static void clear_buffers(renderer_t* renderer)
+static void renderer_draw()
 {
-    framebuffer_clear(renderer->current);
-    depthbuffer_clear(renderer->depthbuffer);
-    display_clear(renderer->display);
+    renderer_draw_utilities();
+
+    renderer_draw_mesh(scene->mesh);
+
+    display_draw(display, current);
+}
+
+static void renderer_clear_buffers()
+{
+    framebuffer_clear(current);
+    depthbuffer_clear(depthbuffer);
+    display_clear(display);
 }
 
 /********************/
 /* public functions */
 /********************/
 
-renderer_t* renderer_new(uint32_t width, uint32_t height, const char* file_path)
+void renderer_init(const uint32_t w, const uint32_t h)
 {
+    display       = display_new(w, h);
 
-    renderer_t* renderer = malloc(sizeof(renderer_t));
+    front         = framebuffer_new(w, h);
+    back          = framebuffer_new(w, h);
+    current       = front;
 
-    renderer->scene         = scene_new(file_path);
-    renderer->display       = display_new(width, height);
+    depthbuffer   = depthbuffer_new(w, h);
 
-    renderer->front         = framebuffer_new(width, height);
-    renderer->back          = framebuffer_new(width, height);
-    renderer->current       = renderer->front;
-
-    renderer->depthbuffer   = depthbuffer_new(width, height);
-
-    renderer->width         = width;
-    renderer->height        = height;
-    renderer->wireframe     = false;
-
-    return renderer;
+    width         = w;
+    height        = h;
+    wireframe     = false;
 }
 
-void renderer_run(renderer_t* renderer)
+void renderer_load(const char* file_path)
+{
+    if (scene)
+    {
+        scene_free(scene);
+    }
+    
+    scene = scene_new(file_path);
+}
+
+void renderer_run()
 {
     bool quit = false;
     timestamp_t start;
@@ -154,31 +142,15 @@ void renderer_run(renderer_t* renderer)
     {
         start = time_now();
 
-        // process input
-        input_t input = handle_input(renderer->display);
+        input_t input = handle_input(display);
 
-        // update
-        scene_update(renderer->scene, input);
-        if (input.keys & KEY_1)
-        {
-            renderer->wireframe = !renderer->wireframe;
-        }
+        renderer_update(input);
 
-        // render
-        render_utils(renderer);
-        if (renderer->wireframe)
-        {
-            render_wireframe(renderer);
-        }
-        display_draw(renderer->display, renderer->current);
+        renderer_draw();
 
-        // clear
-        clear_buffers(renderer);
+        renderer_clear_buffers();
 
-        // swap buffers
-        renderer->current = renderer->current == renderer->front
-                          ? renderer->back
-                          : renderer->front;
+        current = current == front ? back : front;
 
         // maintain 60fps
         end = time_now();
@@ -197,12 +169,14 @@ void renderer_run(renderer_t* renderer)
     }
 }
 
-void renderer_free(renderer_t* renderer)
+void renderer_free()
 {
-    scene_free(renderer->scene);
-    display_free(renderer->display);
-    framebuffer_free(renderer->front);
-    framebuffer_free(renderer->back);
-    depthbuffer_free(renderer->depthbuffer);
-    free(renderer);
+    if (scene)
+    {
+        scene_free(scene);
+    }
+    display_free(display);
+    framebuffer_free(front);
+    framebuffer_free(back);
+    depthbuffer_free(depthbuffer);
 }

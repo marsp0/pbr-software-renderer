@@ -1,5 +1,6 @@
 #include "rasterizer.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
@@ -32,10 +33,10 @@ static int32_t edge_check(int32_t x0, int32_t y0,
 /* public functions */
 /********************/
 
-void rasterize_line(vec4_t v0,
-                    vec4_t v1,
-                    uint32_t color, 
-                    framebuffer_t* framebuffer)
+void rasterizer_draw_line(vec4_t v0,
+                          vec4_t v1,
+                          uint32_t color, 
+                          framebuffer_t* framebuffer)
 {
     int32_t x0 = (int32_t)v0.x;
     int32_t y0 = (int32_t)v0.y;
@@ -105,12 +106,12 @@ void rasterize_line(vec4_t v0,
 
 }
 
-void rasterize_triangle(vec4_t v0,
-                        vec4_t v1,
-                        vec4_t v2,
-                        uint32_t color,
-                        framebuffer_t* framebuffer,
-                        depthbuffer_t* depthbuffer)
+void rasterizer_draw_triangle(vec4_t v0,
+                              vec4_t v1,
+                              vec4_t v2,
+                              uint32_t color,
+                              framebuffer_t* framebuffer,
+                              depthbuffer_t* depthbuffer)
 {
     // workaround until clipping is implemented
     if (v0.z <= 0.f || v0.z > 1.f ||

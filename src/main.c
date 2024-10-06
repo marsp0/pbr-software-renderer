@@ -2,15 +2,25 @@
 #include <stdlib.h>
 
 #include "renderer.h"
+#include "rasterizer.h"
 #include "time_utils.h"
 
-int main()
+int32_t main()
 {
+    uint32_t width      = 800;
+    uint32_t height     = 600;
+    const char* scene   = "/home/martin/Documents/Projects/pbr-software-renderer/assets/WaterBottle.glb";
+
+    // initialize
     time_init();
+    renderer_init(width, height);
+    renderer_load(scene);
 
-    renderer_t* renderer = renderer_new(800, 600, "./assets/WaterBottle.glb");
+    // run
+    renderer_run();
 
-    renderer_run(renderer);
+    // clean up
+    renderer_free();
 
-    renderer_free(renderer);
+    return 0;
 }
