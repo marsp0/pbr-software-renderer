@@ -27,11 +27,11 @@ static void rasterize_and_assert(vec4_t* input,
 
     if (input_size == 2)
     {
-        rasterize_line(input[0], input[1], color, buffer);
+        rasterizer_draw_line(input[0], input[1], color, buffer);
     }
     else if (input_size == 3)
     {
-        rasterize_triangle(input[0], input[1], input[2], color, buffer, depthbuffer);
+        rasterizer_draw_triangle(input[0], input[1], input[2], color, buffer, depthbuffer);
     }
 
     // assert pixel count that has changed
@@ -59,7 +59,7 @@ static void rasterize_and_assert(vec4_t* input,
     depthbuffer_free(depthbuffer);
 }
 
-static void test_rasterize_line_horizontal()
+static void test_rasterizer_draw_line_horizontal()
 {
     // +--------------------+
     // |                    |
@@ -91,7 +91,7 @@ static void test_rasterize_line_horizontal()
 
 }
 
-static void test_rasterize_line_horizontal_out_of_bounds()
+static void test_rasterizer_draw_line_horizontal_out_of_bounds()
 {
     // +--------------------+
     // |                    |
@@ -123,7 +123,7 @@ static void test_rasterize_line_horizontal_out_of_bounds()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_line_vertical()
+static void test_rasterizer_draw_line_vertical()
 {
     // +--------------------+
     // |                    |
@@ -154,7 +154,7 @@ static void test_rasterize_line_vertical()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_line_vertical_out_of_bounds()
+static void test_rasterizer_draw_line_vertical_out_of_bounds()
 {
     // +--------------------+
     // |                    |
@@ -186,7 +186,7 @@ static void test_rasterize_line_vertical_out_of_bounds()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_line_steep_pos_slope()
+static void test_rasterizer_draw_line_steep_pos_slope()
 {
     // +--------------------+
     // |                    |
@@ -216,7 +216,7 @@ static void test_rasterize_line_steep_pos_slope()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_line_steep_pos_slope_out_of_bounds()
+static void test_rasterizer_draw_line_steep_pos_slope_out_of_bounds()
 {
     // +--------------------+
     // |                    |
@@ -247,7 +247,7 @@ static void test_rasterize_line_steep_pos_slope_out_of_bounds()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_line_steep_neg_slope()
+static void test_rasterizer_draw_line_steep_neg_slope()
 {
     // +--------------------+
     // |                    |
@@ -277,7 +277,7 @@ static void test_rasterize_line_steep_neg_slope()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_line_pos_slope()
+static void test_rasterizer_draw_line_pos_slope()
 {
     // +--------------------+
     // |                    |
@@ -307,7 +307,7 @@ static void test_rasterize_line_pos_slope()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_line_neg_slope()
+static void test_rasterizer_draw_line_neg_slope()
 {
     // +--------------------+
     // |                    |
@@ -338,7 +338,7 @@ static void test_rasterize_line_neg_slope()
                          0xAABBCCFF);
 }
 
-static void test_rasterize_triangle()
+static void test_rasterizer_draw_triangle()
 {
     // +--------------------+
     // /                    /
@@ -424,7 +424,7 @@ static void test_rasterize_multiple_triangles()
     }
 
     // rasterize first triangle
-    rasterize_triangle(p1, p2, p3, color1, framebuffer, depthbuffer);
+    rasterizer_draw_triangle(p1, p2, p3, color1, framebuffer, depthbuffer);
 
     p1 = vec4_new(6.f, 6.f, 0.6f);
     p2 = vec4_new(6.f, 1.f, 0.6f);
@@ -432,7 +432,7 @@ static void test_rasterize_multiple_triangles()
     uint32_t color2 = 0x11223344;
 
     // rasterize second triangle (closer to camera)
-    rasterize_triangle(p1, p2, p3, color2, framebuffer, depthbuffer);
+    rasterizer_draw_triangle(p1, p2, p3, color2, framebuffer, depthbuffer);
 
     // assert pixel count that has changed
     uint32_t actual_count = 0;
@@ -559,16 +559,16 @@ void test_rasterizer()
     //     printf("/\n");
     // }
     // printf("+--------------------+\n");
-    TEST_CASE(test_rasterize_line_horizontal);
-    TEST_CASE(test_rasterize_line_horizontal_out_of_bounds);
-    TEST_CASE(test_rasterize_line_vertical);
-    TEST_CASE(test_rasterize_line_vertical_out_of_bounds);
-    TEST_CASE(test_rasterize_line_steep_pos_slope);
-    TEST_CASE(test_rasterize_line_steep_pos_slope_out_of_bounds);
-    TEST_CASE(test_rasterize_line_steep_neg_slope);
-    TEST_CASE(test_rasterize_line_pos_slope);
-    TEST_CASE(test_rasterize_line_neg_slope);
-    TEST_CASE(test_rasterize_triangle);
+    TEST_CASE(test_rasterizer_draw_line_horizontal);
+    TEST_CASE(test_rasterizer_draw_line_horizontal_out_of_bounds);
+    TEST_CASE(test_rasterizer_draw_line_vertical);
+    TEST_CASE(test_rasterizer_draw_line_vertical_out_of_bounds);
+    TEST_CASE(test_rasterizer_draw_line_steep_pos_slope);
+    TEST_CASE(test_rasterizer_draw_line_steep_pos_slope_out_of_bounds);
+    TEST_CASE(test_rasterizer_draw_line_steep_neg_slope);
+    TEST_CASE(test_rasterizer_draw_line_pos_slope);
+    TEST_CASE(test_rasterizer_draw_line_neg_slope);
+    TEST_CASE(test_rasterizer_draw_triangle);
     TEST_CASE(test_rasterize_multiple_triangles);
     TEST_CASE(test_rasterize_clipped_triangle);
     TEST_CASE(test_rasterize_colinear_triangle);
