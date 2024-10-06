@@ -9,6 +9,7 @@
 #include <threads.h>
 
 #include "crc.h"
+#include "../atomic_types.h"
 
 /*
  * List of resources that helped with the parsing of png
@@ -77,7 +78,7 @@ typedef struct node
 
 typedef struct
 {
-    _Atomic uint32_t*       index;
+    atomic_uint32_t*        index;
     texture_batch_info_t*   info;
     texture_batch_t*        batch;
 } job_args_t;
@@ -685,7 +686,7 @@ texture_batch_t parse_multiple_pngs(texture_batch_info_t info)
     result.size             = info.size;
 
     // atomic index to indicate which slot to use for parsed texture
-    _Atomic uint32_t index  = 0;
+    atomic_uint32_t index   = 0;
     job_args_t args         = {.index   = &index,
                                .info    = &info,
                                .batch   = &result};
@@ -695,12 +696,14 @@ texture_batch_t parse_multiple_pngs(texture_batch_info_t info)
     for (int32_t i = 0; i < MAX_THREAD_COUNT; i++)
     {
         success = thrd_create(&threads[i], parse_single_png, (void*)&args);
+        assert(success == 0);
     }
 
     // wait for all jobs to finish
     for (int32_t i = 0; i < MAX_THREAD_COUNT; i++)
     {
         thrd_join(threads[i], &success);
+        assert(success == 0);
     }
 
     return result;
