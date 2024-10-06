@@ -107,6 +107,82 @@ static void test_matrix_transpose()
     ASSERT_MATRIX(expected, actual);
 }
 
+static void test_x_axis_rotation()
+ {
+     mat_t r        = x_axis_rotation(deg_to_rad(90.f));
+     vec4_t v       = vec4_new(0.f, 0.f, 1.f);
+
+     vec4_t actual  = mat_mul_vec(r, v);
+
+     ASSERT_VECTOR3(vec4_new(0.f, -1.f, 0.f), actual);
+ }
+
+ static void test_y_axis_rotation()
+ {
+     mat_t r        = y_axis_rotation(deg_to_rad(90.f));
+     vec4_t v       = vec4_new(0.f, 0.f, 1.f);
+
+     vec4_t actual  = mat_mul_vec(r, v);
+
+     ASSERT_VECTOR3(vec4_new(1.f, 0.f, 0.f), actual);
+ }
+
+ static void test_z_axis_rotation()
+ {
+     mat_t r        = z_axis_rotation(deg_to_rad(90.f));
+     vec4_t v       = vec4_new(1.f, 0.f, 0.f);
+
+     vec4_t actual  = mat_mul_vec(r, v);
+
+     ASSERT_VECTOR3(vec4_new(0.f, 1.f, 0.f), actual);
+ }
+
+ static void test_deg_to_rad()
+ {
+     float deg       = 35.f;
+     float actual    = deg_to_rad(deg);
+     ASSERT_EQUAL(0.6108652382f, actual);
+
+     deg     = 130.f;
+     actual  = deg_to_rad(deg);
+     ASSERT_EQUAL(2.2689280276f, actual);
+
+     deg     = 250.f;
+     actual  = deg_to_rad(deg);
+     ASSERT_EQUAL(4.36332313f, actual);
+
+     deg     = 340.f;
+     actual  = deg_to_rad(deg);
+     ASSERT_EQUAL(5.9341194568f, actual);
+
+     deg     = 390.f;
+     actual  = deg_to_rad(deg);
+     ASSERT_EQUAL(6.8067840828f, actual);
+ }
+
+ static void test_rad_to_deg()
+ {
+     float rad       = 0.6108652382f;
+     float actual    = rad_to_deg(rad);
+     ASSERT_EQUAL(35.f, actual);
+
+     rad     = 2.2689280276f;
+     actual  = rad_to_deg(rad);
+     ASSERT_EQUAL(130.f, actual);
+
+     rad     = 4.36332313f;
+     actual  = rad_to_deg(rad);
+     ASSERT_EQUAL(250.f, actual);
+
+     rad     = 5.9341194568f;
+     actual  = rad_to_deg(rad);
+     ASSERT_EQUAL(340.f, actual);
+
+     rad     = 6.8067840828f;
+     actual  = rad_to_deg(rad);
+     ASSERT_EQUAL(390.f, actual);
+ }
+
 void test_matrix()
 {
     TEST_CASE(test_matrix_add);
@@ -117,4 +193,9 @@ void test_matrix()
     TEST_CASE(test_matrix_inverse_2);
     TEST_CASE(test_matrix_inverse_3);
     TEST_CASE(test_matrix_transpose);
+    TEST_CASE(test_x_axis_rotation);
+    TEST_CASE(test_y_axis_rotation);
+    TEST_CASE(test_z_axis_rotation);
+    TEST_CASE(test_deg_to_rad);
+    TEST_CASE(test_rad_to_deg);
 }
