@@ -80,6 +80,16 @@ static void test_vector_magnitude_sq()
     ASSERT_EQUAL(expected, actual);
 }
 
+static void test_vector_hadamard_product()
+{
+    vec3_t v1 = vec3_new(2.f, 3.f, 4.f);
+    vec3_t v2 = vec3_new(3.f, 4.f, 5.f);
+    vec3_t actual = vec3_hadamard(v1, v2);
+    vec3_t expected = vec3_new(6.f, 12.f, 20.f);
+
+    ASSERT_VECTOR3(expected, actual);
+}
+
 void test_vector3()
 {
     TEST_CASE(test_vector_addition);
@@ -91,4 +101,5 @@ void test_vector3()
     TEST_CASE(test_vector_dot);
     TEST_CASE(test_vector_magnitude);
     TEST_CASE(test_vector_magnitude_sq);
+    TEST_CASE(test_vector_hadamard_product);
 }
