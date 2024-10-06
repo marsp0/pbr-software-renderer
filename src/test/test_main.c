@@ -1,4 +1,6 @@
-#include "test_vector.h"
+#include "test_vector2.h"
+#include "test_vector3.h"
+#include "test_vector4.h"
 #include "test_matrix.h"
 #include "test_json.h"
 #include "test_png.h"
@@ -14,7 +16,9 @@ int main()
 {
     INIT_TESTS();
 
-    TEST_GROUP(test_vector);
+    TEST_GROUP(test_vector2);
+    TEST_GROUP(test_vector3);
+    TEST_GROUP(test_vector4);
     TEST_GROUP(test_matrix);
     TEST_GROUP(test_json);
     TEST_GROUP(test_png);

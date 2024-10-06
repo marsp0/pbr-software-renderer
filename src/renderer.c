@@ -30,14 +30,14 @@
 
 static void render_utils(renderer_t* renderer)
 {
-    float width     = (float)renderer->current->width;
-    float height    = (float)renderer->current->height;
-    camera_t* cam   = renderer->scene->camera;
+    float width         = (float)renderer->current->width;
+    float height        = (float)renderer->current->height;
+    camera_t* cam       = renderer->scene->camera;
 
-    vec_t points[4] = {vec_new(0.f, 0.f, 0.f),
-                       vec_new(1.f, 0.f, 0.f),
-                       vec_new(0.f, 1.f, 0.f),
-                       vec_new(0.f, 0.f, 1.f)};
+    vec4_t points[4]    = {vec4_new(0.f, 0.f, 0.f),
+                           vec4_new(1.f, 0.f, 0.f),
+                           vec4_new(0.f, 1.f, 0.f),
+                           vec4_new(0.f, 0.f, 1.f)};
 
     uint32_t colors[4] = {0x00000000, 
                           0x0000FF00, 
@@ -47,10 +47,10 @@ static void render_utils(renderer_t* renderer)
     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
                            camera_view_transform(cam));
 
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec_t); i++)
+    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec4_t); i++)
     {
         points[i]   = mat_mul_vec(PV, points[i]);
-        points[i]   = vec_scale(points[i], 1.f/points[i].w);
+        points[i]   = vec4_scale(points[i], 1.f/points[i].w);
         points[i].x = (points[i].x + 1.f) * 0.5f * width;
         points[i].y = (points[i].y + 1.f) * 0.5f * height;
     }
@@ -68,7 +68,7 @@ static void render_wireframe(renderer_t* renderer)
     mesh_t* mesh    = renderer->scene->mesh;
     camera_t* cam   = renderer->scene->camera;
 
-    vec_t points[3];
+    vec4_t points[3];
 
     if (!camera_is_mesh_visible(cam, mesh->bounding_sphere))
     {
@@ -89,13 +89,13 @@ static void render_wireframe(renderer_t* renderer)
         points[1] = mesh->vertices[i1];
         points[2] = mesh->vertices[i2];
 
-        for (uint32_t j = 0; j < sizeof(points) / sizeof(vec_t); j++)
+        for (uint32_t j = 0; j < sizeof(points) / sizeof(vec4_t); j++)
         {
             // mvp transform
             points[j]   = mat_mul_vec(PV, points[j]);
 
             // persp divide
-            points[j]   = vec_scale(points[j], 1.f/points[j].w);
+            points[j]   = vec4_scale(points[j], 1.f/points[j].w);
 
             // viewport transform
             points[j].x = (points[j].x + 1.f) * 0.5f * width;

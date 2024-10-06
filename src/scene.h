@@ -7,8 +7,8 @@ typedef struct
 {
     mesh_t*     mesh;
     camera_t*   camera;
-    // vec_t    dir_light;
-    // vec_t    point_light;
+    // vec4_t    dir_light;
+    // vec4_t    point_light;
 } scene_t;
 
 scene_t*    scene_new(const char* file_path);

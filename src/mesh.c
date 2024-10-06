@@ -4,9 +4,9 @@
 #include <string.h>
 
 mesh_t* mesh_new(char*      name,
-                 vec_t*     vertices,
-                 vec_t*     texcoords,
-                 vec_t*     normals,
+                 vec4_t*    vertices,
+                 vec4_t*    texcoords,
+                 vec4_t*    normals,
                  uint32_t*  indices,
                  uint32_t   vertices_size,
                  uint32_t   texcoords_size,

@@ -32,8 +32,8 @@ static int32_t edge_check(int32_t x0, int32_t y0,
 /* public functions */
 /********************/
 
-void rasterize_line(vec_t v0,
-                    vec_t v1,
+void rasterize_line(vec4_t v0,
+                    vec4_t v1,
                     uint32_t color, 
                     framebuffer_t* framebuffer)
 {
@@ -105,9 +105,9 @@ void rasterize_line(vec_t v0,
 
 }
 
-void rasterize_triangle(vec_t v0,
-                        vec_t v1,
-                        vec_t v2,
+void rasterize_triangle(vec4_t v0,
+                        vec4_t v1,
+                        vec4_t v2,
                         uint32_t color,
                         framebuffer_t* framebuffer,
                         depthbuffer_t* depthbuffer)
