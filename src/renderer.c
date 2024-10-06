@@ -10,6 +10,7 @@
 #include "linux/input.h"
 #include "time_utils.h"
 #include "rasterizer.h"
+#include "shader.h"
 
 /********************
  *  Notes
@@ -81,7 +82,87 @@ static void renderer_draw_utilities()
 
 static void renderer_draw_mesh(mesh_t* mesh)
 {
-    printf("mesh draw called %p\n", (void*)mesh);
+
+    uint32_t i0;
+    uint32_t i1;
+    uint32_t i2;
+
+    vec4_t v0;
+    vec4_t v1;
+    vec4_t v2;
+
+    // vec2_t t0;
+    // vec2_t t1;
+    // vec2_t t2;
+
+    // vec4_t n0;
+    // vec4_t n1;
+    // vec4_t n2;
+
+    float w_over_2          = (float)width * 0.5f;
+    float h_over_2          = (float)height * 0.5f;
+
+    camera_t* cam           = scene->camera;
+
+    uint32_t indices_size   = mesh->indices_size;
+    uint32_t* indices       = mesh->indices;
+
+    vec4_t* vertices        = mesh->vertices;
+
+    // uint32_t texcoords_size = mesh->texcoords_size;
+    // vec2_t* texcoords       = mesh->texcoords;
+
+    // uint32_t normals_size   = mesh->normals_size;
+    // vec4_t* normals         = mesh->normals;
+
+    uint32_t colors[4] = {0x00000000,
+                          0x0000FF00,
+                          0x00FF0000,
+                          0xFF000000};
+
+    for (uint32_t i = 0; i < indices_size; i += 3)
+    {
+        i0 = indices[i + 0];
+        i1 = indices[i + 1];
+        i2 = indices[i + 2];
+
+        v0 = vertices[i0];
+        v1 = vertices[i1];
+        v2 = vertices[i2];
+
+        // t0 = texcoords[i0];
+        // t1 = texcoords[i1];
+        // t2 = texcoords[i2];
+
+        // n0 = normals[i0];
+        // n1 = normals[i1];
+        // n2 = normals[i2];
+
+        // TODO: backface culling
+
+        // set shader utils
+        shader_set_camera(cam);
+
+        // run vertex shader
+        v0 = shader_vertex(v0);
+        v1 = shader_vertex(v1);
+        v2 = shader_vertex(v2);
+
+        // persp divide
+        v0 = vec4_scale(v0, 1.f / v0.w);
+        v1 = vec4_scale(v1, 1.f / v1.w);
+        v2 = vec4_scale(v2, 1.f / v2.w);
+
+        // viewport transform
+        v0.x = (v0.x + 1.f) * w_over_2;
+        v0.y = (v0.y + 1.f) * h_over_2;
+        v1.x = (v1.x + 1.f) * w_over_2;
+        v1.y = (v1.y + 1.f) * h_over_2;
+        v2.x = (v2.x + 1.f) * w_over_2;
+        v2.y = (v2.y + 1.f) * h_over_2;
+
+        rasterizer_draw_triangle(v0, v1, v2, colors[i%5], current, depthbuffer);
+    }
 }
 
 static void renderer_draw()
