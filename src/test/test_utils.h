@@ -20,8 +20,9 @@
 void        increment_test_assert_counter();
 void        reset_test_assert_counter();
 uint32_t    get_test_assert_counter();
-void        INIT_TESTS();
+void        TESTS_INIT();
 void        TESTS_SUMMARY();
+uint32_t    TESTS_FAIL_COUNT();
 
 
 #define GET_COMPARISON(a, b) _Generic(  a, \

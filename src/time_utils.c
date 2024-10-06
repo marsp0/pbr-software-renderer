@@ -42,6 +42,8 @@ void time_init()
 
 timestamp_t time_now()
 {
+    // TODO: Add warning that time_now is being used before time_init
+
 	struct timespec time;
 	clock_gettime(CLOCK_REALTIME, &time);
 	

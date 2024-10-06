@@ -9,12 +9,14 @@
 #include "test_camera.h"
 #include "test_rasterizer.h"
 #include "test_clip.h"
+#include "test_time_utils.h"
+#include "test_file.h"
 
 #include "test_utils.h"
 
-int main()
+int32_t main()
 {
-    INIT_TESTS();
+    TESTS_INIT();
 
     TEST_GROUP(test_vector2);
     TEST_GROUP(test_vector3);
@@ -27,6 +29,12 @@ int main()
     TEST_GROUP(test_rasterizer);
     TEST_GROUP(test_clip);
     TEST_GROUP(test_scene);
+    TEST_GROUP(test_time_utils);
+    TEST_GROUP(test_file);
 
     TESTS_SUMMARY();
+    
+    int32_t exit_code = TESTS_FAIL_COUNT() > 0 ? 1 : 0;
+    
+    return exit_code;
 }
