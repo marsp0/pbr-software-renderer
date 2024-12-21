@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <math.h>
 
+#include "shader.h"
+
 /********************
  *  Notes
  *
@@ -109,7 +111,6 @@ void rasterizer_draw_line(vec4_t v0,
 void rasterizer_draw_triangle(vec4_t v0,
                               vec4_t v1,
                               vec4_t v2,
-                              uint32_t color,
                               framebuffer_t* framebuffer,
                               depthbuffer_t* depthbuffer)
 {
@@ -171,6 +172,8 @@ void rasterizer_draw_triangle(vec4_t v0,
             {
                 continue;
             }
+
+            uint32_t color = shader_fragment(w0, w1, w2);
 
             depthbuffer_set(depthbuffer, (uint32_t)x, (uint32_t)y, depth);
             framebuffer_set(framebuffer, (uint32_t)x, (uint32_t)y, color);

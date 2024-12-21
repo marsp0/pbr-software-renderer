@@ -91,13 +91,13 @@ static void renderer_draw_mesh(mesh_t* mesh)
     vec4_t v1;
     vec4_t v2;
 
-    // vec2_t t0;
-    // vec2_t t1;
-    // vec2_t t2;
+    vec2_t t0;
+    vec2_t t1;
+    vec2_t t2;
 
-    // vec4_t n0;
-    // vec4_t n1;
-    // vec4_t n2;
+    vec4_t n0;
+    vec4_t n1;
+    vec4_t n2;
 
     float w_over_2          = (float)width * 0.5f;
     float h_over_2          = (float)height * 0.5f;
@@ -106,19 +106,9 @@ static void renderer_draw_mesh(mesh_t* mesh)
 
     uint32_t indices_size   = mesh->indices_size;
     uint32_t* indices       = mesh->indices;
-
     vec4_t* vertices        = mesh->vertices;
-
-    // uint32_t texcoords_size = mesh->texcoords_size;
-    // vec2_t* texcoords       = mesh->texcoords;
-
-    // uint32_t normals_size   = mesh->normals_size;
-    // vec4_t* normals         = mesh->normals;
-
-    uint32_t colors[4] = {0x00000000,
-                          0x0000FF00,
-                          0x00FF0000,
-                          0xFF000000};
+    vec2_t* texcoords       = mesh->texcoords;
+    vec4_t* normals         = mesh->normals;
 
     for (uint32_t i = 0; i < indices_size; i += 3)
     {
@@ -130,18 +120,27 @@ static void renderer_draw_mesh(mesh_t* mesh)
         v1 = vertices[i1];
         v2 = vertices[i2];
 
-        // t0 = texcoords[i0];
-        // t1 = texcoords[i1];
-        // t2 = texcoords[i2];
+        t0 = texcoords[i0];
+        t1 = texcoords[i1];
+        t2 = texcoords[i2];
 
-        // n0 = normals[i0];
-        // n1 = normals[i1];
-        // n2 = normals[i2];
+        n0 = normals[i0];
+        n1 = normals[i1];
+        n2 = normals[i2];
 
-        // TODO: backface culling
+        // backface cull
+        if (vec4_dot(n0, cam->forward) < 0.f)
+        {
+            continue;
+        }
 
         // set shader utils
-        shader_set_camera(cam);
+        shader_set_uniforms(cam,
+                            mesh->albedo,
+                            mesh->metallic,
+                            mesh->normal,
+                            v0, v1, v2,
+                            t0, t1, t2);
 
         // run vertex shader
         v0 = shader_vertex(v0);
@@ -161,7 +160,7 @@ static void renderer_draw_mesh(mesh_t* mesh)
         v2.x = (v2.x + 1.f) * w_over_2;
         v2.y = (v2.y + 1.f) * h_over_2;
 
-        rasterizer_draw_triangle(v0, v1, v2, colors[i%5], current, depthbuffer);
+        rasterizer_draw_triangle(v0, v1, v2, current, depthbuffer);
     }
 }
 
