@@ -117,6 +117,8 @@ static vec4_t sample_normal(texture_t* tex, float u, float v)
     uint32_t v_idx = (uint32_t)(v * (float)tex->height) - 1;
     vec4_t temp = vec4_from_bgra(texture_get(tex, u_idx, v_idx));
 
+    // NOTE: Should we be remapping the output as per the below?
+    //       https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#additional-textures
     return vec4_new(temp.z, temp.y, temp.x);
 }
 
