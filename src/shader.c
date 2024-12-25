@@ -242,7 +242,7 @@ uint32_t shader_fragment(float w0, float w1, float w2)
     float s     = f_min(t0.x * w0 + t1.x * w1 + t2.x * w2, 1.f);
     float t     = f_min(t0.y * w0 + t1.y * w1 + t2.y * w2, 1.f);
     vec4_t n_t  = vec4_normalize(sample_normal(normal, s, t));
-    vec4_t n_w  = mat_mul_vec(tbn_t_w, n_t);
+    vec4_t n_w  = vec4_normalize(mat_mul_vec(tbn_t_w, n_t));
 
     return vec4_to_bgra(n_w);
 }
