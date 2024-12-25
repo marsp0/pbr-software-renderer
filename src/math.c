@@ -368,6 +368,16 @@ mat_t mat_from_vec4(vec4_t v1, vec4_t v2, vec4_t v3)
     return m;
 }
 
+mat_t mat_translate(vec4_t v)
+{
+    mat_t m = mat_new_identity();
+    m.data[0][3] = v.x;
+    m.data[1][3] = v.y;
+    m.data[2][3] = v.z;
+
+    return m;
+}
+
 mat_t mat_add(mat_t m1, mat_t m2)
 {
     mat_t mat;
@@ -556,6 +566,11 @@ float rad_to_deg(float rad)
 /********************/
 /*    Utilities     */
 /********************/
+
+float f_abs(float a)
+{
+    return fabs(a);
+}
 
 float f_min(float a, float b)
 {

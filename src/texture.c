@@ -20,10 +20,10 @@ uint32_t texture_get(texture_t* texture, uint32_t x, uint32_t y)
     unsigned char* data = texture->data;
 
     uint32_t result = 0;
-    result += data[index + 0] << 8;
-    result += data[index + 1] << 16;
-    result += data[index + 2] << 24;
-    result += data[index + 3];
+    result += data[index + 0] << 8;     // R
+    result += data[index + 1] << 16;    // G
+    result += data[index + 2] << 24;    // B
+    result += data[index + 3];          // A
 
     return result;
 }
