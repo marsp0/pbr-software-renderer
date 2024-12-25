@@ -11,6 +11,7 @@
 #include "test_clip.h"
 #include "test_time_utils.h"
 #include "test_file.h"
+#include "test_math_utils.h"
 
 #include "test_utils.h"
 
@@ -31,6 +32,7 @@ int32_t main()
     TEST_GROUP(test_scene);
     TEST_GROUP(test_time_utils);
     TEST_GROUP(test_file);
+    TEST_GROUP(test_math_utils);
 
     TESTS_SUMMARY();
     
