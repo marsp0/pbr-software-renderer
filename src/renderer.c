@@ -39,9 +39,11 @@ static bool wireframe               = false;
 /* static functions */
 /********************/
 
-static void renderer_update(input_t input)
+static void renderer_update(input_t input, timestamp_t frame_time)
 {
-    scene_update(scene, input);
+    float dt = (float)(frame_time) / SECOND;
+
+    scene_update(scene, input, dt);
     if (input.keys & KEY_1)
     {
         wireframe = !wireframe;
@@ -225,7 +227,7 @@ void renderer_run()
 
         input_t input = handle_input(display);
 
-        renderer_update(input);
+        renderer_update(input, frame_time);
 
         renderer_draw();
 

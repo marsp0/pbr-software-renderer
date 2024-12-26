@@ -136,7 +136,7 @@ camera_t* camera_new(vec4_t position,
     return camera;
 }
 
-void camera_update(camera_t* cam, input_t input)
+void camera_update(camera_t* cam, input_t input, float dt)
 {
     // origin of xorg window is top-left
     cam->pitch += deg_to_rad((float)input.dy);
@@ -152,26 +152,29 @@ void camera_update(camera_t* cam, input_t input)
         cam->yaw = 0.f;
     }
 
-    float speed = 0.5f;
-    vec4_t front = vec4_scale(vec4_negate(cam->forward), speed);
-    vec4_t right = vec4_scale(cam->side, speed);
+    vec4_t front = vec4_negate(cam->forward);
+    vec4_t right = cam->side;
+    vec4_t position = cam->position;
+    vec4_t dir;
 
     if (input.keys & KEY_W)
     {
-        cam->position = vec4_add(cam->position, front);
+        dir = front;
     }
     if (input.keys & KEY_A)
     {
-        cam->position = vec4_add(cam->position, vec4_negate(right));
+        dir = vec4_negate(right);
     }
     if (input.keys & KEY_S)
     {
-        cam->position = vec4_add(cam->position, vec4_negate(front));
+        dir = vec4_negate(front);
     }
     if (input.keys & KEY_D)
     {
-        cam->position = vec4_add(cam->position, right);
+        dir = right;
     }
+
+    cam->position = vec4_add(position, vec4_scale(dir, dt));
 
     update(cam);
 }
