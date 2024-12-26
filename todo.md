@@ -1,5 +1,9 @@
 ## TODO
 
+- [ ] 12.10.2024
+    - [ ] implement all lighting models listend in the disney pbr (if possible)
+            - [ ] Oren Nayar Diffuse
+            - [ ] Hanrahan-Krueger diffuse
 - [ ] 5.08.2023
     - [ ] replace mat_new with mat_new_identity
 - [ ] 18.06.2023

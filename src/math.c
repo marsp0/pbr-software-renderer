@@ -200,25 +200,18 @@ vec4_t vec4_from_bgra(uint32_t c)
     float b = (float)((c >> 24) & 0xFF);
     float g = (float)((c >> 16) & 0xFF);
     float r = (float)((c >>  8) & 0xFF);
-    float a = (float)((c >>  0) & 0xFF);
 
-    vec4_t v = {.x = b * d,
-                .y = g * d,
-                .z = r * d,
-                .w = a * d };
-    return v;
+    return vec4_new(b * d, g * d, r * d);;
 }
 
 uint32_t vec4_to_bgra(vec4_t c)
 {
-    // Note: should i clamp before?
+    uint32_t b = ((uint32_t)(f_min(f_max(c.x, 0.f), 1.f) * 255)) << 24;
+    uint32_t g = ((uint32_t)(f_min(f_max(c.y, 0.f), 1.f) * 255)) << 16;
+    uint32_t r = ((uint32_t)(f_min(f_max(c.z, 0.f), 1.f) * 255)) <<  8;
+    // uint32_t a = ((uint32_t)(f_min(f_max(c.w, 0.f), 1.f) * 255)) <<  0;
 
-    uint32_t b = ((uint32_t)(c.x * 255)) << 24;
-    uint32_t g = ((uint32_t)(c.y * 255)) << 16;
-    uint32_t r = ((uint32_t)(c.z * 255)) <<  8;
-    uint32_t a = ((uint32_t)(c.w * 255)) <<  0;
-
-    return b + g + r + a;
+    return b + g + r;
 }
 
 vec4_t vec4_from_scalar(float s)
@@ -364,6 +357,16 @@ mat_t mat_from_vec4(vec4_t v1, vec4_t v2, vec4_t v3)
     m.data[3][1] = 0.f;
     m.data[3][2] = 0.f;
     m.data[3][3] = 1.f;
+
+    return m;
+}
+
+mat_t mat_translate(vec4_t v)
+{
+    mat_t m = mat_new_identity();
+    m.data[0][3] = v.x;
+    m.data[1][3] = v.y;
+    m.data[2][3] = v.z;
 
     return m;
 }
@@ -556,6 +559,11 @@ float rad_to_deg(float rad)
 /********************/
 /*    Utilities     */
 /********************/
+
+float f_abs(float a)
+{
+    return (float)fabs(a);
+}
 
 float f_min(float a, float b)
 {

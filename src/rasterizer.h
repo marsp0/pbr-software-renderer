@@ -13,6 +13,5 @@ void rasterizer_draw_line(vec4_t p0,
 void rasterizer_draw_triangle(vec4_t v0,
                               vec4_t v1,
                               vec4_t v2,
-                              uint32_t color,
                               framebuffer_t* framebuffer,
                               depthbuffer_t* depthbuffer);

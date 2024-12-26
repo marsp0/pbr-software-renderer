@@ -390,7 +390,7 @@ scene_t* parse_scene(const char* file_path)
                                  0.610866f,
                                  -2.356194f,
                                  45 * F_PI / 180.f,
-                                 1.f,
+                                 0.1f,
                                  20.f,
                                  1.3333f);
 

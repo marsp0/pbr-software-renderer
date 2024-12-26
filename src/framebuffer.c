@@ -67,7 +67,7 @@ uint32_t framebuffer_get(framebuffer_t* buffer, uint32_t x, uint32_t y)
 
 void framebuffer_clear(framebuffer_t* buffer)
 {
-    memset(buffer->data, 0, buffer->width * buffer->height * sizeof(unsigned char) * RGB_CHANNELS);
+    memset(buffer->data, 120, buffer->width * buffer->height * sizeof(unsigned char) * RGB_CHANNELS);
 }
 
 void framebuffer_free(framebuffer_t* buffer)

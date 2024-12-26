@@ -10,5 +10,6 @@ typedef struct
 	unsigned char* data; /* R G B (A) */
 } texture_t;
 
-texture_t* 	texture_new(uint32_t width, uint32_t height, uint32_t stride);
-void 		texture_free(texture_t* texture);
+texture_t*  texture_new(uint32_t width, uint32_t height, uint32_t stride);
+uint32_t    texture_get(texture_t* texture, uint32_t x, uint32_t y);
+void        texture_free(texture_t* texture);
