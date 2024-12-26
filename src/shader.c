@@ -24,10 +24,10 @@
 /* static variables */
 /********************/
 
-static camera_t* camera     = NULL;
-static texture_t* albedo    = NULL;
-static texture_t* metallic  = NULL;
-static texture_t* normal    = NULL;
+static camera_t* camera             = NULL;
+static texture_t* albedo_texture    = NULL;
+static texture_t* metallic_texture  = NULL;
+static texture_t* normal_texture    = NULL;
 // static mat_t  tbn_t_w;
 static vec4_t v0_w;
 static vec4_t v1_w;
@@ -35,9 +35,9 @@ static vec4_t v2_w;
 static vec2_t t0;
 static vec2_t t1;
 static vec2_t t2;
-static vec4_t normal0;
-static vec4_t normal1;
-static vec4_t normal2;
+static vec4_t n0;
+static vec4_t n1;
+static vec4_t n2;
 static vec4_t cam_w;
 
 /********************/
@@ -143,29 +143,29 @@ void shader_set_uniforms(camera_t* cam,
                          vec2_t tex_coord0,
                          vec2_t tex_coord1,
                          vec2_t tex_coord2,
-                                vec4_t normal_vec0,
-                                vec4_t normal_vec1,
-                                vec4_t normal_vec2)
+                         vec4_t normal_vec0,
+                         vec4_t normal_vec1,
+                         vec4_t normal_vec2)
 {
-    camera          = cam;
-    cam_w           = camera->position;
+    camera              = cam;
+    cam_w               = camera->position;
 
-    normal0         = normal_vec0;
-    normal1         = normal_vec1;
-    normal2         = normal_vec2;
+    albedo_texture      = albedo_tex;
+    metallic_texture    = metallic_tex;
+    normal_texture      = normal_tex;
 
-    albedo          = albedo_tex;
-    metallic        = metallic_tex;
-    normal          = normal_tex;
+    mat_t M             = mat_new_identity();
+    v0_w                = mat_mul_vec(M, v0);
+    v1_w                = mat_mul_vec(M, v1);
+    v2_w                = mat_mul_vec(M, v2);
 
-    t0              = tex_coord0;
-    t1              = tex_coord1;
-    t2              = tex_coord2;
+    t0                  = tex_coord0;
+    t1                  = tex_coord1;
+    t2                  = tex_coord2;
 
-    mat_t M         = mat_new_identity();
-    v0_w            = mat_mul_vec(M, v0);
-    v1_w            = mat_mul_vec(M, v1);
-    v2_w            = mat_mul_vec(M, v2);
+    n0                  = normal_vec0;
+    n1                  = normal_vec1;
+    n2                  = normal_vec2;
 }
 
 
@@ -188,16 +188,16 @@ uint32_t shader_fragment(float w0, float w1, float w2)
     float s             = f_min(t0.x * w0 + t1.x * w1 + t2.x * w2, 1.f);
     float t             = f_min(t0.y * w0 + t1.y * w1 + t2.y * w2, 1.f);
 
-    vec4_t a            = vec4_scale(vec4_from_bgra(sample(albedo, s, t)), 2.2f);
-    vec4_t m_sample     = vec4_from_bgra(sample(metallic, s, t));
-    float r             = m_sample.y;                                       // green channel
-    float m             = m_sample.x;                                       // blue channel
+    vec4_t albedo       = vec4_scale(vec4_from_bgra(sample(albedo_texture, s, t)), 2.2f);
+    vec4_t metallic     = vec4_from_bgra(sample(metallic_texture, s, t));
+    float rough         = metallic.y;                                       // green channel
+    float metal         = metallic.x;                                       // blue channel
     // vec_t o             = vec_from_bgra(sample(tri->occlusion, s, t));
 
-    // vec4_t n_t          = vec4_normalize(sample_normal(normal, s, t));
-    vec4_t n_w          = vec4_scale(normal0, w0);
-    n_w                 = vec4_add(n_w, vec4_scale(normal1, w1));
-    n_w                 = vec4_add(n_w, vec4_scale(normal2, w2));
+    // vec4_t n_t          = vec4_normalize(sample_normal(normal_texture, s, t));
+    vec4_t n_w          = vec4_scale(n0, w0);
+    n_w                 = vec4_add(n_w, vec4_scale(n1, w1));
+    n_w                 = vec4_add(n_w, vec4_scale(n2, w2));
     n_w                 = vec4_normalize(n_w);
     
     // float du1       = t1.x - t0.x;
@@ -236,9 +236,9 @@ uint32_t shader_fragment(float w0, float w1, float w2)
     // ---------------------
     // 4 * n_dot_l * n_dot_v
 
-    float d             = normal_dist(n_dot_h, r);
-    float g             = self_shadow(n_dot_v, n_dot_l, r);
-    vec4_t f            = fresnel(h_dot_v, a, m);
+    float d             = normal_dist(n_dot_h, rough);
+    float g             = self_shadow(n_dot_v, n_dot_l, rough);
+    vec4_t f            = fresnel(h_dot_v, albedo, metal);
     float dg            = ( d * g ) / ( 4 * n_dot_l * n_dot_v + 0.001f );
     vec4_t specular     = vec4_scale(f, dg);
 
@@ -248,16 +248,15 @@ uint32_t shader_fragment(float w0, float w1, float w2)
     //     pi
 
     vec4_t kd           = vec4_sub(one, f);
-
-    kd                  = vec4_scale(kd, 1.f - m);
+    kd                  = vec4_scale(kd, 1.f - metal);
     kd                  = vec4_scale(kd, 1.f/F_PI);
-    vec4_t diffuse      = vec4_hadamard(a, kd);
+    vec4_t diffuse      = vec4_hadamard(albedo, kd);
 
-    vec4_t c            = vec4_add(diffuse, specular);
-    c                   = vec4_scale(c, 1.f);
-    c                   = vec4_scale(c, n_dot_l);
+    vec4_t col          = vec4_add(diffuse, specular);
+    col                 = vec4_scale(col, 1.f);
+    col                 = vec4_scale(col, n_dot_l);
 
-    vec4_t ambient = vec4_scale(a, 0.1f);
+    vec4_t ambient = vec4_scale(albedo, 0.1f);
 
-    return vec4_to_bgra(vec4_add(c, ambient));
+    return vec4_to_bgra(vec4_add(col, ambient));
 }
