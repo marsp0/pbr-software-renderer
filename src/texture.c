@@ -23,7 +23,10 @@ uint32_t texture_get(texture_t* texture, uint32_t x, uint32_t y)
     result += data[index + 0] << 8;     // R
     result += data[index + 1] << 16;    // G
     result += data[index + 2] << 24;    // B
-    result += data[index + 3];          // A
+    if (texture->stride == 4)
+    {
+        result += data[index + 3];          // A
+    }
 
     return result;
 }

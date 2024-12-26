@@ -140,7 +140,7 @@ static void renderer_draw_mesh(mesh_t* mesh)
                             mesh->metallic,
                             mesh->normal,
                             v0, v1, v2,
-                            t0, t1, t2);
+                            t0, t1, t2, n0, n1, n2);
 
         // run vertex shader
         v0 = shader_vertex(v0);
