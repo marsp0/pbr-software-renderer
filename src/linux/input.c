@@ -68,6 +68,11 @@ static void handle_mouse(display_t* dsp, XEvent* event, input_t* input)
     
     input->dx   = x - prev_x;
     input->dy   = y - prev_y;
+    input->x    = x;
+    input->y    = y;
+    input->prev_x = prev_x;
+    input->prev_y = prev_y;
+    
     prev_x      = x;
     prev_y      = y;
 }
