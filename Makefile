@@ -1,5 +1,8 @@
 # https://en.wikipedia.org/wiki/Makefile
 
+# TODO: add explicit file listing instead of automatic one,
+#       simplify the make file
+
 SRC_DIR         := ./src
 OBJ_DIR         := ./out
 
