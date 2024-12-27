@@ -11,6 +11,8 @@
 #define F_PI_OVER_180   0.0174532925199f
 #define F_180_OVER_PI   57.2957795131f
 
+typedef float rad_t;
+
 /********************/
 /*      Vector      */
 /********************/

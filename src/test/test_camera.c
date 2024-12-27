@@ -4,6 +4,8 @@
 
 #include "../camera.h"
 
+static const float dt = 0.016f;
+
 static void assert_frustum(float pitch, float yaw, vec4_t view_dir)
 {
     float n_dist            = 1.f;
@@ -121,7 +123,7 @@ static void test_view_matrix_rotated_90deg_around_y()
 
     // move camera
     camera->position = new_pos;
-    camera_update(camera, input);
+    camera_update(camera, input, dt);
     
     // assert view transform
     view.data[0][0] = new_left.x;
@@ -174,7 +176,7 @@ static void test_view_matrix_rotated_45deg_around_x()
 
     // move camera
     camera->position = new_pos;
-    camera_update(camera, input);
+    camera_update(camera, input, dt);
     
     // assert view transform
     view.data[0][0] = new_left.x;
@@ -227,7 +229,7 @@ static void test_view_matrix_rotated_30deg_around_x_and_45deg_around_y()
 
     // move camera
     camera->position = new_pos;
-    camera_update(camera, input);
+    camera_update(camera, input, dt);
     
     // assert view transform
     view.data[0][0] = new_left.x;
