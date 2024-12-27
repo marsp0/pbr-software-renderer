@@ -44,61 +44,6 @@ static void camera_update_internal(camera_t* cam)
     cam->forward    = vec4_normalize(mat_mul_vec(rot_y_x, vec4_new(0.f, 0.f, -1.f)));
     cam->side       = vec4_normalize(vec4_cross(world_up, cam->forward));
     cam->up         = vec4_normalize(vec4_cross(cam->forward, cam->side));
-
-    // generate new planes
-    vec4_t view_dir  = vec4_negate(cam->forward);
-
-    vec4_t n_point   = vec4_add(cam->position, vec4_scale(view_dir, cam->n_dist));
-    vec4_t f_point   = vec4_add(cam->position, vec4_scale(view_dir, cam->f_dist));
-
-    vec4_t r_point   = vec4_add(n_point, vec4_scale(cam->side, cam->r_dist));
-    vec4_t r_dir     = vec4_normalize(vec4_sub(r_point, cam->position));
-
-    vec4_t l_point   = vec4_add(n_point, vec4_scale(cam->side, cam->l_dist));
-    vec4_t l_dir     = vec4_normalize(vec4_sub(l_point, cam->position));
-
-    vec4_t t_point   = vec4_add(n_point, vec4_scale(cam->up, cam->t_dist));
-    vec4_t t_dir     = vec4_normalize(vec4_sub(t_point, cam->position));
-
-    vec4_t b_point   = vec4_add(n_point, vec4_scale(cam->up, cam->b_dist));
-    vec4_t b_dir     = vec4_normalize(vec4_sub(b_point, cam->position));
-
-    cam->n_plane.p  = n_point;
-    cam->n_plane.n  = view_dir;
-
-    cam->f_plane.p  = f_point;
-    cam->f_plane.n  = cam->forward;
-
-    cam->r_plane.p  = r_point;
-    cam->r_plane.n  = vec4_normalize(vec4_cross(cam->up, r_dir));
-
-    cam->l_plane.p  = l_point;
-    cam->l_plane.n  = vec4_normalize(vec4_cross(l_dir, cam->up));
-
-    cam->t_plane.p  = t_point;
-    cam->t_plane.n  = vec4_normalize(vec4_cross(t_dir, cam->side));
-
-    cam->b_plane.p  = b_point;
-    cam->b_plane.n  = vec4_normalize(vec4_cross(cam->side, b_dir));
-}
-
-static bool camera_plane_check(plane_t plane, sphere_t sphere)
-{
-    vec4_t pc = vec4_sub(sphere.c, plane.p);
-    float dot = vec4_dot(pc, plane.n);
-    if (dot / vec4_magnitude(pc) > 0.f)
-    {
-        return true;
-    }
-
-    printf("dist is %f\n", fabs(dot));
-    vec4_print(plane.n);
-    if (fabs(dot) < sphere.r)
-    {
-        return true;
-    }
-
-    return false;
 }
 
 /********************/
@@ -177,16 +122,6 @@ void camera_update(camera_t* cam, input_t input, float dt)
     cam->position = vec4_add(position, vec4_scale(dir, dt));
 
     camera_update_internal(cam);
-}
-
-bool camera_is_mesh_visible(camera_t* cam, sphere_t sphere)
-{
-    return  camera_plane_check(cam->n_plane, sphere) &&
-            camera_plane_check(cam->f_plane, sphere) &&
-            camera_plane_check(cam->r_plane, sphere) &&
-            camera_plane_check(cam->l_plane, sphere) &&
-            camera_plane_check(cam->t_plane, sphere) &&
-            camera_plane_check(cam->b_plane, sphere);
 }
 
 mat_t camera_view_transform(camera_t* cam)
