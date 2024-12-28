@@ -84,6 +84,7 @@ float       vec4_magnitude(vec4_t v);
 float       vec4_magnitude_sq(vec4_t v);
 void        vec4_print(vec4_t v);
 
+
 /********************/
 /*       Matrix     */
 /********************/
@@ -108,6 +109,23 @@ mat_t   mat_inverse(mat_t m);
 mat_t   mat_transpose(mat_t m);
 void    mat_print(mat_t m);
 
+
+/********************/
+/*    Quaternion    */
+/********************/
+
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+    float w;
+} quat_t;
+
+quat_t quat_identity();
+quat_t quat_new(float x, float y, float z, float w);
+
+
 /********************/
 /*  Rotation Utils  */
 /********************/
@@ -117,6 +135,7 @@ mat_t y_axis_rotation(float rad);
 mat_t z_axis_rotation(float rad);
 float deg_to_rad(float deg);
 float rad_to_deg(float rad);
+
 
 /********************/
 /*       Plane      */
@@ -128,6 +147,7 @@ typedef struct
     vec4_t n;
 } plane_t;
 
+
 /********************/
 /*      Sphere      */
 /********************/
@@ -137,6 +157,7 @@ typedef struct
     vec4_t c;
     float r;
 } sphere_t;
+
 
 /********************/
 /*    Utilities     */

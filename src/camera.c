@@ -31,41 +31,59 @@
 /* static variables */
 /********************/
 
+static const vec4_t world_up = { 0.f, 1.f, 0.f, 1.f };
+
 /********************/
 /* static functions */
 /********************/
 
 static void camera_update_internal(camera_t* cam)
 {
-    vec4_t world_up  = vec4_new(0.f, 1.f, 0.f);
-    
     // generate new basis vectors
-    mat_t rot_y_x   = mat_mul_mat(y_axis_rotation(cam->yaw), x_axis_rotation(cam->pitch));
-    cam->forward    = vec4_normalize(mat_mul_vec(rot_y_x, vec4_new(0.f, 0.f, -1.f)));
-    cam->side       = vec4_normalize(vec4_cross(world_up, cam->forward));
-    cam->up         = vec4_normalize(vec4_cross(cam->forward, cam->side));
+    float radius    = cam->radius;
+    float sin_phi   = sin(cam->phi);
+    float cos_phi   = cos(cam->phi);
+    float sin_theta = sin(cam->theta);
+    float cos_theta = cos(cam->theta);
+    float x         = radius * sin_phi * cos_theta;
+    float y         = radius * cos_phi;
+    float z         = radius * sin_phi * sin_theta;
+
+    vec4_t position = vec4_new(x, y, z);                                    // TODO: will not work with any vec besides origin
+    vec4_t target   = cam->target;
+
+    vec4_t forward  = vec4_normalize(vec4_sub(position, target));
+    vec4_t left     = vec4_normalize(vec4_cross(world_up, forward));
+    vec4_t up       = vec4_normalize(vec4_cross(forward, left));
+
+    cam->position   = position;
+    cam->forward    = forward;
+    cam->left       = left;
+    cam->up         = up;
 }
 
 /********************/
 /* public functions */
 /********************/
 
-camera_t* camera_new(vec4_t position,
-                     float pitch,
-                     float yaw,
+camera_t* camera_new(vec4_t target,
+                     float phi,
+                     float theta,
+                     float radius,
                      float fov_x,
                      float near,
                      float far,
                      float aspect_ratio)
 {
     camera_t* camera    = malloc(sizeof(camera_t));
-    
-    camera->position    = position;
-    camera->pitch       = pitch;
-    camera->yaw         = yaw;
-    camera->forward     = vec4_new(0.f, 0.f, 0.f);
-    camera->side        = vec4_new(0.f, 0.f, 0.f);
-    camera->up          = vec4_new(0.f, 0.f, 0.f);
+
+    camera->radius      = radius;
+    camera->phi         = phi;
+    camera->theta       = theta;
+    camera->target      = target;
+    camera->forward     = vec4_new(0.f, 0.f, -1.f);
+    camera->left        = vec4_new(1.f, 0.f, 0.f);
+    camera->up          = vec4_new(0.f, 1.f, 0.f);
 
     camera->fov_x       = fov_x;
     camera->asp_ratio   = aspect_ratio;
@@ -83,68 +101,46 @@ camera_t* camera_new(vec4_t position,
 
 void camera_update(camera_t* cam, input_t input, float dt)
 {
-    // origin of xorg window is top-left
-    cam->pitch += deg_to_rad((float)input.dy);
-    cam->yaw   -= deg_to_rad((float)input.dx);
 
-    if (cam->pitch > MAX_PITCH || cam->pitch < -MAX_PITCH)
-    {
-        cam->pitch = cam->pitch > MAX_PITCH ? MAX_PITCH : -MAX_PITCH;
-    }
+    float phi   = cam->phi;
+    float theta = cam->theta;
 
-    if (cam->yaw > 2 * M_PI || cam->yaw < -M_PI * 2)
-    {
-        cam->yaw = 0.f;
-    }
+    phi        -= deg_to_rad((float)input.dy);
+    phi         = f_clamp(phi, 0.001f, F_PI - 0.001f);
 
-    vec4_t front = vec4_negate(cam->forward);
-    vec4_t right = cam->side;
-    vec4_t position = cam->position;
-    vec4_t dir;
+    theta      += deg_to_rad((float)input.dx);
+    theta       = f_wrap(theta, 0.f, 2 * F_PI);
 
-    if (input.keys & KEY_W)
-    {
-        dir = front;
-    }
-    if (input.keys & KEY_A)
-    {
-        dir = vec4_negate(right);
-    }
-    if (input.keys & KEY_S)
-    {
-        dir = vec4_negate(front);
-    }
-    if (input.keys & KEY_D)
-    {
-        dir = right;
-    }
-
-    cam->position = vec4_add(position, vec4_scale(dir, dt));
+    cam->phi    = phi;
+    cam->theta  = theta;
 
     camera_update_internal(cam);
 }
 
 mat_t camera_view_transform(camera_t* cam)
 {
-    mat_t result = mat_new_identity();
+    mat_t result        = mat_new_identity();
 
     vec4_t pos_negative = vec4_negate(cam->position);
+    vec4_t forward      = cam->forward;
+    vec4_t left         = cam->left;
+    vec4_t up           = cam->up;
 
     // construct cam -> world transform + invert it
-    result.data[0][0] = cam->side.x;
-    result.data[0][1] = cam->side.y;
-    result.data[0][2] = cam->side.z;
-    result.data[0][3] = vec4_dot(pos_negative, cam->side);
+    result.data[0][0]   = left.x;
+    result.data[0][1]   = left.y;
+    result.data[0][2]   = left.z;
+    result.data[0][3]   = vec4_dot(pos_negative, left);
 
-    result.data[1][0] = cam->up.x;
-    result.data[1][1] = cam->up.y;
-    result.data[1][2] = cam->up.z;
-    result.data[1][3] = vec4_dot(pos_negative, cam->up);
+    result.data[1][0]   = up.x;
+    result.data[1][1]   = up.y;
+    result.data[1][2]   = up.z;
+    result.data[1][3]   = vec4_dot(pos_negative, up);
 
-    result.data[2][0] = cam->forward.x;
-    result.data[2][1] = cam->forward.y;
-    result.data[2][2] = cam->forward.z;
-    result.data[2][3] = vec4_dot(pos_negative, cam->forward);
+    result.data[2][0]   = forward.x;
+    result.data[2][1]   = forward.y;
+    result.data[2][2]   = forward.z;
+    result.data[2][3]   = vec4_dot(pos_negative, forward);
 
     return result;
 }
