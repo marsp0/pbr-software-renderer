@@ -19,11 +19,6 @@ typedef struct
     uint64_t keys;
     int32_t  dx;
     int32_t  dy;
-    
-    int32_t     x;
-    int32_t     y;
-    int32_t     prev_x;
-    int32_t     prev_y;
 } input_t;
 
 input_t handle_input(display_t* dsp);
