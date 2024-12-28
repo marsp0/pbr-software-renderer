@@ -50,37 +50,37 @@ static void renderer_update(input_t input, timestamp_t frame_time)
     }
 }
 
-static void renderer_draw_utilities()
-{
-    float w         = (float)width;
-    float h         = (float)height;
-    camera_t* cam   = scene->camera;
+// static void renderer_draw_utilities()
+// {
+//     float w         = (float)width;
+//     float h         = (float)height;
+//     camera_t* cam   = scene->camera;
 
-    vec4_t points[4]    = {vec4_new(0.f, 0.f, 0.f),
-                           vec4_new(1.f, 0.f, 0.f),
-                           vec4_new(0.f, 1.f, 0.f),
-                           vec4_new(0.f, 0.f, 1.f)};
+//     vec4_t points[4]    = {vec4_new(0.f, 0.f, 0.f),
+//                            vec4_new(1.f, 0.f, 0.f),
+//                            vec4_new(0.f, 1.f, 0.f),
+//                            vec4_new(0.f, 0.f, 1.f)};
 
-    uint32_t colors[4] = {0x00000000, 
-                          0x0000FF00, 
-                          0x00FF0000, 
-                          0xFF000000};
+//     uint32_t colors[4] = {0x00000000, 
+//                           0x0000FF00, 
+//                           0x00FF0000, 
+//                           0xFF000000};
 
-    mat_t PV = mat_mul_mat(camera_proj_transform(cam),
-                           camera_view_transform(cam));
+//     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
+//                            camera_view_transform(cam));
 
-    for (uint32_t i = 0; i < sizeof(points) / sizeof(vec4_t); i++)
-    {
-        points[i]   = mat_mul_vec(PV, points[i]);
-        points[i]   = vec4_scale(points[i], 1.f/points[i].w);
-        points[i].x = (points[i].x + 1.f) * 0.5f * w;
-        points[i].y = (points[i].y + 1.f) * 0.5f * h;
-    }
+//     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec4_t); i++)
+//     {
+//         points[i]   = mat_mul_vec(PV, points[i]);
+//         points[i]   = vec4_scale(points[i], 1.f/points[i].w);
+//         points[i].x = (points[i].x + 1.f) * 0.5f * w;
+//         points[i].y = (points[i].y + 1.f) * 0.5f * h;
+//     }
 
-    rasterizer_draw_line(points[0], points[1], colors[1], current);
-    rasterizer_draw_line(points[0], points[2], colors[2], current);
-    rasterizer_draw_line(points[0], points[3], colors[3], current);
-}
+//     rasterizer_draw_line(points[0], points[1], colors[1], current);
+//     rasterizer_draw_line(points[0], points[2], colors[2], current);
+//     rasterizer_draw_line(points[0], points[3], colors[3], current);
+// }
 
 static void renderer_draw_mesh(mesh_t* mesh)
 {
@@ -169,7 +169,7 @@ static void renderer_draw_mesh(mesh_t* mesh)
 
 static void renderer_draw()
 {
-    renderer_draw_utilities();
+    // renderer_draw_utilities();
 
     renderer_draw_mesh(scene->mesh);
 

@@ -101,14 +101,14 @@ camera_t* camera_new(vec4_t target,
 
 void camera_update(camera_t* cam, input_t input, float dt)
 {
-
+    float dA    = dt * 90.f;
     float phi   = cam->phi;
     float theta = cam->theta;
 
-    phi        -= deg_to_rad((float)input.dy);
+    phi        -= deg_to_rad((float)input.dy * dA);
     phi         = f_clamp(phi, 0.001f, F_PI - 0.001f);
 
-    theta      += deg_to_rad((float)input.dx);
+    theta      += deg_to_rad((float)input.dx * dA);
     theta       = f_wrap(theta, 0.f, 2 * F_PI);
 
     cam->phi    = phi;
