@@ -599,3 +599,20 @@ float f_clamp(float v, float min, float max)
 {
     return f_min(max, f_max(min, v));
 }
+
+float f_wrap(float v, float min, float max)
+{
+    float diff = max - min;
+
+    while (v > max)
+    {
+        v = v - diff;
+    }
+
+    while (v < min)
+    {
+        v = v + diff;
+    }
+
+    return v;
+}

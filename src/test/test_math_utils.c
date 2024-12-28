@@ -162,6 +162,37 @@ static void test_f_clamp()
 }
 
 
+static void test_f_wrap()
+{
+    float actual;
+    float expected;
+
+    actual = f_wrap(11.f, 1.f, 10.f);
+    expected = 2.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_wrap(-5.f, 1.f, 10.f);
+    expected = 4.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_wrap(-50.f, 1.f, 10.f);
+    expected = 4.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_wrap(50.f, 1.f, 10.f);
+    expected = 5.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_wrap(13.f, 1.f, 10.f);
+    expected = 4.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_wrap(-2.f, 1.f, 10.f);
+    expected = 7.f;
+    ASSERT_EQUAL(actual, expected);
+}
+
+
 void test_math_utils()
 {
     TEST_CASE(test_f_abs);
@@ -172,4 +203,5 @@ void test_math_utils()
     TEST_CASE(test_u_min);
     TEST_CASE(test_u_max);
     TEST_CASE(test_f_clamp);
+    TEST_CASE(test_f_wrap);
 }
