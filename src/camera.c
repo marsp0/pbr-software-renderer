@@ -31,7 +31,8 @@
 /* static variables */
 /********************/
 
-static const vec4_t world_up = { 0.f, 1.f, 0.f, 1.f };
+static const vec4_t world_up    = { 0.f, 1.f, 0.f, 1.f };
+static const float dA           = 3.f;
 
 /********************/
 /* static functions */
@@ -94,8 +95,6 @@ camera_t* camera_new(vec4_t target,
     camera->t_dist      = camera->r_dist / aspect_ratio;
     camera->b_dist      = -camera->t_dist;
 
-    camera->drag        = false;
-
     camera_update_internal(camera);
 
     return camera;
@@ -103,18 +102,9 @@ camera_t* camera_new(vec4_t target,
 
 void camera_update(camera_t* cam, input_t input, float dt)
 {
+
     if (input.keys & BUTTON_1)
     {
-        cam->drag = true;
-    }
-    else
-    {
-        cam->drag = false;
-    }
-
-    if (cam->drag)
-    {
-        float dA    = dt * 90.f;
         float phi   = cam->phi;
         float theta = cam->theta;
 
