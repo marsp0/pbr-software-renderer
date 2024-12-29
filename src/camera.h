@@ -25,6 +25,8 @@ typedef struct
     float   l_dist;
     float   r_dist;
 
+    bool    drag;
+
 } camera_t;
 
 camera_t*   camera_new(vec4_t target,

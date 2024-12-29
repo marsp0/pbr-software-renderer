@@ -94,6 +94,7 @@ display_t* display_new(uint32_t width, uint32_t height)
                     KeyReleaseMask | \
                     KeyPressMask | \
                     ButtonReleaseMask | \
+                    ButtonPressMask | \
                     PointerMotionMask;
     XSelectInput(dsp->display, dsp->window, key_mask);
 

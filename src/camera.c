@@ -94,6 +94,8 @@ camera_t* camera_new(vec4_t target,
     camera->t_dist      = camera->r_dist / aspect_ratio;
     camera->b_dist      = -camera->t_dist;
 
+    camera->drag        = false;
+
     camera_update_internal(camera);
 
     return camera;
@@ -101,18 +103,30 @@ camera_t* camera_new(vec4_t target,
 
 void camera_update(camera_t* cam, input_t input, float dt)
 {
-    float dA    = dt * 90.f;
-    float phi   = cam->phi;
-    float theta = cam->theta;
+    if (input.keys & BUTTON_1)
+    {
+        cam->drag = true;
+    }
+    else
+    {
+        cam->drag = false;
+    }
 
-    phi        -= deg_to_rad((float)input.dy * dA);
-    phi         = f_clamp(phi, 0.001f, F_PI - 0.001f);
+    if (cam->drag)
+    {
+        float dA    = dt * 90.f;
+        float phi   = cam->phi;
+        float theta = cam->theta;
 
-    theta      += deg_to_rad((float)input.dx * dA);
-    theta       = f_wrap(theta, 0.f, 2 * F_PI);
+        phi        -= deg_to_rad((float)input.dy * dA);
+        phi         = f_clamp(phi, 0.001f, F_PI - 0.001f);
 
-    cam->phi    = phi;
-    cam->theta  = theta;
+        theta      += deg_to_rad((float)input.dx * dA);
+        theta       = f_wrap(theta, 0.f, 2 * F_PI);
+
+        cam->phi    = phi;
+        cam->theta  = theta;
+    }
 
     camera_update_internal(cam);
 }
