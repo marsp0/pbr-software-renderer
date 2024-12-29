@@ -24,7 +24,6 @@ typedef struct
     float   b_dist;
     float   l_dist;
     float   r_dist;
-    float   r_dist;
 
 } camera_t;
 

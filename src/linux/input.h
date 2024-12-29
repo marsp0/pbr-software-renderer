@@ -16,7 +16,7 @@
 #define SCROLL_UP       1L << 9
 #define SCROLL_DOWN     1L << 10
 #define BUTTON_1        1L << 11
-#define BUTTON_2        1L << 10
+#define BUTTON_2        1L << 12
 
 typedef struct
 {

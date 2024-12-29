@@ -32,7 +32,8 @@
 /********************/
 
 static const vec4_t world_up    = { 0.f, 1.f, 0.f, 1.f };
-static const float dA           = 3.f;
+static const float d_a          = 3.f;
+static const float d_z          = 0.05f;
 
 /********************/
 /* static functions */
@@ -102,21 +103,32 @@ camera_t* camera_new(vec4_t target,
 
 void camera_update(camera_t* cam, input_t input, float dt)
 {
-
     if (input.keys & BUTTON_1)
     {
         float phi   = cam->phi;
         float theta = cam->theta;
 
-        phi        -= deg_to_rad((float)input.dy * dA);
+        phi        -= deg_to_rad((float)input.dy * d_a);
         phi         = f_clamp(phi, 0.001f, F_PI - 0.001f);
 
-        theta      += deg_to_rad((float)input.dx * dA);
+        theta      += deg_to_rad((float)input.dx * d_a);
         theta       = f_wrap(theta, 0.f, 2 * F_PI);
 
         cam->phi    = phi;
         cam->theta  = theta;
     }
+
+    float radius = cam->radius;
+    if (input.keys & SCROLL_UP)
+    {
+        radius = radius - d_z;
+    }
+    else if (input.keys & SCROLL_DOWN)
+    {
+        radius = radius + d_z;
+    }
+
+    cam->radius = f_max(0.02f, radius);
 
     camera_update_internal(cam);
 }

@@ -44,10 +44,6 @@ static void renderer_update(input_t input, timestamp_t frame_time)
     float dt = (float)(frame_time) / SECOND;
 
     scene_update(scene, input, dt);
-    if (input.keys & KEY_1)
-    {
-        wireframe = !wireframe;
-    }
 }
 
 // static void renderer_draw_utilities()
