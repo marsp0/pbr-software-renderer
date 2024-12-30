@@ -119,8 +119,10 @@ void camera_update(camera_t* cam, input_t input, float dt)
     }
 
     float radius = cam->radius;
+
     if      (input.keys & SCROLL_UP)    { radius = radius - d_z; }
     else if (input.keys & SCROLL_DOWN)  { radius = radius + d_z; }
+
     cam->radius = f_max(0.02f, radius);
 
     camera_update_internal(cam);
