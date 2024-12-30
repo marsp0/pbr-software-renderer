@@ -63,15 +63,15 @@ static void handle_mouse_buttons(display_t* dsp, XEvent* event)
 
     if (type == ButtonPress)
     {
-        if      (button == Button1) { keys |= BUTTON_1; }
-        else if (button == Button2) { keys |= BUTTON_2; }
+        if      (button == Button1) { keys |= LEFT_CLICK; printf("pressed the button -------\n"); }
+        else if (button == Button3) { keys |= RIGHT_CLICK; printf("pressed the button -------\n"); }
         else if (button == Button4) { keys |= SCROLL_UP; }
         else if (button == Button5) { keys |= SCROLL_DOWN; }
     }
     else if (type == ButtonRelease)
     {
-        if      (button == Button1) { keys ^= BUTTON_1; }
-        else if (button == Button2) { keys ^= BUTTON_2; }
+        if      (button == Button1) { keys ^= LEFT_CLICK; }
+        else if (button == Button3) { keys ^= RIGHT_CLICK; }
     }
 }
 

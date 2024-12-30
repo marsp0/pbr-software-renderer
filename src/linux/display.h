@@ -7,9 +7,6 @@
 
 typedef struct
 {
-
-    uint32_t        width;
-    uint32_t        height;
     Display*        display;
     Window          window;
     int             screen;
@@ -18,7 +15,7 @@ typedef struct
 
 } display_t;
 
-display_t*  display_new(uint32_t width, uint32_t height);
+display_t*  display_new();
 void        display_draw(display_t* dsp, const framebuffer_t* framebuffer);
 void        display_clear(display_t* dsp);
 void        display_free(display_t* dsp);

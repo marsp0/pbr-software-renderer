@@ -13,10 +13,11 @@
 #define KEY_2           1L << 6
 #define KEY_3           1L << 7
 #define KEY_4           1L << 8
-#define SCROLL_UP       1L << 9
-#define SCROLL_DOWN     1L << 10
-#define BUTTON_1        1L << 11
-#define BUTTON_2        1L << 12
+#define SCROLL_UP       1L << 9     // BUTTON_4
+#define SCROLL_DOWN     1L << 10    // BUTTON 5
+#define LEFT_CLICK      1L << 11    // left click
+#define BUTTON_2        1L << 12    // mid click
+#define RIGHT_CLICK     1L << 13    // right click
 
 typedef struct
 {

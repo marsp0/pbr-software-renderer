@@ -7,6 +7,7 @@
 #include <X11/Xutil.h>
 
 #include "../rasterizer_constants.h"
+#include "../constants.h"
 
 /********************
  *  Notes
@@ -29,7 +30,7 @@
 /* public functions */
 /********************/
 
-display_t* display_new(uint32_t width, uint32_t height)
+display_t* display_new()
 {
 
     /*
@@ -38,9 +39,7 @@ display_t* display_new(uint32_t width, uint32_t height)
      */
 
     display_t* dsp = malloc(sizeof(display_t));
-    dsp->buffer = malloc(sizeof(unsigned char) * width * height * RGB_CHANNELS);
-    dsp->width = width;
-    dsp->height = height;
+    dsp->buffer = malloc(sizeof(unsigned char) * WINDOW_WIDTH * WINDOW_HEIGHT * RGB_CHANNELS);
 
     /*
      * The XOpenDisplay function returns a Display structure that serves as the connection to the X server and 
@@ -61,8 +60,8 @@ display_t* display_new(uint32_t width, uint32_t height)
                                       XRootWindow(dsp->display, dsp->screen),
                                       0,
                                       0,
-                                      width,
-                                      height,
+                                      WINDOW_WIDTH,
+                                      WINDOW_HEIGHT,
                                       0,
                                       XWhitePixel(dsp->display, dsp->screen),
                                       XBlackPixel(dsp->display, dsp->screen));
@@ -70,10 +69,10 @@ display_t* display_new(uint32_t width, uint32_t height)
     /* configure the window */
     XSizeHints* config = XAllocSizeHints();
     config->flags = PMinSize | PMaxSize;
-    config->min_width = (int)width;
-    config->max_width = (int)width;
-    config->min_height = (int)height;
-    config->max_height = (int)height;
+    config->min_width = (int)WINDOW_WIDTH;
+    config->max_width = (int)WINDOW_WIDTH;
+    config->min_height = (int)WINDOW_HEIGHT;
+    config->max_height = (int)WINDOW_HEIGHT;
     XSetWMNormalHints(dsp->display, dsp->window, config);
     XFree(config);
 
@@ -84,8 +83,8 @@ display_t* display_new(uint32_t width, uint32_t height)
                                ZPixmap,
                                0,
                                (char*)dsp->buffer,
-                               width,
-                               height,
+                               WINDOW_WIDTH,
+                               WINDOW_HEIGHT,
                                8 * RGB_CHANNELS,
                                0);
 
@@ -117,7 +116,7 @@ void display_draw(display_t* dsp, const framebuffer_t* framebuffer)
     //       Something like void framebuffer_copy(dst, scheme) ?
     memcpy(dsp->buffer,
            framebuffer->data,
-           dsp->width * dsp->height * sizeof(unsigned char) * RGB_CHANNELS);
+           WINDOW_WIDTH * WINDOW_HEIGHT * sizeof(unsigned char) * RGB_CHANNELS);
 
     /* show image on display */
     XPutImage(dsp->display,
@@ -128,8 +127,8 @@ void display_draw(display_t* dsp, const framebuffer_t* framebuffer)
               0,
               0,
               0,
-              dsp->width,
-              dsp->height);
+              WINDOW_WIDTH,
+              WINDOW_HEIGHT);
 
     XFlush(dsp->display);
 }

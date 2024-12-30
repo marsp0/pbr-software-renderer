@@ -10,6 +10,7 @@
 #include "linux/input.h"
 #include "time_utils.h"
 #include "rasterizer.h"
+#include "constants.h"
 #include "shader.h"
 
 /********************
@@ -31,8 +32,6 @@ static framebuffer_t* front         = NULL;
 static framebuffer_t* back          = NULL;
 static framebuffer_t* current       = NULL;
 static depthbuffer_t* depthbuffer   = NULL;
-static uint32_t width               = 800;
-static uint32_t height              = 600;
 static bool wireframe               = false;
 
 /********************/
@@ -97,8 +96,8 @@ static void renderer_draw_mesh(mesh_t* mesh)
     vec4_t n1;
     vec4_t n2;
 
-    float w_over_2          = (float)width * 0.5f;
-    float h_over_2          = (float)height * 0.5f;
+    float w_over_2          = (float)WINDOW_WIDTH * 0.5f;
+    float h_over_2          = (float)WINDOW_HEIGHT * 0.5f;
 
     camera_t* cam           = scene->camera;
 
@@ -183,18 +182,14 @@ static void renderer_clear_buffers()
 /* public functions */
 /********************/
 
-void renderer_init(const uint32_t w, const uint32_t h)
+void renderer_init()
 {
-    display       = display_new(w, h);
+    display       = display_new();
 
-    front         = framebuffer_new(w, h);
-    back          = framebuffer_new(w, h);
+    front         = framebuffer_new(WINDOW_WIDTH, WINDOW_HEIGHT);
+    back          = framebuffer_new(WINDOW_WIDTH, WINDOW_HEIGHT);
     current       = front;
-
-    depthbuffer   = depthbuffer_new(w, h);
-
-    width         = w;
-    height        = h;
+    depthbuffer   = depthbuffer_new(WINDOW_WIDTH, WINDOW_HEIGHT);
     wireframe     = false;
 }
 

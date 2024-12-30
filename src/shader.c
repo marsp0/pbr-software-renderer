@@ -148,7 +148,7 @@ void shader_set_uniforms(camera_t* cam,
                          vec4_t normal_vec2)
 {
     camera              = cam;
-    cam_w               = camera->position;
+    cam_w               = camera->position_w;
 
     albedo_texture      = albedo_tex;
     metallic_texture    = metallic_tex;
