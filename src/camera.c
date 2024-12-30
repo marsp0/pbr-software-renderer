@@ -130,7 +130,7 @@ void camera_update(camera_t* cam, input_t input, float dt)
     // update target position
     if (input.keys & RIGHT_CLICK)
     {
-        printf("button 2 is pressed\n");
+        
     }
 
     camera_generate_basis(cam);
