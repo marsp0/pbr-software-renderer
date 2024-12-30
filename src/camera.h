@@ -10,8 +10,8 @@ typedef struct
     float   phi;
     float   theta;
     float   radius;
-    vec4_t  position;
-    vec4_t  target;
+    vec4_t  position_w;
+    vec4_t  target_w;
     vec4_t  forward; // points inward
     vec4_t  left;
     vec4_t  up;

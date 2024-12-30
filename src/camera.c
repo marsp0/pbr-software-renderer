@@ -51,14 +51,14 @@ static void camera_generate_basis(camera_t* cam)
     float y         = radius * cos_phi;
     float z         = radius * sin_phi * sin_theta;
 
-    vec4_t position = vec4_new(x, y, z);                                    // TODO: will not work with any vec besides origin
-    vec4_t target   = cam->target;
+    vec4_t pos_w    = vec4_new(x, y, z);                                    // TODO: will not work with any vec besides origin
+    vec4_t target_w = cam->target_w;
 
-    vec4_t forward  = vec4_normalize(vec4_sub(position, target));
+    vec4_t forward  = vec4_normalize(vec4_sub(pos_w, target_w));
     vec4_t left     = vec4_normalize(vec4_cross(world_up, forward));
     vec4_t up       = vec4_normalize(vec4_cross(forward, left));
 
-    cam->position   = position;
+    cam->position_w = pos_w;
     cam->forward    = forward;
     cam->left       = left;
     cam->up         = up;
@@ -82,7 +82,7 @@ camera_t* camera_new(vec4_t target,
     camera->radius      = radius;
     camera->phi         = phi;
     camera->theta       = theta;
-    camera->target      = target;
+    camera->target_w    = target;
     camera->forward     = vec4_new(0.f, 0.f, -1.f);
     camera->left        = vec4_new(1.f, 0.f, 0.f);
     camera->up          = vec4_new(0.f, 1.f, 0.f);
@@ -103,7 +103,8 @@ camera_t* camera_new(vec4_t target,
 
 void camera_update(camera_t* cam, input_t input, float dt)
 {
-    if (input.keys & BUTTON_1)
+    // update orientation
+    if (input.keys & LEFT_CLICK)
     {
         float phi   = cam->phi;
         float theta = cam->theta;
@@ -118,12 +119,19 @@ void camera_update(camera_t* cam, input_t input, float dt)
         cam->theta  = theta;
     }
 
+    // update radius
     float radius = cam->radius;
 
     if      (input.keys & SCROLL_UP)    { radius = radius - d_z; }
     else if (input.keys & SCROLL_DOWN)  { radius = radius + d_z; }
 
     cam->radius = f_max(0.02f, radius);
+
+    // update target position
+    if (input.keys & RIGHT_CLICK)
+    {
+        printf("button 2 is pressed\n");
+    }
 
     camera_generate_basis(cam);
 }
@@ -132,7 +140,7 @@ mat_t camera_view_transform(camera_t* cam)
 {
     mat_t result        = mat_new_identity();
 
-    vec4_t pos_negative = vec4_negate(cam->position);
+    vec4_t pos_negative = vec4_negate(cam->position_w);
     vec4_t forward      = cam->forward;
     vec4_t left         = cam->left;
     vec4_t up           = cam->up;
