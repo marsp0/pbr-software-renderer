@@ -39,7 +39,7 @@ static const float d_z          = 0.05f;
 /* static functions */
 /********************/
 
-static void camera_update_internal(camera_t* cam)
+static void camera_generate_basis(camera_t* cam)
 {
     // generate new basis vectors
     float radius    = cam->radius;
@@ -96,7 +96,7 @@ camera_t* camera_new(vec4_t target,
     camera->t_dist      = camera->r_dist / aspect_ratio;
     camera->b_dist      = -camera->t_dist;
 
-    camera_update_internal(camera);
+    camera_generate_basis(camera);
 
     return camera;
 }
@@ -125,7 +125,7 @@ void camera_update(camera_t* cam, input_t input, float dt)
 
     cam->radius = f_max(0.02f, radius);
 
-    camera_update_internal(cam);
+    camera_generate_basis(cam);
 }
 
 mat_t camera_view_transform(camera_t* cam)
