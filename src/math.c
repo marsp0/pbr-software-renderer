@@ -96,7 +96,7 @@ float vec2_magnitude_sq(vec2_t v)
 
 void vec2_print(vec2_t v)
 {
-    printf("vec(%f, %f)\n", v.x, v.y);
+    printf("vec(%.3f, %.3f)\n", v.x, v.y);
 }
 
 /*      Vector3      */
@@ -179,7 +179,7 @@ float vec3_magnitude_sq(vec3_t v)
 
 void vec3_print(vec3_t v)
 {
-    printf("vec(%f, %f, %f)\n", v.x, v.y, v.z);
+    printf("vec(%.3f, %.3f, %.3f)\n", v.x, v.y, v.z);
 }
 
 /*      Vector4      */
@@ -239,7 +239,17 @@ vec4_t vec4_cross(vec4_t v1, vec4_t v2)
 
 vec4_t vec4_scale(vec4_t v, float scale)
 {
-    return vec4_new(v.x * scale, v.y * scale, v.z * scale);
+    vec4_t res = vec4_new(v.x * scale, v.y * scale, v.z * scale);
+    return res;
+}
+
+vec4_t vec4_scale_with_w(vec4_t v, float scale)
+{
+    vec4_t res = {  .x = v.x * scale,
+                    .y = v.y * scale,
+                    .z = v.z * scale,
+                    .w = v.w * scale };
+    return res;
 }
 
 vec4_t vec4_negate(vec4_t v)
@@ -281,9 +291,9 @@ float vec4_magnitude_sq(vec4_t v)
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-void vec4_print(vec4_t v)
+void vec4_print(vec4_t v, const char* name)
 {
-    printf("vec(%f, %f, %f, %f)\n", v.x, v.y, v.z, v.w);
+    printf("vec(%.3f, %.3f, %.3f, %.3f) \t- %s\n", v.x, v.y, v.z, v.w, name);
 }
 
 /*
@@ -492,10 +502,10 @@ mat_t mat_transpose(mat_t m)
 void mat_print(mat_t m)
 {
     printf("mat\n");
-    printf("|%f, %f, %f, %f|\n", m.data[0][0], m.data[0][1], m.data[0][2], m.data[0][3]);
-    printf("|%f, %f, %f, %f|\n", m.data[1][0], m.data[1][1], m.data[1][2], m.data[1][3]);
-    printf("|%f, %f, %f, %f|\n", m.data[2][0], m.data[2][1], m.data[2][2], m.data[2][3]);
-    printf("|%f, %f, %f, %f|\n", m.data[3][0], m.data[3][1], m.data[3][2], m.data[3][3]);
+    printf("|%.3f, %.3f, %.3f, %.3f|\n", m.data[0][0], m.data[0][1], m.data[0][2], m.data[0][3]);
+    printf("|%.3f, %.3f, %.3f, %.3f|\n", m.data[1][0], m.data[1][1], m.data[1][2], m.data[1][3]);
+    printf("|%.3f, %.3f, %.3f, %.3f|\n", m.data[2][0], m.data[2][1], m.data[2][2], m.data[2][3]);
+    printf("|%.3f, %.3f, %.3f, %.3f|\n", m.data[3][0], m.data[3][1], m.data[3][2], m.data[3][3]);
 }
 
 mat_t x_axis_rotation(float rad)
@@ -598,4 +608,31 @@ uint32_t u_min(uint32_t a, uint32_t b)
 float f_clamp(float v, float min, float max)
 {
     return f_min(max, f_max(min, v));
+}
+
+float f_wrap(float v, float min, float max)
+{
+    float diff = max - min;
+
+    while (v > max)
+    {
+        v = v - diff;
+    }
+
+    while (v < min)
+    {
+        v = v + diff;
+    }
+
+    return v;
+}
+
+float f_sin(float v)
+{
+    return sinf(v);
+}
+
+float f_cos(float v)
+{
+    return cosf(v);
 }

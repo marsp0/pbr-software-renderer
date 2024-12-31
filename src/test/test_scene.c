@@ -5,7 +5,7 @@
 
 static void test_water_bottle()
 {
-    const char* file_path = "./assets/WaterBottle.glb";
+    const char* file_path = "./assets/waterbottle.glb";
 
     scene_t* scene = scene_new(file_path);
 

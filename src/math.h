@@ -11,6 +11,8 @@
 #define F_PI_OVER_180   0.0174532925199f
 #define F_180_OVER_PI   57.2957795131f
 
+typedef float rad_t;
+
 /********************/
 /*      Vector      */
 /********************/
@@ -73,6 +75,7 @@ vec4_t      vec4_add(vec4_t v1, vec4_t v2);
 vec4_t      vec4_sub(vec4_t v1, vec4_t v2);
 vec4_t      vec4_cross(vec4_t v1, vec4_t v2);
 vec4_t      vec4_scale(vec4_t v, float scale);
+vec4_t      vec4_scale_with_w(vec4_t v, float scale);
 vec4_t      vec4_negate(vec4_t v);
 vec4_t      vec4_normalize(vec4_t v);
 vec4_t      vec4_hadamard(vec4_t v1, vec4_t v2);
@@ -80,7 +83,8 @@ vec4_t      vec4_clamp(vec4_t v, float min, float max);
 float       vec4_dot(vec4_t v1, vec4_t v2);
 float       vec4_magnitude(vec4_t v);
 float       vec4_magnitude_sq(vec4_t v);
-void        vec4_print(vec4_t v);
+void        vec4_print(vec4_t v, const char* name);
+
 
 /********************/
 /*       Matrix     */
@@ -106,6 +110,23 @@ mat_t   mat_inverse(mat_t m);
 mat_t   mat_transpose(mat_t m);
 void    mat_print(mat_t m);
 
+
+/********************/
+/*    Quaternion    */
+/********************/
+
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+    float w;
+} quat_t;
+
+quat_t quat_identity();
+quat_t quat_new(float x, float y, float z, float w);
+
+
 /********************/
 /*  Rotation Utils  */
 /********************/
@@ -115,6 +136,7 @@ mat_t y_axis_rotation(float rad);
 mat_t z_axis_rotation(float rad);
 float deg_to_rad(float deg);
 float rad_to_deg(float rad);
+
 
 /********************/
 /*       Plane      */
@@ -126,6 +148,7 @@ typedef struct
     vec4_t n;
 } plane_t;
 
+
 /********************/
 /*      Sphere      */
 /********************/
@@ -135,6 +158,7 @@ typedef struct
     vec4_t c;
     float r;
 } sphere_t;
+
 
 /********************/
 /*    Utilities     */
@@ -148,3 +172,6 @@ int32_t     i_min(int32_t a, int32_t b);
 uint32_t    u_max(uint32_t a, uint32_t b);
 uint32_t    u_min(uint32_t a, uint32_t b);
 float       f_clamp(float v, float min, float max);
+float       f_wrap(float v, float min, float max);
+float       f_sin(float v);
+float       f_cos(float v);

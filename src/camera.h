@@ -7,13 +7,14 @@
 
 typedef struct
 {
-    float   pitch;
-    float   yaw;
-
-    vec4_t  forward;  // points inward
-    vec4_t  side;
+    float   phi;
+    float   theta;
+    float   radius;
+    vec4_t  position_w;
+    vec4_t  target_w;
+    vec4_t  forward; // points inward
+    vec4_t  left;
     vec4_t  up;
-    vec4_t  position;
 
     float   fov_x;
     float   asp_ratio;
@@ -24,24 +25,17 @@ typedef struct
     float   l_dist;
     float   r_dist;
 
-    plane_t n_plane;
-    plane_t f_plane;
-    plane_t t_plane;
-    plane_t b_plane;
-    plane_t r_plane;
-    plane_t l_plane;
-
 } camera_t;
 
-camera_t*   camera_new(vec4_t position,
-                       float pitch,
-                       float yaw,
+camera_t*   camera_new(vec4_t target,
+                       float phi,
+                       float theta,
+                       float radius,
                        float fov_x,
                        float near,
                        float far,
                        float aspect_ratio);
 void        camera_update(camera_t* cam, input_t input);
-bool        camera_is_mesh_visible(camera_t* cam, sphere_t sphere);
-mat_t       camera_view_transform(camera_t* cam);
-mat_t       camera_proj_transform(camera_t* cam);
+mat_t       camera_view_mat(camera_t* cam);
+mat_t       camera_proj_mat(camera_t* cam);
 void        camera_free(camera_t* cam);

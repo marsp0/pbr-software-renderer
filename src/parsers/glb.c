@@ -385,10 +385,11 @@ scene_t* parse_scene(const char* file_path)
     // scene->dir_light
     // scene->point_light
     scene->mesh     = parse_meshes(json, binary);
-    vec4_t cam_pos  = vec4_new(1.f, 1.f, 1.f);
-    scene->camera   = camera_new(cam_pos,
-                                 0.610866f,
-                                 -2.356194f,
+    vec4_t target   = vec4_new(0.f, 0.f, 0.f);
+    scene->camera   = camera_new(target,
+                                 F_PI / 2.f,
+                                 0.0,
+                                 0.5f,
                                  45 * F_PI / 180.f,
                                  0.1f,
                                  20.f,
