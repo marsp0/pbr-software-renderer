@@ -172,8 +172,8 @@ void shader_set_uniforms(camera_t* cam,
 vec4_t shader_vertex(vec4_t v)
 {
     mat_t M         = mat_new_identity();
-    mat_t V         = camera_view_transform(camera);
-    mat_t P         = camera_proj_transform(camera);
+    mat_t V         = camera_view_mat(camera);
+    mat_t P         = camera_proj_mat(camera);
     mat_t VM        = mat_mul_mat(V, M);
     mat_t PVM       = mat_mul_mat(P, VM);
     

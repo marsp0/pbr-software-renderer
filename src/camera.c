@@ -141,8 +141,8 @@ void camera_update(camera_t* cam, input_t input, float dt)
         vec4_t p1 = vec4_new(input.curr_x, -input.curr_y, 1.f);
         vec4_t p2 = vec4_new(input.prev_x, -input.prev_y, 1.f);
 
-        mat_t P         = camera_proj_transform(cam);
-        mat_t V         = camera_view_transform(cam);
+        mat_t P         = camera_proj_mat(cam);
+        mat_t V         = camera_view_mat(cam);
         mat_t P_inv     = mat_inverse(P);
         mat_t V_inv     = mat_inverse(V);
 
@@ -177,7 +177,7 @@ void camera_update(camera_t* cam, input_t input, float dt)
     camera_generate_basis(cam);
 }
 
-mat_t camera_view_transform(camera_t* cam)
+mat_t camera_view_mat(camera_t* cam)
 {
     mat_t result        = mat_new_identity();
 
@@ -205,7 +205,7 @@ mat_t camera_view_transform(camera_t* cam)
     return result;
 }
 
-mat_t camera_proj_transform(camera_t* cam)
+mat_t camera_proj_mat(camera_t* cam)
 {
     mat_t result = mat_new_identity();
 

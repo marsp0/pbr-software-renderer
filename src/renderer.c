@@ -62,7 +62,7 @@ static void renderer_update(input_t input, timestamp_t frame_time)
 //                           0xFF000000};
 
 //     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
-//                            camera_view_transform(cam));
+//                            camera_view_mat(cam));
 
 //     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec4_t); i++)
 //     {
