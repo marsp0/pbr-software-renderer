@@ -90,6 +90,16 @@ static void test_vector_hadamard_product()
     ASSERT_VECTOR4(expected, actual);
 }
 
+static void test_vector_scale_with_w()
+{
+    vec4_t p        = vec4_new(1.f, 2.f, 3.f);
+    vec4_t actual   = vec4_scale_with_w(p, 2.f);
+    vec4_t expected = vec4_new(2.f, 4.f, 6.f);
+    expected.w      = 2.f;
+
+    ASSERT_VECTOR4(actual, expected);
+}
+
 void test_vector4()
 {
     TEST_CASE(test_vector_addition);
