@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "constants.h"
+
 /*
  * Notes
  * 
@@ -51,10 +53,10 @@ static void camera_generate_basis(camera_t* cam)
     float y         = radius * cos_phi;
     float z         = radius * sin_phi * sin_theta;
 
-    vec4_t pos_w    = vec4_new(x, y, z);                                    // TODO: will not work with any vec besides origin
+    vec4_t pos_w    = vec4_add(cam->target_w, vec4_new(x, y, z));
     vec4_t target_w = cam->target_w;
 
-    vec4_t forward  = vec4_normalize(vec4_sub(pos_w, target_w));
+    vec4_t forward  = vec4_normalize(vec4_new(x, y, z));
     vec4_t left     = vec4_normalize(vec4_cross(world_up, forward));
     vec4_t up       = vec4_normalize(vec4_cross(forward, left));
 
@@ -103,16 +105,19 @@ camera_t* camera_new(vec4_t target,
 
 void camera_update(camera_t* cam, input_t input, float dt)
 {
+    int32_t dx = input.curr_x - input.prev_x;
+    int32_t dy = input.curr_y - input.prev_y;
+
     // update orientation
     if (input.keys & LEFT_CLICK)
     {
         float phi   = cam->phi;
         float theta = cam->theta;
 
-        phi        -= deg_to_rad((float)input.dy * d_a);
+        phi        -= deg_to_rad((float)dy * d_a);
         phi         = f_clamp(phi, 0.001f, F_PI - 0.001f);
 
-        theta      += deg_to_rad((float)input.dx * d_a);
+        theta      += deg_to_rad((float)dx * d_a);
         theta       = f_wrap(theta, 0.f, 2 * F_PI);
 
         cam->phi    = phi;
@@ -130,7 +135,34 @@ void camera_update(camera_t* cam, input_t input, float dt)
     // update target position
     if (input.keys & RIGHT_CLICK)
     {
-        
+        vec4_t target_w = cam->target_w;
+        vec4_t n        = vec4_negate(cam->forward);
+
+        vec4_t p1 = vec4_new(input.curr_x, -input.curr_y, 1.f);
+        vec4_t p2 = vec4_new(input.prev_x, -input.prev_y, 1.f);
+
+        mat_t P         = camera_proj_transform(cam);
+        mat_t V         = camera_view_transform(cam);
+        mat_t P_inv     = mat_inverse(P);
+        mat_t V_inv     = mat_inverse(V);
+
+        p1              = mat_mul_vec(P_inv, p1);
+        p1              = mat_mul_vec(V_inv, p1);
+        p1.w            = 1.f/p1.w;
+        p1              = vec4_scale(p1, p1.w);
+        vec4_t tar_p1   = vec4_sub(p1, target_w);
+        vec4_t n_p1     = vec4_scale(n, vec4_dot(tar_p1, n));
+        vec4_t q1       = vec4_sub(tar_p1, n_p1);
+
+        p2              = mat_mul_vec(P_inv, p2);
+        p2              = mat_mul_vec(V_inv, p2);
+        p2.w            = 1.f/p2.w;
+        p2              = vec4_scale(p2, p2.w);
+        vec4_t tar_p2   = vec4_sub(p2, target_w);
+        vec4_t n_p2     = vec4_scale(n, vec4_dot(tar_p2, n));
+        vec4_t q2       = vec4_sub(tar_p2, n_p2);
+
+        cam->target_w = vec4_add(target_w, vec4_scale(vec4_sub(q2, q1), 0.12f));
     }
 
     camera_generate_basis(cam);

@@ -21,9 +21,11 @@
 
 typedef struct
 {
-    uint64_t keys;
-    int32_t  dx;
-    int32_t  dy;
+    uint64_t    keys;
+    int32_t     curr_x;
+    int32_t     prev_x;
+    int32_t     curr_y;
+    int32_t     prev_y;
 } input_t;
 
 input_t handle_input(display_t* dsp);

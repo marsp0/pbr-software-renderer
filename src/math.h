@@ -75,6 +75,7 @@ vec4_t      vec4_add(vec4_t v1, vec4_t v2);
 vec4_t      vec4_sub(vec4_t v1, vec4_t v2);
 vec4_t      vec4_cross(vec4_t v1, vec4_t v2);
 vec4_t      vec4_scale(vec4_t v, float scale);
+vec4_t      vec4_scale_with_w(vec4_t v, float scale);
 vec4_t      vec4_negate(vec4_t v);
 vec4_t      vec4_normalize(vec4_t v);
 vec4_t      vec4_hadamard(vec4_t v1, vec4_t v2);
@@ -82,7 +83,7 @@ vec4_t      vec4_clamp(vec4_t v, float min, float max);
 float       vec4_dot(vec4_t v1, vec4_t v2);
 float       vec4_magnitude(vec4_t v);
 float       vec4_magnitude_sq(vec4_t v);
-void        vec4_print(vec4_t v);
+void        vec4_print(vec4_t v, const char* name);
 
 
 /********************/

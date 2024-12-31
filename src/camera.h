@@ -36,6 +36,7 @@ camera_t*   camera_new(vec4_t target,
                        float far,
                        float aspect_ratio);
 void        camera_update(camera_t* cam, input_t input, float dt);
+// TODO: rename to camera_view_mat / camera_projection_mat
 mat_t       camera_view_transform(camera_t* cam);
 mat_t       camera_proj_transform(camera_t* cam);
 void        camera_free(camera_t* cam);
