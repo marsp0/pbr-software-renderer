@@ -85,11 +85,13 @@ static void handle_keyboard(XEvent* event)
 
     if (type == KeyPress)
     {
-        if (button == X_ESCAPE) { keys |= QUIT; }
+        if      (button == X_ESCAPE)    { keys |= QUIT; }
+        else if (button == X_1)         { keys |= KEY_1; }
     }
     else if (type == KeyRelease)
     {
-        if (button == X_ESCAPE) { keys ^= QUIT; }
+        if      (button == X_ESCAPE)    { keys ^= QUIT; }
+        else if (button == X_1)         { keys ^= KEY_1; }
     }
 }
 
@@ -106,7 +108,7 @@ input_t handle_input(display_t* dsp)
 
     while (event.type != Expose)
     {
-        if      (event.type == KeyRelease)                                  { handle_keyboard(&event); }
+        if      (event.type == KeyPress || event.type == KeyRelease)        { handle_keyboard(&event); }
         else if (event.type == MotionNotify)                                { handle_mouse_motion(dsp, &event, &input); }
         else if (event.type == ButtonPress || event.type == ButtonRelease)  { handle_mouse_buttons(dsp, &event); }
 

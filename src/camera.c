@@ -165,6 +165,15 @@ void camera_update(camera_t* cam, input_t input, float dt)
         cam->target_w = vec4_add(target_w, vec4_scale(vec4_sub(q2, q1), 0.12f));
     }
 
+    // handle reset
+    if (input.keys & KEY_1)
+    {
+        cam->target_w   = vec4_from_scalar(0.f);
+        cam->phi        = F_PI / 2.f;
+        cam->theta      = 0.1f;
+        cam->radius     = 0.5f;
+    }
+
     camera_generate_basis(cam);
 }
 
