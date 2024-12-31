@@ -626,3 +626,13 @@ float f_wrap(float v, float min, float max)
 
     return v;
 }
+
+float f_sin(float v)
+{
+    return sinf(v);
+}
+
+float f_cos(float v)
+{
+    return cosf(v);
+}

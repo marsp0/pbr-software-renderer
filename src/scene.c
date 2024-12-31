@@ -32,9 +32,9 @@ scene_t* scene_new(const char* file_path)
     return scene;
 }
 
-void scene_update(scene_t* scene, input_t input, float dt)
+void scene_update(scene_t* scene, input_t input)
 {
-    camera_update(scene->camera, input, dt);
+    camera_update(scene->camera, input);
 }
 
 void scene_free(scene_t* scene)

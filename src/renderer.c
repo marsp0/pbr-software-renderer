@@ -38,11 +38,9 @@ static bool wireframe               = false;
 /* static functions */
 /********************/
 
-static void renderer_update(input_t input, timestamp_t frame_time)
+static void renderer_update(input_t input)
 {
-    float dt = (float)(frame_time) / SECOND;
-
-    scene_update(scene, input, dt);
+    scene_update(scene, input);
 }
 
 // static void renderer_draw_utilities()
@@ -61,7 +59,7 @@ static void renderer_update(input_t input, timestamp_t frame_time)
 //                           0x00FF0000, 
 //                           0xFF000000};
 
-//     mat_t PV = mat_mul_mat(camera_proj_transform(cam),
+//     mat_t PV = mat_mul_mat(camera_proj_mat(cam),
 //                            camera_view_mat(cam));
 
 //     for (uint32_t i = 0; i < sizeof(points) / sizeof(vec4_t); i++)
@@ -218,7 +216,7 @@ void renderer_run()
 
         input_t input = handle_input(display);
 
-        renderer_update(input, frame_time);
+        renderer_update(input);
 
         renderer_draw();
 

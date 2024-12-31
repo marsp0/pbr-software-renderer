@@ -173,3 +173,5 @@ uint32_t    u_max(uint32_t a, uint32_t b);
 uint32_t    u_min(uint32_t a, uint32_t b);
 float       f_clamp(float v, float min, float max);
 float       f_wrap(float v, float min, float max);
+float       f_sin(float v);
+float       f_cos(float v);

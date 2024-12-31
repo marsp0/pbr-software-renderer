@@ -35,7 +35,7 @@ camera_t*   camera_new(vec4_t target,
                        float near,
                        float far,
                        float aspect_ratio);
-void        camera_update(camera_t* cam, input_t input, float dt);
+void        camera_update(camera_t* cam, input_t input);
 mat_t       camera_view_mat(camera_t* cam);
 mat_t       camera_proj_mat(camera_t* cam);
 void        camera_free(camera_t* cam);

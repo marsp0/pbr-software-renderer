@@ -44,18 +44,18 @@ static const float d_z          = 0.05f;
 static void camera_generate_basis(camera_t* cam)
 {
     // generate new basis vectors
+    float phi       = cam->phi;
+    float theta     = cam->theta;
     float radius    = cam->radius;
-    float sin_phi   = sin(cam->phi);
-    float cos_phi   = cos(cam->phi);
-    float sin_theta = sin(cam->theta);
-    float cos_theta = cos(cam->theta);
+    float sin_phi   = f_sin(phi);
+    float cos_phi   = f_cos(phi);
+    float sin_theta = f_sin(theta);
+    float cos_theta = f_cos(theta);
     float x         = radius * sin_phi * cos_theta;
     float y         = radius * cos_phi;
     float z         = radius * sin_phi * sin_theta;
 
     vec4_t pos_w    = vec4_add(cam->target_w, vec4_new(x, y, z));
-    vec4_t target_w = cam->target_w;
-
     vec4_t forward  = vec4_normalize(vec4_new(x, y, z));
     vec4_t left     = vec4_normalize(vec4_cross(world_up, forward));
     vec4_t up       = vec4_normalize(vec4_cross(forward, left));
@@ -103,7 +103,7 @@ camera_t* camera_new(vec4_t target,
     return camera;
 }
 
-void camera_update(camera_t* cam, input_t input, float dt)
+void camera_update(camera_t* cam, input_t input)
 {
     int32_t dx = input.curr_x - input.prev_x;
     int32_t dy = input.curr_y - input.prev_y;
@@ -138,8 +138,8 @@ void camera_update(camera_t* cam, input_t input, float dt)
         vec4_t target_w = cam->target_w;
         vec4_t n        = vec4_negate(cam->forward);
 
-        vec4_t p1 = vec4_new(input.curr_x, -input.curr_y, 1.f);
-        vec4_t p2 = vec4_new(input.prev_x, -input.prev_y, 1.f);
+        vec4_t p1       = vec4_new((float)input.curr_x, -(float)input.curr_y, 1.f);
+        vec4_t p2       = vec4_new((float)input.prev_x, -(float)input.prev_y, 1.f);
 
         mat_t P         = camera_proj_mat(cam);
         mat_t V         = camera_view_mat(cam);

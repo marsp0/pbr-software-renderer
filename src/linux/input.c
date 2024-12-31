@@ -38,10 +38,10 @@ uint64_t keys       = 0;
 /* static functions */
 /********************/
 
-static void handle_mouse_motion(display_t* dsp, XEvent* event, input_t* input)
+static void handle_mouse_motion(input_t* input)
 {
-    int32_t x = event->xmotion.x;
-    int32_t y = event->xmotion.y;
+    int32_t x = event.xmotion.x;
+    int32_t y = event.xmotion.y;
     
     if (!initialized)
     {
@@ -59,10 +59,10 @@ static void handle_mouse_motion(display_t* dsp, XEvent* event, input_t* input)
     prev_y          = y;
 }
 
-static void handle_mouse_buttons(display_t* dsp, XEvent* event)
+static void handle_mouse_buttons()
 {
-    int32_t type = event->type;
-    uint32_t button = event->xbutton.button;
+    int32_t type = event.type;
+    uint32_t button = event.xbutton.button;
 
     if (type == ButtonPress)
     {
@@ -78,10 +78,10 @@ static void handle_mouse_buttons(display_t* dsp, XEvent* event)
     }
 }
 
-static void handle_keyboard(XEvent* event)
+static void handle_keyboard()
 {
-    int32_t type = event->type;
-    uint32_t button = event->xkey.keycode;
+    int32_t type = event.type;
+    uint32_t button = event.xkey.keycode;
 
     if (type == KeyPress)
     {
@@ -101,16 +101,16 @@ static void handle_keyboard(XEvent* event)
 
 input_t handle_input(display_t* dsp)
 {
-    keys            = keys & ~(SCROLL_UP | SCROLL_DOWN);
+    keys            = keys & ~((uint64_t)(SCROLL_UP | SCROLL_DOWN));
     input_t input   = { 0 };
 
     XPeekEvent(dsp->display, &event);
 
     while (event.type != Expose)
     {
-        if      (event.type == KeyPress || event.type == KeyRelease)        { handle_keyboard(&event); }
-        else if (event.type == MotionNotify)                                { handle_mouse_motion(dsp, &event, &input); }
-        else if (event.type == ButtonPress || event.type == ButtonRelease)  { handle_mouse_buttons(dsp, &event); }
+        if      (event.type == KeyPress || event.type == KeyRelease)        { handle_keyboard(); }
+        else if (event.type == MotionNotify)                                { handle_mouse_motion(&input); }
+        else if (event.type == ButtonPress || event.type == ButtonRelease)  { handle_mouse_buttons(); }
 
         XNextEvent(dsp->display, &event);
         XPeekEvent(dsp->display, &event);

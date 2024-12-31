@@ -112,4 +112,5 @@ void test_vector4()
     TEST_CASE(test_vector_magnitude);
     TEST_CASE(test_vector_magnitude_sq);
     TEST_CASE(test_vector_hadamard_product);
+    TEST_CASE(test_vector_scale_with_w);
 }
