@@ -636,3 +636,18 @@ float f_cos(float v)
 {
     return cosf(v);
 }
+
+float f_floor(float v)
+{
+    return floorf(v);
+}
+
+float f_ceil(float v)
+{
+    return ceilf(v);
+}
+
+float f_round(float v)
+{
+    return roundf(v);
+}
