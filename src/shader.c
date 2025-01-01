@@ -53,15 +53,6 @@ static vec4_t vec4_mix(vec4_t v0, vec4_t v1, float mix)
     return vec4_new(x, y, z);
 }
 
-
-static uint32_t sample(texture_t* tex, float u, float v)
-{
-    uint32_t u_idx = (uint32_t)(u * (float)tex->width) - 1;
-    uint32_t v_idx = (uint32_t)(v * (float)tex->height) - 1;
-
-    return texture_get(tex, u_idx, v_idx);
-}
-
 // static vec4_t sample_normal(texture_t* tex, float u, float v)
 // {
 //     // fixme: this second sample method is needed because of the whole BGRA thing.
@@ -188,8 +179,8 @@ uint32_t shader_fragment(float w0, float w1, float w2)
     float s             = f_min(t0.x * w0 + t1.x * w1 + t2.x * w2, 1.f);
     float t             = f_min(t0.y * w0 + t1.y * w1 + t2.y * w2, 1.f);
 
-    vec4_t albedo       = vec4_scale(vec4_from_bgra(sample(albedo_texture, s, t)), 2.2f);
-    vec4_t metallic     = vec4_from_bgra(sample(metallic_texture, s, t));
+    vec4_t albedo       = vec4_scale(vec4_from_bgra(texture_sample(albedo_texture, s, t)), 2.2f);
+    vec4_t metallic     = vec4_from_bgra(texture_sample(metallic_texture, s, t));
     float rough         = metallic.y;                                       // green channel
     float metal         = metallic.x;                                       // blue channel
     // vec_t o             = vec_from_bgra(sample(tri->occlusion, s, t));
