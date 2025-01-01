@@ -12,24 +12,21 @@ texture_t* texture_new(uint32_t width, uint32_t height, uint32_t stride)
 	return texture;
 }
 
-uint32_t texture_sample(texture_t* texture, float u, float v)
+vec4_t texture_sample(texture_t* texture, float u, float v)
 {
-    // TODO: BGRA vs RGBA????? GOOD PLACE FOR BOUNDRY? Loader / texture / screen ? ????
+    // this function converts rgba from image to bgra
+
     uint32_t x          = (uint32_t)(u * (float)texture->width) - 1;
     uint32_t y          = (uint32_t)(v * (float)texture->height) - 1;
     uint32_t index      = (x + texture->width * y) * texture->stride;
     unsigned char* data = texture->data;
 
-    uint32_t result = 0;
-    result += data[index + 0] << 8;     // R
-    result += data[index + 1] << 16;    // G
-    result += data[index + 2] << 24;    // B
-    if (texture->stride == 4)
-    {
-        result += data[index + 3];          // A
-    }
+    float d = 1.f / 255.f;
+    float b = (float)(data[index + 2] & 0xFF);
+    float g = (float)(data[index + 1] & 0xFF);
+    float r = (float)(data[index + 0] & 0xFF);
 
-    return result;
+    return vec4_new(b * d, g * d, r * d);
 }
 
 void texture_free(texture_t* texture)
