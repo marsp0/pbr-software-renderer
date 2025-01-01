@@ -1,6 +1,47 @@
 #include "texture.h"
 
 #include <stdlib.h>
+#include <stdio.h>
+
+/********************
+ *  Notes
+ *
+ ********************/
+
+/********************/
+/*      defines     */
+/********************/
+
+/********************/
+/* static variables */
+/********************/
+
+// 0 - point, 1 - bilinear
+// TODO - 2 - trilinear, 3 - cubic, 4 - anisotropic
+static int32_t SAMPLING_METHOD = 1;
+
+/********************/
+/* static functions */
+/********************/
+
+static vec4_t sample(texture_t* texture, uint32_t x, uint32_t y)
+{
+    float w             = (float)texture->width;
+    uint32_t stride     = texture->stride;
+    unsigned char* data = texture->data;
+
+    uint32_t index      = (x + (uint32_t)w * y) * stride;
+    float d             = 1.f / 255.f;
+    float b             = (float)(data[index + 2] & 0xFF);
+    float g             = (float)(data[index + 1] & 0xFF);
+    float r             = (float)(data[index + 0] & 0xFF);
+
+    return vec4_new(b * d, g * d, r * d);
+}
+
+/********************/
+/* public functions */
+/********************/
 
 texture_t* texture_new(uint32_t width, uint32_t height, uint32_t stride)
 {
@@ -16,17 +57,45 @@ vec4_t texture_sample(texture_t* texture, float u, float v)
 {
     // this function converts rgba from image to bgra
 
-    uint32_t x          = (uint32_t)(u * (float)texture->width) - 1;
-    uint32_t y          = (uint32_t)(v * (float)texture->height) - 1;
-    uint32_t index      = (x + texture->width * y) * texture->stride;
-    unsigned char* data = texture->data;
+    float w             = (float)texture->width;
+    float h             = (float)texture->height;
+    vec4_t result = vec4_new(1.f, 0.f, 1.f);
 
-    float d = 1.f / 255.f;
-    float b = (float)(data[index + 2] & 0xFF);
-    float g = (float)(data[index + 1] & 0xFF);
-    float r = (float)(data[index + 0] & 0xFF);
+    if (SAMPLING_METHOD == 0)
+    {
+        uint32_t x = (uint32_t)f_floor(u * w);
+        uint32_t y = (uint32_t)f_floor(v * h);
+        result = sample(texture, x, y);
+    }
+    else if (SAMPLING_METHOD == 1)
+    {
+        float x = u * w;
+        float y = v * h;
+        float x1 = f_floor(u * w);
+        float x2 = x1 + 1.f;
+        float y1 = f_floor(v * h);
+        float y2 = y1 + 1.f;
 
-    return vec4_new(b * d, g * d, r * d);
+        vec4_t f_x1y1 = sample(texture, (uint32_t)x1, (uint32_t)y1);
+        vec4_t f_x1y2 = sample(texture, (uint32_t)x1, (uint32_t)y2);
+        vec4_t f_x2y1 = sample(texture, (uint32_t)x2, (uint32_t)y1);
+        vec4_t f_x2y2 = sample(texture, (uint32_t)x2, (uint32_t)y2);
+
+        vec4_t f_xy1_1  = vec4_scale(f_x1y1, (x2 - x) / (x2 - x1));
+        vec4_t f_xy1_2  = vec4_scale(f_x2y1, (x - x1) / (x2 - x1));
+        vec4_t f_xy1    = vec4_add(f_xy1_1, f_xy1_2);
+
+        vec4_t f_xy2_1  = vec4_scale(f_x1y2, (x2 - x) / (x2 - x1));
+        vec4_t f_xy2_2  = vec4_scale(f_x2y2, (x - x1) / (x2 - x1));
+        vec4_t f_xy2    = vec4_add(f_xy2_1, f_xy2_2);
+
+        vec4_t f_xy_1   = vec4_scale(f_xy1, (y2 - y) / (y2 - y1) );
+        vec4_t f_xy_2   = vec4_scale(f_xy2, (y - y1) / (y2 - y1) );
+
+        result = vec4_add(f_xy_1, f_xy_2);
+    }
+
+    return result;
 }
 
 void texture_free(texture_t* texture)
