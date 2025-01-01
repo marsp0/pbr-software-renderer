@@ -167,6 +167,9 @@ typedef struct
 float       f_abs(float a);
 float       f_min(float a, float b);
 float       f_max(float a, float b);
+float       f_ceil(float v);
+float       f_floor(float v);
+float       f_round(float v);
 int32_t     i_max(int32_t a, int32_t b);
 int32_t     i_min(int32_t a, int32_t b);
 uint32_t    u_max(uint32_t a, uint32_t b);

@@ -193,6 +193,51 @@ static void test_f_wrap()
 }
 
 
+static void test_f_floor()
+{
+    float actual;
+    float expected;
+
+    actual = f_floor(3.2f);
+    expected = 3.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_floor(-3.7f);
+    expected = -4.f;
+    ASSERT_EQUAL(actual, expected);
+}
+
+
+static void test_f_ceil()
+{
+    float actual;
+    float expected;
+
+    actual = f_ceil(3.2f);
+    expected = 4.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_ceil(-3.7f);
+    expected = -3.f;
+    ASSERT_EQUAL(actual, expected);
+}
+
+
+static void test_f_round()
+{
+    float actual;
+    float expected;
+
+    actual = f_round(3.2f);
+    expected = 3.f;
+    ASSERT_EQUAL(actual, expected);
+
+    actual = f_ceil(-3.7f);
+    expected = -3.f;
+    ASSERT_EQUAL(actual, expected);
+}
+
+
 void test_math_utils()
 {
     TEST_CASE(test_f_abs);
@@ -204,4 +249,7 @@ void test_math_utils()
     TEST_CASE(test_u_max);
     TEST_CASE(test_f_clamp);
     TEST_CASE(test_f_wrap);
+    TEST_CASE(test_f_floor);
+    TEST_CASE(test_f_ceil);
+    TEST_CASE(test_f_round);
 }
