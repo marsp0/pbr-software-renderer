@@ -252,6 +252,15 @@ vec4_t vec4_scale_with_w(vec4_t v, float scale)
     return res;
 }
 
+vec4_t vec4_pow(vec4_t v, float pow)
+{
+    v.x = f_pow(v.x, pow);
+    v.y = f_pow(v.y, pow);
+    v.z = f_pow(v.z, pow);
+
+    return v;
+}
+
 vec4_t vec4_negate(vec4_t v)
 {
     return vec4_new(-v.x, -v.y, -v.z);
@@ -585,26 +594,6 @@ float f_max(float a, float b)
     return a > b ? a : b;
 }
 
-int32_t i_max(int32_t a, int32_t b)
-{
-    return a > b ? a : b;
-}
-
-int32_t i_min(int32_t a, int32_t b)
-{
-    return a < b ? a : b;
-}
-
-uint32_t u_max(uint32_t a, uint32_t b)
-{
-    return a > b ? a : b;
-}
-
-uint32_t u_min(uint32_t a, uint32_t b)
-{
-    return a < b ? a : b;
-}
-
 float f_clamp(float v, float min, float max)
 {
     return f_min(max, f_max(min, v));
@@ -650,4 +639,29 @@ float f_ceil(float v)
 float f_round(float v)
 {
     return roundf(v);
+}
+
+float f_pow(float v, float pow)
+{
+    return powf(v, pow);
+}
+
+int32_t i_max(int32_t a, int32_t b)
+{
+    return a > b ? a : b;
+}
+
+int32_t i_min(int32_t a, int32_t b)
+{
+    return a < b ? a : b;
+}
+
+uint32_t u_max(uint32_t a, uint32_t b)
+{
+    return a > b ? a : b;
+}
+
+uint32_t u_min(uint32_t a, uint32_t b)
+{
+    return a < b ? a : b;
 }

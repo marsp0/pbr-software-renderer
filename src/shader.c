@@ -24,11 +24,12 @@
 /* static variables */
 /********************/
 
+static const float gamma_val        = 2.2f;
+static const float one_over_gamma   = 1.f / gamma_val;
 static camera_t* camera             = NULL;
 static texture_t* albedo_texture    = NULL;
 static texture_t* metallic_texture  = NULL;
 static texture_t* normal_texture    = NULL;
-// static mat_t  tbn_t_w;
 static vec4_t v0_w;
 static vec4_t v1_w;
 static vec4_t v2_w;
@@ -179,7 +180,7 @@ uint32_t shader_fragment(float w0, float w1, float w2)
     float s             = f_min(t0.x * w0 + t1.x * w1 + t2.x * w2, 1.f);
     float t             = f_min(t0.y * w0 + t1.y * w1 + t2.y * w2, 1.f);
 
-    vec4_t albedo       = vec4_scale(texture_sample(albedo_texture, s, t), 2.2f);
+    vec4_t albedo       = vec4_pow(texture_sample(albedo_texture, s, t), gamma_val);
     vec4_t metallic     = texture_sample(metallic_texture, s, t);
     float rough         = metallic.y;                                       // green channel
     float metal         = metallic.x;                                       // blue channel
@@ -247,7 +248,10 @@ uint32_t shader_fragment(float w0, float w1, float w2)
     col                 = vec4_scale(col, 1.f);
     col                 = vec4_scale(col, n_dot_l);
 
-    vec4_t ambient = vec4_scale(albedo, 0.1f);
+    // ambient + gamma correction
 
-    return vec4_to_bgra(vec4_add(col, ambient));
+    vec4_t ambient      = vec4_scale(albedo, 0.1f);
+    vec4_t final        = vec4_pow(vec4_add(col, ambient), one_over_gamma);
+
+    return vec4_to_bgra(final);
 }
