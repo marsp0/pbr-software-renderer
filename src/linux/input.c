@@ -66,15 +66,15 @@ static void handle_mouse_buttons()
 
     if (type == ButtonPress)
     {
-        if      (button == Button1) { keys |= LEFT_CLICK; }
-        else if (button == Button3) { keys |= RIGHT_CLICK; }
-        else if (button == Button4) { keys |= SCROLL_UP; }
-        else if (button == Button5) { keys |= SCROLL_DOWN; }
+        if      (button == Button1) { keys |= LEFT_CLICK;   }
+        else if (button == Button3) { keys |= RIGHT_CLICK;  }
+        else if (button == Button4) { keys |= SCROLL_UP;    }
+        else if (button == Button5) { keys |= SCROLL_DOWN;  }
     }
     else if (type == ButtonRelease)
     {
-        if      (button == Button1) { keys ^= LEFT_CLICK; }
-        else if (button == Button3) { keys ^= RIGHT_CLICK; }
+        if      (button == Button1) { keys ^= LEFT_CLICK;   }
+        else if (button == Button3) { keys ^= RIGHT_CLICK;  }
     }
 }
 
@@ -85,13 +85,15 @@ static void handle_keyboard()
 
     if (type == KeyPress)
     {
-        if      (button == X_ESCAPE)    { keys |= QUIT; }
-        else if (button == X_1)         { keys |= KEY_1; }
+        if      (button == X_ESCAPE)    { keys |= QUIT;     }
+        else if (button == X_1)         { keys |= KEY_1;    }
+        else if (button == X_2)         { keys |= KEY_2;    }
     }
     else if (type == KeyRelease)
     {
-        if      (button == X_ESCAPE)    { keys ^= QUIT; }
-        else if (button == X_1)         { keys ^= KEY_1; }
+        if      (button == X_ESCAPE)    { keys ^= QUIT;     }
+        else if (button == X_1)         { keys ^= KEY_1;    }
+        else if (button == X_2)         { keys ^= KEY_2;    }
     }
 }
 
