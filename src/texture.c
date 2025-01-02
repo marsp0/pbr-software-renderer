@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "settings.h"
+
 /********************
  *  Notes
  *
@@ -15,10 +17,6 @@
 /********************/
 /* static variables */
 /********************/
-
-// 0 - point, 1 - bilinear
-// TODO - 2 - trilinear, 3 - cubic, 4 - anisotropic
-static int32_t SAMPLING_METHOD = 1;
 
 /********************/
 /* static functions */
@@ -57,17 +55,18 @@ vec4_t texture_sample(texture_t* texture, float u, float v)
 {
     // this function converts rgba from image to bgra
 
-    float w             = (float)texture->width;
-    float h             = (float)texture->height;
-    vec4_t result = vec4_new(1.f, 0.f, 1.f);
+    float w                 = (float)texture->width;
+    float h                 = (float)texture->height;
+    vec4_t result           = vec4_new(1.f, 0.f, 1.f);
+    texture_filter_e filter = get_texture_filter();
 
-    if (SAMPLING_METHOD == 0)
+    if (filter == POINT_SAMPLE)
     {
         uint32_t x = (uint32_t)f_floor(u * w);
         uint32_t y = (uint32_t)f_floor(v * h);
         result = sample(texture, x, y);
     }
-    else if (SAMPLING_METHOD == 1)
+    else if (filter == BILINEAR_SAMPLE)
     {
         float x = u * w;
         float y = v * h;

@@ -12,6 +12,7 @@
 #include "rasterizer.h"
 #include "constants.h"
 #include "shader.h"
+#include "settings.h"
 
 /********************
  *  Notes
@@ -41,6 +42,8 @@ static bool wireframe               = false;
 static void renderer_update(input_t input)
 {
     scene_update(scene, input);
+
+    if (input.keys & KEY_2) { change_texture_filter(); }
 }
 
 // static void renderer_draw_utilities()
